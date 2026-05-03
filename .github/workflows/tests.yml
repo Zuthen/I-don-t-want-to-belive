@@ -19,7 +19,7 @@ jobs:
       - name: Import project
         working-directory: i-(don't)-want-to-belive
         run: |
-          godot --headless --editor --quit
+          godot --headless --import
 
       - name: Run tests
         working-directory: i-(don't)-want-to-belive
