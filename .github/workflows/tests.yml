@@ -16,6 +16,10 @@ jobs:
         with:
           version: 4.2.2
 
+      - name: Import project
+        run: |
+          godot --headless --editor --quit
+
       - name: Run tests
         working-directory: i-(don't)-want-to-belive
         run: |
