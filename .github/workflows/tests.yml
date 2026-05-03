@@ -1,0 +1,21 @@
+name: Run GUT Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.2.2
+
+      - name: Run tests
+        run: |
+          godot --headless -s res://addons/gut/gut_cmdln.gd -gexit
