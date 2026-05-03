@@ -18,4 +18,4 @@ jobs:
 
       - name: Run tests
         run: |
-          godot --headless -s i-(don't)-want-to-belive/res://addons/gut/gut_cmdln.gd -gexit
+          godot --headless -s i-(don't)-want-to-belive/addons/gut/gut_cmdln.gd -gexit
