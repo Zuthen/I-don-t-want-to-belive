@@ -24,4 +24,4 @@ jobs:
       - name: Run tests
         working-directory: i-(don't)-want-to-belive
         run: |
-          godot --headless -s res://addons/gut/gut_cmdln.gd -gexit
+          godot --headless -s res://addons/gut/gut_cmdln.gd -gdir=res://scenes -gexit
