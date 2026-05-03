@@ -11,12 +11,13 @@ config_version=5
 [application]
 
 config/name="I (don't) want to belive"
+run/main_scene="uid://c4twc836ak4bd"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/GitGodot/plugin.cfg", "res://addons/gut/plugin.cfg")
 
 [physics]
 
