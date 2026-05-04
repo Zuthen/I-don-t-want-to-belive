@@ -15,9 +15,10 @@ run/main_scene="uid://c4twc836ak4bd"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
-[editor_plugins]
+[display]
 
-enabled=PackedStringArray("res://addons/GitGodot/plugin.cfg", "res://addons/gut/plugin.cfg")
+window/size/viewport_width=400
+window/size/viewport_height=400
 
 [physics]
 
