@@ -4,15 +4,17 @@ extends Node2D
 @onready var camera = $Camera2D
 
 var bush : PackedScene = preload("uid://bstnhs77ge8vn")
+var player_scene: PackedScene = preload("uid://b7wo2a5407873")
 var random_generator: RandomNumberGenerator = RandomNumberGenerator.new()
 var paths: Array[Vector2i]=[]
 var min_position:= Vector2i(0, -10)
 var max_position:= Vector2i(19, 9)
+var spawn_points: Array[Vector2i]=[]
 	
 func _ready():
 	genereate_map()
-	fit_map()
-
+	var spawn_position = find_spawn_position()
+	spawn_player(spawn_position)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -32,6 +34,8 @@ func genereate_map():
 			var position := Vector2i(x, y)
 			if !paths.has(position):
 				create_bush(position)
+			else:
+				spawn_points.append(position)
 
 func create_bush(position: Vector2i):
 	var new_bush = bush.instantiate()
@@ -81,8 +85,15 @@ func directions(step: int) -> Dictionary:
 		"left": Vector2i(-step, 0),
 		"right":Vector2i(step, 0)
 	}
-
-func fit_map():
-	var size = Vector2(2560, 2560)
-	var screen = get_viewport_rect().size
-	camera.zoom = screen / size
+func find_spawn_position() -> Vector2i:
+	return spawn_points.pick_random()
+	
+func spawn_player(spawn_position: Vector2i):
+	var player = player_scene.instantiate()
+	player.position = bushes.map_to_local(spawn_position)
+	add_child(player)
+#
+#func fit_map():
+	#var size = Vector2(2560, 2560)
+	#var screen = get_viewport_rect().size
+	#camera.zoom = screen / size

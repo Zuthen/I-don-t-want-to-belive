@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://b7wo2a5407873"]
+
+[ext_resource type="Script" uid="uid://6iy4io5jvrm3" path="res://scenes/player/player.gd" id="1_8afob"]
+[ext_resource type="Texture2D" uid="uid://bauru7i8fyxi6" path="res://assets/characters/female/character_femaleAdventurer_back.png" id="2_dovo2"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u8vuu"]
+radius = 25.0
+height = 98.0
+
+[node name="Player" type="CharacterBody2D" unique_id=402508521]
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_8afob")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=312119236]
+texture = ExtResource("2_dovo2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1318819708]
+position = Vector2(1, 14)
+shape = SubResource("CapsuleShape2D_u8vuu")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1868817480]
