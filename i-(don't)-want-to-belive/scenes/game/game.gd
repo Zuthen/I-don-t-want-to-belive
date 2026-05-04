@@ -6,6 +6,9 @@ extends Node2D
 var bush : PackedScene = preload("uid://bstnhs77ge8vn")
 var random_generator: RandomNumberGenerator = RandomNumberGenerator.new()
 var paths: Array[Vector2i]=[]
+var min_position:= Vector2i(0, -10)
+var max_position:= Vector2i(19, 9)
+	
 func _ready():
 	genereate_map()
 	fit_map()
@@ -18,40 +21,25 @@ func _process(_delta):
 
 func genereate_map():
 	var start: Vector2i = Vector2i(random_generator.randi_range(0, 19), random_generator.randi_range(-10,9))
-	create_bush(start)
 	var next:Array[Vector2i] = find_next_path(start,Vector2i.ZERO)
-	create_bushes(next)
 	
-	for i in range(110):
+	for i in range(100):
 		var way = find_next_path(next[0], next[1])
-		create_bushes(way)
 		next=way
+		
+	for y in range(min_position.y, max_position.y):
+		for x in range(min_position.x, max_position.x):
+			var position := Vector2i(x, y)
+			if !paths.has(position):
+				create_bush(position)
 
 func create_bush(position: Vector2i):
 	var new_bush = bush.instantiate()
 	new_bush.position = bushes.map_to_local(position)
 	bushes.add_child(new_bush)
-	paths.push_back(position)
 
-func create_bushes(positions: Array[Vector2i]):
-	for position in positions:
-		var new_bush = bush.instantiate()
-		new_bush.position = bushes.map_to_local(position)
-		bushes.add_child(new_bush)
-		paths.push_back(position)
-
-
-func empty() -> bool:
-	var is_empty := [true, false]
-	return is_empty.pick_random()
-
-func map_rows(row_number:int) -> int :
-	return row_number -11
 
 func find_next_path(position: Vector2i, previous:Vector2i)-> Array[Vector2i]:
-	var min_position:= Vector2i(0, -10)
-	var max_position:= Vector2i(19, 9)
-
 	var valid_dirs: Dictionary[String,Vector2i] = {}
 	var valid_ways: Dictionary[String,Vector2i] = {}
 	var destinations = directions(2)
@@ -81,6 +69,9 @@ func find_next_path(position: Vector2i, previous:Vector2i)-> Array[Vector2i]:
 		return find_next_path(new_path, previous)
 	
 	var key = valid_dirs.keys().pick_random()
+	var next = position + valid_dirs[key]
+	var next_2 = position + valid_ways[key]
+	paths.append_array([next, next_2])
 	return [position + valid_dirs[key], position + valid_ways[key]]
 
 func directions(step: int) -> Dictionary:
@@ -95,6 +86,3 @@ func fit_map():
 	var size = Vector2(2560, 2560)
 	var screen = get_viewport_rect().size
 	camera.zoom = screen / size
-	
-	
-# 1. Losowe miejsce, losowy kierunek, następne miejsce, To jest nasz start, na początek węzły dam zamiast ścieżki a potem zamienię!!!
