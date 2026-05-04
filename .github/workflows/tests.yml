@@ -14,7 +14,7 @@ jobs:
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
         with:
-          version: 4.2.2
+          version: 4.6.2
 
       - name: Import project
         working-directory: i-(don't)-want-to-belive
