@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bt6so2huvttp0" path="res://scenes/game/game.gd" id="1_kelw5"]
 [ext_resource type="Texture2D" uid="uid://dadusk5yuvpp" path="res://assets/tiles/terrainTiles_retina.png" id="2_7dfdq"]
 [ext_resource type="Texture2D" uid="uid://d1ouav7tgho31" path="res://assets/objects/onlyObjects_retina.png" id="3_54y65"]
+[ext_resource type="FontFile" uid="uid://de4fk6e3aysdf" path="res://assets/fonts/Kenney Blocks.ttf" id="4_kelw5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e2o6t"]
 texture = ExtResource("2_7dfdq")
@@ -103,6 +104,18 @@ physics_layer_0/collision_layer = 1
 physics_layer_0/physics_material = SubResource("PhysicsMaterial_feb5d")
 sources/0 = SubResource("TileSetAtlasSource_fc0e3")
 
+[sub_resource type="LabelSettings" id="LabelSettings_lfrn8"]
+line_spacing = 1.0
+font = ExtResource("4_kelw5")
+font_size = 53
+font_color = Color(0.14959998, 0.22219999, 0.44, 1)
+shadow_size = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_5i0tg"]
+font = ExtResource("4_kelw5")
+font_size = 53
+font_color = Color(0.81, 0.1539, 0.1539, 1)
+
 [sub_resource type="TileSet" id="TileSet_1p5ji"]
 tile_size = Vector2i(64, 64)
 
@@ -118,6 +131,410 @@ metadata/_edit_lock_ = true
 tile_map_data = PackedByteArray("AAD///r/AAAAAAEAAAD///v/AAAAAAEAAAD///z/AAAAAAEAAAD///3/AAAAAAEAAAD///7/AAAAAAEAAAD/////AAAAAAEAAAD//wAAAAAAAAEAAAD//wEAAAAAAAEAAAD//wIAAAAAAAEAAAD//wMAAAAAAAEAAAD//wQAAAAAAAEAAAD//wUAAAAAAAEAAAAAAAUAAAAAAAEAAAABAAUAAAAAAAEAAAACAAUAAAAAAAEAAAADAAUAAAAAAAEAAAAEAAUAAAAAAAEAAAAFAAUAAAAAAAEAAAAGAAUAAAAAAAEAAAAHAAUAAAAAAAEAAAAIAAUAAAAAAAEAAAAJAAUAAAAAAAEAAAAKAAUAAAAAAAEAAAAKAAQAAAAAAAEAAAAKAAMAAAAAAAEAAAAKAAIAAAAAAAEAAAAKAAEAAAAAAAEAAAAKAAAAAAAAAAEAAAAKAP//AAAAAAEAAAAKAP7/AAAAAAEAAAAKAP3/AAAAAAEAAAAKAPz/AAAAAAEAAAAKAPv/AAAAAAEAAAAKAPr/AAAAAAEAAAAAAPr/AAAAAAEAAAABAPr/AAAAAAEAAAACAPr/AAAAAAEAAAADAPr/AAAAAAEAAAAEAPr/AAAAAAEAAAAFAPr/AAAAAAEAAAAGAPr/AAAAAAEAAAAHAPr/AAAAAAEAAAAIAPr/AAAAAAEAAAAJAPr/AAAAAAEAAAA=")
 tile_set = SubResource("TileSet_7jktm")
 metadata/_edit_lock_ = true
+
+[node name="Labels_Numbers" type="Node2D" parent="Trees" unique_id=865054940]
+
+[node name="1_left" type="Label" parent="Trees/Labels_Numbers" unique_id=2077276627]
+offset_left = -81.0
+offset_top = -617.0
+offset_right = -41.0
+offset_bottom = -536.0
+text = "1"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="2_left" type="Label" parent="Trees/Labels_Numbers" unique_id=779448330]
+offset_left = -94.0
+offset_top = -486.0
+offset_right = -33.0
+offset_bottom = -405.0
+text = "2"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="2_right" type="Label" parent="Trees/Labels_Numbers" unique_id=1497908959]
+offset_left = 1314.0
+offset_top = -486.0
+offset_right = 1375.0
+offset_bottom = -405.0
+text = "2"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="1_right" type="Label" parent="Trees/Labels_Numbers" unique_id=2078411316]
+offset_left = 1314.0
+offset_top = -617.0
+offset_right = 1375.0
+offset_bottom = -536.0
+text = "1"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="3_right" type="Label" parent="Trees/Labels_Numbers" unique_id=655841744]
+offset_left = 1314.0
+offset_top = -362.0
+offset_right = 1375.0
+offset_bottom = -281.0
+text = "3"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="3_left" type="Label" parent="Trees/Labels_Numbers" unique_id=1284452113]
+offset_left = -94.0
+offset_top = -362.0
+offset_right = -33.0
+offset_bottom = -281.0
+text = "3"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="4_left" type="Label" parent="Trees/Labels_Numbers" unique_id=885890773]
+offset_left = -94.0
+offset_top = -236.0
+offset_right = -33.0
+offset_bottom = -155.0
+text = "4"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="4_right" type="Label" parent="Trees/Labels_Numbers" unique_id=1235195881]
+offset_left = 1314.0
+offset_top = -232.0
+offset_right = 1375.0
+offset_bottom = -151.0
+text = "4"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="5_right" type="Label" parent="Trees/Labels_Numbers" unique_id=523631049]
+offset_left = 1314.0
+offset_top = -109.0
+offset_right = 1375.0
+offset_bottom = -28.0
+text = "5"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="5_left" type="Label" parent="Trees/Labels_Numbers" unique_id=259605408]
+offset_left = -94.0
+offset_top = -109.0
+offset_right = -33.0
+offset_bottom = -28.0
+text = "5"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="6_left" type="Label" parent="Trees/Labels_Numbers" unique_id=67741629]
+offset_left = -94.0
+offset_top = 17.0
+offset_right = -33.0
+offset_bottom = 98.0
+text = "6"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="6_right" type="Label" parent="Trees/Labels_Numbers" unique_id=443869262]
+offset_left = 1314.0
+offset_top = 17.0
+offset_right = 1375.0
+offset_bottom = 98.0
+text = "6"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="7_right" type="Label" parent="Trees/Labels_Numbers" unique_id=1211540796]
+offset_left = 1314.0
+offset_top = 150.0
+offset_right = 1375.0
+offset_bottom = 231.0
+text = "7"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="7_left" type="Label" parent="Trees/Labels_Numbers" unique_id=1704212348]
+offset_left = -94.0
+offset_top = 150.0
+offset_right = -33.0
+offset_bottom = 231.0
+text = "7"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="8_left" type="Label" parent="Trees/Labels_Numbers" unique_id=568080858]
+offset_left = -94.0
+offset_top = 274.0
+offset_right = -33.0
+offset_bottom = 355.0
+text = "8"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="8_right" type="Label" parent="Trees/Labels_Numbers" unique_id=945002591]
+offset_left = 1314.0
+offset_top = 274.0
+offset_right = 1375.0
+offset_bottom = 355.0
+text = "8"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="9_right" type="Label" parent="Trees/Labels_Numbers" unique_id=1862496394]
+offset_left = 1314.0
+offset_top = 409.0
+offset_right = 1375.0
+offset_bottom = 490.0
+text = "9"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="9_left" type="Label" parent="Trees/Labels_Numbers" unique_id=2118984656]
+offset_left = -94.0
+offset_top = 409.0
+offset_right = -33.0
+offset_bottom = 490.0
+text = "9"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="10_left" type="Label" parent="Trees/Labels_Numbers" unique_id=1387141011]
+offset_left = -99.0
+offset_top = 535.0
+offset_right = -19.0
+offset_bottom = 616.0
+text = "10"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="10_right" type="Label" parent="Trees/Labels_Numbers" unique_id=710713804]
+offset_left = 1307.0
+offset_top = 533.0
+offset_right = 1387.0
+offset_bottom = 614.0
+text = "10"
+label_settings = SubResource("LabelSettings_lfrn8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Labels_Letters" type="Node" parent="Trees" unique_id=1257066587]
+
+[node name="A_top" type="Label" parent="Trees/Labels_Letters" unique_id=87670770]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 45.0
+offset_top = -745.0
+offset_right = 65.0
+offset_bottom = -664.0
+text = "A"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="A_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=494357050]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 45.0
+offset_top = 663.0
+offset_right = 65.0
+offset_bottom = 744.0
+text = "A"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="B_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=211920878]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 174.0
+offset_top = 663.0
+offset_right = 194.0
+offset_bottom = 744.0
+text = "B"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="B_top" type="Label" parent="Trees/Labels_Letters" unique_id=600377636]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 174.0
+offset_top = -745.0
+offset_right = 194.0
+offset_bottom = -664.0
+text = "B"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="C_top" type="Label" parent="Trees/Labels_Letters" unique_id=619355750]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 298.0
+offset_top = -745.0
+offset_right = 318.0
+offset_bottom = -664.0
+text = "C"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="C_botttom" type="Label" parent="Trees/Labels_Letters" unique_id=2096549739]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 298.0
+offset_top = 663.0
+offset_right = 318.0
+offset_bottom = 744.0
+text = "C"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="D_botttom" type="Label" parent="Trees/Labels_Letters" unique_id=1051464601]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 429.0
+offset_top = 663.0
+offset_right = 449.0
+offset_bottom = 744.0
+text = "D"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="D_top" type="Label" parent="Trees/Labels_Letters" unique_id=1945144898]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 429.0
+offset_top = -745.0
+offset_right = 449.0
+offset_bottom = -664.0
+text = "D"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="E_top" type="Label" parent="Trees/Labels_Letters" unique_id=2052751690]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 555.0
+offset_top = -745.0
+offset_right = 575.0
+offset_bottom = -664.0
+text = "E"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="E_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=1461779682]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 555.0
+offset_top = 663.0
+offset_right = 575.0
+offset_bottom = 744.0
+text = "E"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="F_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=1246538933]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 686.0
+offset_top = 663.0
+offset_right = 706.0
+offset_bottom = 744.0
+text = "F"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="F_top" type="Label" parent="Trees/Labels_Letters" unique_id=237489468]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 686.0
+offset_top = -745.0
+offset_right = 706.0
+offset_bottom = -664.0
+text = "F"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="G_top" type="Label" parent="Trees/Labels_Letters" unique_id=115593782]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 817.0
+offset_top = -745.0
+offset_right = 837.0
+offset_bottom = -664.0
+text = "G"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="G_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=857490124]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 817.0
+offset_top = 663.0
+offset_right = 837.0
+offset_bottom = 744.0
+text = "G"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="H_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=1989906200]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 941.0
+offset_top = 663.0
+offset_right = 961.0
+offset_bottom = 744.0
+text = "H"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="H_top" type="Label" parent="Trees/Labels_Letters" unique_id=820135777]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 941.0
+offset_top = -745.0
+offset_right = 961.0
+offset_bottom = -664.0
+text = "H"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="I_top" type="Label" parent="Trees/Labels_Letters" unique_id=828005121]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 1070.0
+offset_top = -745.0
+offset_right = 1090.0
+offset_bottom = -664.0
+text = "I"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="I_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=574174667]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 1070.0
+offset_top = 663.0
+offset_right = 1090.0
+offset_bottom = 744.0
+text = "I"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="J_bottom" type="Label" parent="Trees/Labels_Letters" unique_id=1088662448]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 1196.0
+offset_top = 663.0
+offset_right = 1216.0
+offset_bottom = 744.0
+text = "J"
+label_settings = SubResource("LabelSettings_5i0tg")
+
+[node name="J_top" type="Label" parent="Trees/Labels_Letters" unique_id=1276916445]
+anchors_preset = -1
+anchor_right = 0.05
+offset_left = 1199.0
+offset_top = -745.0
+offset_right = 1219.0
+offset_bottom = -664.0
+text = "J"
+label_settings = SubResource("LabelSettings_5i0tg")
 
 [node name="Bushes" type="TileMapLayer" parent="." unique_id=1179521056]
 tile_set = SubResource("TileSet_1p5ji")
