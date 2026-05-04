@@ -1,10 +1,21 @@
 extends GutTest
 
-func test_bush_created():
+func arrange():
 	# Arrange
 	var game: PackedScene = preload("uid://c4twc836ak4bd")
 	var test_game = autoqfree(game.instantiate())
-	add_child(test_game)
+
+	var cam = Camera2D.new()
+	cam.name = "Camera2D"
+	test_game.add_child(cam) 
+
+	add_child(test_game) 
+	return test_game
+
+func test_bush_created():
+	# Arrange
+	var test_game = arrange()    
+	
 	# Act
 	test_game.create_bush(Vector2i.ZERO)
 	var obstacles = test_game.paths
