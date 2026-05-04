@@ -19,11 +19,11 @@ func _process(_delta):
 func genereate_map():
 	var start: Vector2i = Vector2i(random_generator.randi_range(0, 19), random_generator.randi_range(-10,9))
 	create_bush(start)
-	var next:Array[Vector2i] = find_next_path(start)
+	var next:Array[Vector2i] = find_next_path(start,Vector2i.ZERO)
 	create_bushes(next)
 	
-	for i in range(20):
-		var way = find_next_path(next[0])
+	for i in range(110):
+		var way = find_next_path(next[0], next[1])
 		create_bushes(way)
 		next=way
 
@@ -48,9 +48,9 @@ func empty() -> bool:
 func map_rows(row_number:int) -> int :
 	return row_number -11
 
-func find_next_path(position: Vector2i)-> Array[Vector2i]:
-	var min:= Vector2i(0, -10)
-	var max:= Vector2i(19, 9)
+func find_next_path(position: Vector2i, previous:Vector2i)-> Array[Vector2i]:
+	var min_position:= Vector2i(0, -10)
+	var max_position:= Vector2i(19, 9)
 
 	var valid_dirs: Dictionary[String,Vector2i] = {}
 	var valid_ways: Dictionary[String,Vector2i] = {}
@@ -65,18 +65,20 @@ func find_next_path(position: Vector2i)-> Array[Vector2i]:
 
 		var way_vec = ways_to_destinations[key]
 		var next = position + dest_vec
-
+		if next == previous:
+			continue
 		if paths.has(next):
 			continue
-		if next.x < min.x or next.x > max.x:
+		if next.x < min_position.x or next.x > max_position.x:
 			continue
-		if next.y < min.y or next.y > max.y:
+		if next.y < min_position.y or next.y > max_position.y:
 			continue
 
 		valid_dirs[key] = dest_vec
 		valid_ways[key] = way_vec
 	if valid_dirs.is_empty():
-		printerr("No way to go", position)
+		var new_path = paths.pick_random()
+		return find_next_path(new_path, previous)
 	
 	var key = valid_dirs.keys().pick_random()
 	return [position + valid_dirs[key], position + valid_ways[key]]
