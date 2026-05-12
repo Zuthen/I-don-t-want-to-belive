@@ -180,19 +180,21 @@ _data = {
 }
 
 [node name="Player" type="CharacterBody2D" unique_id=402508521]
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.45, 0.45)
 script = ExtResource("1_8afob")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1318819708]
 position = Vector2(0, 2)
-scale = Vector2(8, 8)
+scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_3j4b4")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=312119236]
-scale = Vector2(8, 8)
+scale = Vector2(2, 2)
 texture = ExtResource("2_je7p5")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1868817480]
+scale = Vector2(0.6, 0.6)
+zoom = Vector2(3, 3)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=724571534]
 libraries/ = SubResource("AnimationLibrary_tffgl")

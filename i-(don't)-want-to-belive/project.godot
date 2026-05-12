@@ -15,10 +15,16 @@ run/main_scene="uid://c4twc836ak4bd"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+MapCreator="*uid://b1ypbtaykhwyw"
+Drawers="*uid://bqmmu5bpq48t7"
+
 [display]
 
-window/size/viewport_width=400
-window/size/viewport_height=400
+window/size/viewport_width=700
+window/size/viewport_height=700
+window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
