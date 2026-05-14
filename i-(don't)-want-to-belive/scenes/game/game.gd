@@ -10,11 +10,23 @@ var paths: Array[Vector2i]=[]
 var min_position:= Vector2i(0, -10)
 var max_position:= Vector2i(19, 9)
 var spawn_points: Array[Vector2i]=[]
+
+
+# to remove
+@onready var test_tile_map_layer: TileMapLayer = $TileMapLayer
+
 	
 func _ready():
 	genereate_map()
 	var spawn_position = find_spawn_position()
 	spawn_player(spawn_position)
+	fit_map()
+	
+	# to remove
+	for path in paths:
+		var borders = Pavement.get_neighbors(path, paths)
+		var tile = Pavement.get_tile(borders)
+		test_tile_map_layer.set_cell(path,0,tile)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -93,7 +105,7 @@ func spawn_player(spawn_position: Vector2i):
 	player.position = bushes.map_to_local(spawn_position)
 	add_child(player)
 #
-#func fit_map():
-	#var size = Vector2(2560, 2560)
-	#var screen = get_viewport_rect().size
-	#camera.zoom = screen / size
+func fit_map():
+	var size = Vector2(2560, 2560)
+	var screen = get_viewport_rect().size
+	camera.zoom = screen / size
