@@ -96,18 +96,15 @@ func draw_obstacle(rectangle: Rect2i):
 			set_city_atlas_cell(rectangle.position, roof.thin.start)
 			set_city_atlas_cell(rectangle.position + Vector2i(0,1), roof.thin.end)
 			set_city_atlas_cell(rectangle.position + Vector2i(0,2), facade.thin.top)
-			var next_window_row = draw_top_windows(rectangle,2,roof_color)
+			
 			var placed_door = place_door(rectangle,2,roof_color)
 			if placed_door.start_position != Vector2i.ZERO:
 					place_windows_on_door_level(rectangle,roof_color,placed_door)
-			draw_windows(rectangle,next_window_row,roof_color)
 			set_city_atlas_cell(rectangle.position + Vector2i(0,3), facade.thin.bottom)
 		else:
 			draw_single_row( rectangle,roof.top)
 			draw_single_row( rectangle,roof.bottom, 1)
 			draw_single_row( rectangle, facade.top, 2)
-			var next_window_row = draw_top_windows(rectangle,2,roof_color)
-			draw_windows(rectangle,next_window_row,roof_color)
 			draw_single_row( rectangle, facade.bottom,3)
 			var placed_door = place_door(rectangle,3, roof_color)
 			if placed_door.start_position != Vector2i.ZERO:
@@ -180,7 +177,6 @@ func draw_top_windows(rectangle, row, color) -> int:
 	return row+2
 
 func draw_windows(rectangle, row, color):
-	print("row: " + str(row))
 	var window = BuildingWindow.create_by_roof_color(color)
 	var width = rectangle.size.x
 
@@ -248,24 +244,88 @@ func place_door(rectangle, row, color) -> Door.PlacedDoor:
 	
 	
 func place_windows_on_door_level(rectangle, color, placed_door):
-
 	var width = rectangle.size.x
 	var blocked_positions = []
 
 	for i in range(placed_door.length):
 		blocked_positions.append(
-			placed_door.start_position.x + i
-		)
-
+			placed_door.start_position.x + i)
 	var window = BuildingWindow.create_by_roof_color(color).bottom
 
 	for x in range(1, width, 2):
-
 		if blocked_positions.has(x):
 			continue
+		set_building_details_cell(rectangle.position + Vector2i(x, rectangle.size.y-1),window)
 
-		set_building_details_cell(
-			rectangle.position + Vector2i(x, rectangle.size.y-1),
-			window
-		)
+func draw_pavement(paths):
+	var pavement: Pavement = Pavement.new()
+	var rows_range := split_to_rows(paths)
+	#pierwszy kafelek:
+	var first_path_position = paths[0]
+	draw_first_pavement(first_path_position,rows_range, pavement)
+	
+	
+	#for path in paths:
+		#set_city_atlas_cell(path,pavement.wide.middle)
+
+func draw_first_pavement(position: Vector2i, rows_range:RowsRange, pavement: Pavement):
+	var neighbors = get_neighbors(position, rows_range)
+	var wide = neighbors.right && neighbors.bottom && neighbors.diagonal
+	if wide:
+		set_city_atlas_cell(position, pavement.wide.corners.top_left)
+	elif neighbors.right && neighbors.bottom:
+		set_city_atlas_cell(position, pavement.thin.corners.top_left)
+	elif neighbors.right:
+		set_city_atlas_cell(position, pavement.thin.path_ends.left)
+	elif neighbors.bottom:
+		set_city_atlas_cell(position, pavement.thin.path_ends.top)
+		# zrwacamy wide i sąsiadów (chyba)
+class RowsRange:
+	var rows: Array
+	var min: int
+	var max: int
+	
+	func _init(rows, min, max):
+		self.rows = rows
+		self.min= min
+		self.max=max
+
 		
+func split_to_rows(paths: Array[Vector2i]) -> RowsRange:
+	var y = paths.map(func(path): return path.y)
+	var min_y = y.min()
+	var max_y = y.max()
+	var rows= []
+	for i in range (min_y, max_y):
+		var row: Array[Vector2i] = []
+		row.append_array(paths.filter(func(vector: Vector2i): return vector.y == i))
+		rows.append(row)
+	var rows_range :=  RowsRange.new(rows, min_y, max_y)
+	return rows_range
+
+class Neighbors:
+	var right: bool = false
+	var bottom: bool = false
+	var diagonal: bool = false
+
+func get_neighbors(place: Vector2i, rows_range: RowsRange) -> Neighbors:
+	var neighbors: Neighbors = Neighbors.new()
+	var x = place.x
+	var y = place.y
+	
+	var row_index = y - rows_range.min
+	var row = rows_range.rows[row_index]
+	
+	var right_neighbor = Vector2i(x+1, y)
+	if row.has(right_neighbor):
+		neighbors.right = true
+		
+	if row_index + 1 < rows_range.rows.size():
+		var next_row = rows_range.rows[row_index+1]
+		var bottom_neighbor = Vector2i(x, y+1)
+		if next_row.has(bottom_neighbor):
+			neighbors.bottom = true
+		var diagonal_neighbor = Vector2i(x+1, y+1)
+		if next_row.has(diagonal_neighbor):
+			neighbors.diagonal = true
+	return neighbors

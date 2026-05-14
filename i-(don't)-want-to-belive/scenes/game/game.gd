@@ -24,8 +24,6 @@ func _ready():
 	for region in obstacle_regions:
 		var rects = MapCreator.regions_to_rects(region)
 		obstacle_rects.append_array(MapCreator.merge_small_rectangles(rects))
-#var min_position:= Vector2i(0, -10)
-#var max_position:= Vector2i(19, 9)
 	var valid_spawns = []
 
 	for pos in areas.paths:
@@ -35,7 +33,7 @@ func _ready():
 	var spawn_position = valid_spawns.pick_random()
 	Drawers.draw_map(obstacle_rects)
 	#Drawers.draw_map(map_borders_obstacle_rects)
-	
+	Drawers.draw_pavement(areas.paths)
 	spawn_player(spawn_position)
 	
 
