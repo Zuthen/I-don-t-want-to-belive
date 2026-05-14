@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 MapCreator="*uid://b1ypbtaykhwyw"
 Drawers="*uid://bqmmu5bpq48t7"
+PavementTilesMap="*uid://dp1fr0vbdlnle"
 
 [display]
 

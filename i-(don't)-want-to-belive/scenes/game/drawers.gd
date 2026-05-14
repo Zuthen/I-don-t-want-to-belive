@@ -258,28 +258,11 @@ func place_windows_on_door_level(rectangle, color, placed_door):
 		set_building_details_cell(rectangle.position + Vector2i(x, rectangle.size.y-1),window)
 
 func draw_pavement(paths):
-	var pavement: Pavement = Pavement.new()
-	var rows_range := split_to_rows(paths)
-	#pierwszy kafelek:
-	var first_path_position = paths[0]
-	draw_first_pavement(first_path_position,rows_range, pavement)
-	
-	
-	#for path in paths:
-		#set_city_atlas_cell(path,pavement.wide.middle)
+	for tile in paths:
+		var borders = Pavement.get_neighbors(tile, paths)
+		var pavement_tile = Pavement.get_tile(borders)
+		set_city_atlas_cell(tile,pavement_tile)
 
-func draw_first_pavement(position: Vector2i, rows_range:RowsRange, pavement: Pavement):
-	var neighbors = get_neighbors(position, rows_range)
-	var wide = neighbors.right && neighbors.bottom && neighbors.diagonal
-	if wide:
-		set_city_atlas_cell(position, pavement.wide.corners.top_left)
-	elif neighbors.right && neighbors.bottom:
-		set_city_atlas_cell(position, pavement.thin.corners.top_left)
-	elif neighbors.right:
-		set_city_atlas_cell(position, pavement.thin.path_ends.left)
-	elif neighbors.bottom:
-		set_city_atlas_cell(position, pavement.thin.path_ends.top)
-		# zrwacamy wide i sąsiadów (chyba)
 class RowsRange:
 	var rows: Array
 	var min: int

@@ -12,6 +12,10 @@ var city_atlas_obstacles_coords = Vector2i(22,8)
 var paths: Array[Vector2i]=[]
 var obstacles
 
+var spawn_points: Array[Vector2i]=[]
+
+
+	
 func _ready():
 	Drawers.tile_map_layer = tile_map_layer
 	Drawers.details = buildings_details
@@ -24,18 +28,18 @@ func _ready():
 	for region in obstacle_regions:
 		var rects = MapCreator.regions_to_rects(region)
 		obstacle_rects.append_array(MapCreator.merge_small_rectangles(rects))
-	var valid_spawns = []
+	
 
-	for pos in areas.paths:
-		if not is_inside_obstacle(pos, obstacle_rects):
-			valid_spawns.append(pos)
-
-	var spawn_position = valid_spawns.pick_random()
+	var spawn_position = areas.paths.pick_random()
 	Drawers.draw_map(obstacle_rects)
-	#Drawers.draw_map(map_borders_obstacle_rects)
 	Drawers.draw_pavement(areas.paths)
 	spawn_player(spawn_position)
 	
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(_delta):
+	pass
+
 
 func genereate_map():
 	var start: Vector2i = Vector2i(random_generator.randi_range(0, 19), random_generator.randi_range(-10,9))
@@ -102,12 +106,10 @@ func find_next_path(position: Vector2i, previous:Vector2i)-> Array[Vector2i]:
 	paths.append_array([next, next_2])
 	return [position + valid_dirs[key], position + valid_ways[key]]
 
-func is_inside_obstacle(pos: Vector2i, rects: Array[Rect2i]) -> bool:
-	for rect in rects:
-		if rect.has_point(pos):
-			return true
-	return false
+func find_spawn_position() -> Vector2i:
+	return spawn_points.pick_random()
 	
+#
 #func fit_map():
 	#var size = Vector2(860, 860)
 	#var screen = get_viewport_rect().size
