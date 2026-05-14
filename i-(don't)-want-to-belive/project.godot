@@ -15,6 +15,10 @@ run/main_scene="uid://c4twc836ak4bd"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+PavementTilesMap="*uid://dp1fr0vbdlnle"
+
 [display]
 
 window/size/viewport_width=800
