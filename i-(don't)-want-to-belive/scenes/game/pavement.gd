@@ -70,6 +70,13 @@ static func get_tile(borders: PavementBorders) -> Vector2i:
 	if borders.bottom && borders.right && !borders.top:
 		return Vector2i(10,2)
 	if borders.bottom && borders.left && !borders.top:
-		print("done")
 		return Vector2i(8,2)
+	if borders.top_right && !borders.top && !borders.right:
+		return Vector2i(13,1)
+	if borders.top_left && !borders.top && !borders.left:
+		return Vector2i(14,1)
+	if borders.bottom_left && !borders.bottom && !borders.left:
+		return Vector2i(14,0)
+	if borders.bottom_right && !borders.bottom && !borders.right:
+		return Vector2i(13,0)
 	return Vector2i(9,1)
