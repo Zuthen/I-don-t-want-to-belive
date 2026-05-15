@@ -55,3 +55,9 @@ var left_border_bottom_right_corner=Vector2i(17,18)
 
 var right_border_bottom_left_corner=Vector2i(21,18)
 var right_border_top_left_corner=Vector2i(20,18)
+
+var top_border_bottom_left_corner = Vector2i(19,18)
+var top_border_bottom_right_corner= Vector2i(18,18)
+
+var bottom_border_top_right_corner=Vector2i(22,18)
+var bottom_border_top_left_corner=Vector2i(23,18)
