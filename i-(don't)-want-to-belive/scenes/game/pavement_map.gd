@@ -44,3 +44,20 @@ var right_end = Vector2i(13,2)
 var top_end = Vector2i(15,0)
 var top_bottom = Vector2i(15,1)
 var bottom_end = Vector2i(15,2)
+
+var t_cross_left=Vector2i(12,18)
+var t_cross_right=Vector2i(14,18)
+var t_cross_top=Vector2i(13,18)
+var t_cross_bottom=Vector2i(15,18)
+
+var left_border_top_right_corner=Vector2i(16,18)
+var left_border_bottom_right_corner=Vector2i(17,18)
+
+var right_border_bottom_left_corner=Vector2i(21,18)
+var right_border_top_left_corner=Vector2i(20,18)
+
+var top_border_bottom_left_corner = Vector2i(19,18)
+var top_border_bottom_right_corner= Vector2i(18,18)
+
+var bottom_border_top_right_corner=Vector2i(22,18)
+var bottom_border_top_left_corner=Vector2i(23,18)

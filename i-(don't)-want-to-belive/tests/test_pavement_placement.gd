@@ -27,6 +27,16 @@ func test_wide_pavement_borders():
 	assert_true(results.has(PavementTilesMap.wide_bottom))
 	assert_true(results.has(PavementTilesMap.wide_bottom_right))
 
+func test_wide_right():
+	#Arrange
+	var test_map : Array[Vector2i]= [Vector2i.ZERO, 
+	Vector2i.LEFT, Vector2i.LEFT + Vector2i.DOWN, Vector2i.LEFT+Vector2i.UP,
+	Vector2i.UP, Vector2i.DOWN]
+	#Act
+	var results = create_test_map(test_map)
+	#Assert
+	assert_true(results.has(PavementTilesMap.wide_right))
+
 func test_single_paths():
 	#Arrange
 	var test_map : Array[Vector2i]= [Vector2i.LEFT + Vector2i.UP, Vector2i.UP, Vector2i.RIGHT +Vector2i.UP,
@@ -39,9 +49,23 @@ func test_single_paths():
 	assert_true(results.has(PavementTilesMap.top_right))
 	assert_true(results.has(PavementTilesMap.bottom_left))
 	assert_true(results.has(PavementTilesMap.bottom_right))
+
+func test_left_right():
+	#Arrange
+	var test_map : Array[Vector2i]=[Vector2i.ZERO, Vector2i.LEFT, Vector2i.RIGHT]
+	#Act
+	var results = create_test_map(test_map)
+	#Assert
 	assert_true(results.has(PavementTilesMap.left_right))
-	assert_true(results.has(PavementTilesMap.top_bottom))
 	
+func test_top_bottom():
+	#Arrange
+	var test_map : Array[Vector2i]=[Vector2i.ZERO, Vector2i.UP, Vector2i.DOWN]
+	#Act
+	var results = create_test_map(test_map)
+	#Assert
+	assert_true(results.has(PavementTilesMap.top_bottom))
+
 func test_single_horizontal_ends():
 	#Arrange
 	var left_right_end: Array[Vector2i] = [Vector2i.ZERO, Vector2i.RIGHT]
@@ -199,3 +223,95 @@ func test_thin_cross_road():
 	var map = create_test_map(paths)
 	#Assert
 	assert_true(map.has(PavementTilesMap.thin_cross_road))
+func test_t_cross_left():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO,Vector2i.UP,Vector2i.RIGHT,Vector2i.DOWN]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.t_cross_left))
+func test_t_cross_right():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO, Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.t_cross_right))
+func test_t_cross_top():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.t_cross_top))
+func test_t_cross_bottom():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO, Vector2i.RIGHT, Vector2i.UP, Vector2i.LEFT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.t_cross_bottom))
+
+func test_left_border_top_right_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO, Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.DOWN+Vector2i.RIGHT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.left_border_top_right_corner))
+
+func test_left_border_bottom_right_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO, Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.UP+Vector2i.RIGHT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.left_border_bottom_right_corner))
+	
+func test_right_border_bottom_left_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO, Vector2i.UP, Vector2i.LEFT, Vector2i.DOWN, Vector2i.UP+Vector2i.LEFT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.right_border_bottom_left_corner))
+
+func test_right_border_top_left_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO,Vector2i.LEFT, Vector2i.UP,Vector2i.DOWN, Vector2i.DOWN+Vector2i.LEFT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.right_border_top_left_corner))
+
+func test_top_border_bottom_left_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO,Vector2i.LEFT, Vector2i.RIGHT,Vector2i.DOWN, Vector2i.DOWN+Vector2i.RIGHT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.top_border_bottom_left_corner))
+	
+func test_top_border_bottom_right_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO,Vector2i.LEFT, Vector2i.RIGHT,Vector2i.DOWN, Vector2i.DOWN+Vector2i.LEFT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.top_border_bottom_right_corner))
+
+func test_bottom_border_top_right_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO,Vector2i.LEFT, Vector2i.RIGHT,Vector2i.UP, Vector2i.UP+Vector2i.LEFT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.bottom_border_top_right_corner))
+
+func test_bottom_border_top_left_corner():
+	#Arrange
+	var paths:Array[Vector2i]=[Vector2i.ZERO,Vector2i.LEFT, Vector2i.RIGHT,Vector2i.UP, Vector2i.UP+Vector2i.RIGHT]
+	#Act
+	var map = create_test_map(paths)
+	#Assert
+	assert_true(map.has(PavementTilesMap.bottom_border_top_left_corner))
