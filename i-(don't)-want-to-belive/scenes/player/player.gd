@@ -3,11 +3,11 @@ class_name Player
 
 @onready var animation_player = $AnimationPlayer
 
-const speed = 300.0
+const speed = 100.0
 
 var direction_sprite := "down" 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	var horizontal_direction := Input.get_axis("walk_left","walk_right")
 	var vertical_direction := Input.get_axis("walk_up","walk_down")
 	
@@ -18,10 +18,10 @@ func _physics_process(delta):
 
 func animate(direction: Vector2):
 	var directions = {
-	"down": Vector2(0.0,1.0),
-	"up" : Vector2(0.0, -1.0),
-	"left": Vector2(-1.0, 0.0),
-	"right": Vector2(1.0, 0.0)
+	"down": Vector2.DOWN,
+	"up" : Vector2.UP,
+	"left": Vector2.LEFT,
+	"right": Vector2.RIGHT
 }
 	if direction == directions["down"]:
 		animation_player.play("move down")

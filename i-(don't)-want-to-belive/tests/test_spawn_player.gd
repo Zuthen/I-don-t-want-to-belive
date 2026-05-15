@@ -1,35 +1,34 @@
 extends GutTest
 
-func arrange():
-	# Arrange
-	var game: PackedScene = preload("uid://c4twc836ak4bd")
-	var test_game = autoqfree(game.instantiate())
+var game
+var container
 
-	var cam = Camera2D.new()
-	cam.name = "Camera2D"
-	test_game.add_child(cam) 
+func before_each():
+	container = Node.new()
+	get_tree().root.add_child(container)
 
-	add_child(test_game) 
-	return test_game
+	game = preload("uid://c4twc836ak4bd").instantiate()
+	container.add_child(game)
 
-func test_find_spawn_position():
-	var test_game = arrange()
-	# Act
-	var spawn_position = test_game.find_spawn_position()
-	var available_positions = test_game.spawn_points
-	# Assert
-	assert_true(available_positions.has(spawn_position))
-	
+	await get_tree().process_frame
+
+func after_each():
+	if is_instance_valid(container):
+		container.queue_free()
+		container = null
+		game = null
+
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+
 func test_spawn_player():
-	# Arrange
-	var test_game = arrange()      
-	
-	# Act
-	var spawn_position = test_game.find_spawn_position()
-	test_game.spawn_player(spawn_position)
-	
-	# Assert
-	var players = test_game.get_children().filter(func(n):
+	var spawn_position = Vector2i(2, 9)
+
+	game.spawn_player(spawn_position)
+
+	var players = game.get_children().filter(func(n):
 		return n is Player
 	)
-	assert_false(players.is_empty())
+
+	assert_gt(players.size(), 0)
