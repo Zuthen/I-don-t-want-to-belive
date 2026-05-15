@@ -27,6 +27,16 @@ func test_wide_pavement_borders():
 	assert_true(results.has(PavementTilesMap.wide_bottom))
 	assert_true(results.has(PavementTilesMap.wide_bottom_right))
 
+func test_wide_right():
+	#Arrange
+	var test_map : Array[Vector2i]= [Vector2i.ZERO, 
+	Vector2i.LEFT, Vector2i.LEFT + Vector2i.DOWN, Vector2i.LEFT+Vector2i.UP,
+	Vector2i.UP, Vector2i.DOWN]
+	#Act
+	var results = create_test_map(test_map)
+	#Assert
+	assert_true(results.has(PavementTilesMap.wide_right))
+
 func test_single_paths():
 	#Arrange
 	var test_map : Array[Vector2i]= [Vector2i.LEFT + Vector2i.UP, Vector2i.UP, Vector2i.RIGHT +Vector2i.UP,

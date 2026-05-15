@@ -45,17 +45,17 @@ static func has_all_right_borders(borders:PavementBorders):
 	return borders.right && borders.top_right && borders.bottom_right
 	
 static func get_tile(borders: PavementBorders) -> Vector2i:
-	if has_all_left_borders(borders) &&  !borders.right && !borders.bottom_right && !borders.top_right  && !borders.top && !borders.bottom && !borders.top_right && !borders.bottom_right:
+	if borders.left &&  !borders.right && !borders.bottom_right && !borders.top_right  && !borders.top && !borders.bottom && !borders.top_right && !borders.bottom_right:
 		return PavementTilesMap.wide_left
-	if has_all_right_borders(borders) && !borders.left && !borders.top_left && !borders.bottom_left &&  !borders.top && !borders.bottom && !borders.top_left && !borders.bottom_left:
+	if borders.right && !borders.left && !borders.top_left && !borders.bottom_left &&  !borders.top && !borders.bottom:
 		return PavementTilesMap.wide_right
-	if has_all_bottom_borders(borders) && !borders.top && !borders.top_left && !borders.top_right && !borders.left && !borders.right:
+	if borders.bottom && !borders.top && !borders.top_left && !borders.top_right && !borders.left && !borders.right:
 		return PavementTilesMap.wide_bottom
-	if has_all_top_borders(borders) && !borders.bottom && !borders.bottom_left && !borders.bottom_right && !borders.left && !borders.right:
+	if borders.top && !borders.bottom && !borders.bottom_left && !borders.bottom_right && !borders.left && !borders.right:
 		return PavementTilesMap.wide_top
 	if borders.right && !borders.left && !borders.top && !borders.bottom && borders.top_left && borders.bottom_left:
 		return PavementTilesMap.t_cross_right
-	if has_all_left_borders(borders) &&  borders.top_right && borders.bottom_right && !borders.bottom && !borders.top && !borders.right:
+	if borders.left &&  borders.top_right && borders.bottom_right && !borders.bottom && !borders.top && !borders.right:
 		return PavementTilesMap.t_cross_left
 	if borders.top && borders.bottom_left && borders.bottom_right && !borders.left && !borders.right && !borders.bottom:
 		return PavementTilesMap.t_cross_top
