@@ -12,9 +12,6 @@ var city_atlas_obstacles_coords = Vector2i(22,8)
 var paths: Array[Vector2i]=[]
 var obstacles
 
-var spawn_points: Array[Vector2i]=[]
-
-
 	
 func _ready():
 	Drawers.tile_map_layer = tile_map_layer
@@ -35,11 +32,6 @@ func _ready():
 	Drawers.draw_pavement(areas.paths)
 	spawn_player(spawn_position)
 	
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	pass
-
 
 func genereate_map():
 	var start: Vector2i = Vector2i(random_generator.randi_range(0, 19), random_generator.randi_range(-10,9))
@@ -106,8 +98,6 @@ func find_next_path(position: Vector2i, previous:Vector2i)-> Array[Vector2i]:
 	paths.append_array([next, next_2])
 	return [position + valid_dirs[key], position + valid_ways[key]]
 
-func find_spawn_position() -> Vector2i:
-	return spawn_points.pick_random()
 	
 #
 #func fit_map():

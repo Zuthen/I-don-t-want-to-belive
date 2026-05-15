@@ -263,52 +263,5 @@ func draw_pavement(paths):
 		var pavement_tile = Pavement.get_tile(borders)
 		set_city_atlas_cell(tile,pavement_tile)
 
-class RowsRange:
-	var rows: Array
-	var min: int
-	var max: int
-	
-	func _init(rows, min, max):
-		self.rows = rows
-		self.min= min
-		self.max=max
 
 		
-func split_to_rows(paths: Array[Vector2i]) -> RowsRange:
-	var y = paths.map(func(path): return path.y)
-	var min_y = y.min()
-	var max_y = y.max()
-	var rows= []
-	for i in range (min_y, max_y):
-		var row: Array[Vector2i] = []
-		row.append_array(paths.filter(func(vector: Vector2i): return vector.y == i))
-		rows.append(row)
-	var rows_range :=  RowsRange.new(rows, min_y, max_y)
-	return rows_range
-
-class Neighbors:
-	var right: bool = false
-	var bottom: bool = false
-	var diagonal: bool = false
-
-func get_neighbors(place: Vector2i, rows_range: RowsRange) -> Neighbors:
-	var neighbors: Neighbors = Neighbors.new()
-	var x = place.x
-	var y = place.y
-	
-	var row_index = y - rows_range.min
-	var row = rows_range.rows[row_index]
-	
-	var right_neighbor = Vector2i(x+1, y)
-	if row.has(right_neighbor):
-		neighbors.right = true
-		
-	if row_index + 1 < rows_range.rows.size():
-		var next_row = rows_range.rows[row_index+1]
-		var bottom_neighbor = Vector2i(x, y+1)
-		if next_row.has(bottom_neighbor):
-			neighbors.bottom = true
-		var diagonal_neighbor = Vector2i(x+1, y+1)
-		if next_row.has(diagonal_neighbor):
-			neighbors.diagonal = true
-	return neighbors

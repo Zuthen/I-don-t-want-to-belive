@@ -42,30 +42,30 @@ static func get_tile(borders: PavementBorders) -> Vector2i:
 		return PavementTilesMap.wide_left
 	if borders.right && !borders.left && !borders.bottom && !borders.top:
 		return PavementTilesMap.wide_right
+	if !borders.right && !borders.bottom && borders.bottom_right && borders.top &&borders.left:
+		return PavementTilesMap.top_left	
 	if borders.top && !borders.bottom && !borders.left && !borders.right:
 		return PavementTilesMap.wide_top
 	if borders.bottom && !borders.top && !borders.left && !borders.right:
 		return PavementTilesMap.wide_bottom
-	if !borders.right && !borders.bottom && borders.bottom_right && borders.top:
-		return PavementTilesMap.top_left
 	if !borders.left && !borders.bottom && borders.bottom_left && borders.top:
 		return PavementTilesMap.top_right
 	if !borders.left && !borders.top && borders.top_left && borders.bottom:
 		return PavementTilesMap.bottom_right
 	if !borders.right && !borders.top && borders.top_right && borders.bottom:
 		return PavementTilesMap.bottom_left
-	if borders.top && borders.left && !borders.bottom:
+	if borders.left && borders.top && borders.bottom && !borders.right:
+		return PavementTilesMap.left_end
+	if borders.top && borders.left && !borders.bottom && !borders.right:
 		return PavementTilesMap.wide_top_left
-	if borders.top && borders.bottom && borders.right:
-		return PavementTilesMap.right_end
 	if borders.left && borders.right && borders.top:
 		return PavementTilesMap.top_end
+	if borders.top && borders.bottom && borders.right:
+		return PavementTilesMap.right_end
 	if borders.left && borders.right && borders.bottom:
 		return PavementTilesMap.bottom_end
 	if borders.top && borders.right && !borders.bottom:
 		return PavementTilesMap.wide_top_right
-	if borders.left && borders.top && borders.bottom && !borders.right:
-		return PavementTilesMap.left_end
 	if borders.bottom && borders.right && !borders.top:
 		return PavementTilesMap.wide_bottom_right
 	if borders.bottom && borders.left && !borders.top:
