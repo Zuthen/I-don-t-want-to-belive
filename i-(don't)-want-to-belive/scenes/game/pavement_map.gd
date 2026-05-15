@@ -22,6 +22,21 @@ var corner_bottom_left = Vector2i(14,0)
 var corner_top_right = Vector2i(13,1)
 var corner_top_left= Vector2i(14,1)
 
+var corners_bottom = Vector2i(0,18)
+var corners_top = Vector2i(6,18)
+var corners_left = Vector2i(3,18)
+var corners_right = Vector2i(2,18)
+
+var diagonal_left_top = Vector2i(1,18)
+var diagonal_right_top=Vector2i(4,18)
+
+var corners_left_bottom_open= Vector2i(10,18)
+var corners_right_bottom_open= Vector2i(9,18)
+var corners_right_top_open= Vector2i(7,18)
+var corners_left_top_open= Vector2i(8,18)
+
+var thin_cross_road= Vector2i(11,18)
+
 var left_end = Vector2i(11,2)
 var left_right = Vector2i(12,2)
 var right_end = Vector2i(13,2)
