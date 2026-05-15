@@ -268,7 +268,7 @@ func test_right_border_bottom_left_corner():
 
 func test_right_border_top_left_corner():
 	#Arrange
-	var paths:Array[Vector2i]=[Vector2i.ZERO, Vector2i.UP, Vector2i.LEFT, Vector2i.DOWN, Vector2i.DOWN+Vector2i.LEFT]
+	var paths:Array[Vector2i]=[Vector2i.ZERO,Vector2i.LEFT, Vector2i.UP,Vector2i.DOWN, Vector2i.DOWN+Vector2i.LEFT]
 	#Act
 	var map = create_test_map(paths)
 	#Assert

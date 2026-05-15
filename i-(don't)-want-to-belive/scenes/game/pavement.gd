@@ -67,7 +67,7 @@ static func get_tile(borders: PavementBorders) -> Vector2i:
 		return PavementTilesMap.left_border_bottom_right_corner
 	if borders.right && borders.bottom_left && !borders.top && !borders.top_left && !borders.left && !borders.bottom:
 		return PavementTilesMap.right_border_bottom_left_corner
-	if borders.right && borders.top_right && !borders.top && !borders.bottom_left && !borders.left && !borders.bottom:
+	if borders.right && borders.top_left && !borders.bottom && !borders.top && !borders.left && !borders.bottom_left:
 		return PavementTilesMap.right_border_top_left_corner	
 	if borders.top && borders.bottom_left && !borders.bottom && !borders.left && !borders.right && !borders.bottom_right:
 		return PavementTilesMap.top_border_bottom_left_corner
