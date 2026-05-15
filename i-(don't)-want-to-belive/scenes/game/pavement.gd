@@ -37,28 +37,29 @@ static func is_cross_road(borders:PavementBorders):
 	return !borders.top && !borders.bottom && !borders.right && !borders.left
 
 static func get_tile(borders: PavementBorders) -> Vector2i:
-	if is_cross_road(borders) && !borders.top_left && !borders.top_right && borders.bottom_left && borders.bottom_right :
-		return PavementTilesMap.corners_bottom
-	if is_cross_road(borders) && !borders.bottom_left && !borders.bottom_right && borders.top_left && borders.top_right:
-		return PavementTilesMap.corners_top
-	if is_cross_road(borders) && borders.top_left && borders.bottom_left && !borders.top_right && !borders.bottom_right:
-		return PavementTilesMap.corners_left
-	if is_cross_road(borders) && borders.top_right && borders.bottom_right && !borders.top_left && !borders.bottom_left:
-		return PavementTilesMap.corners_right
-	if is_cross_road(borders) && borders.top_left && borders.bottom_right && !borders.top_right && !borders.bottom_left:
-		return PavementTilesMap.diagonal_left_top
-	if is_cross_road(borders) && !borders.top_left && !borders.bottom_right && borders.top_right && borders.bottom_left:
-		return PavementTilesMap.diagonal_right_top
-	if is_cross_road(borders) && borders.top_left && borders.top_right && !borders.bottom_left && borders.bottom_right:
-		return PavementTilesMap.corners_left_bottom_open
-	if is_cross_road(borders) && borders.top_left && borders.top_right && borders.bottom_left && !borders.bottom_right:
-		return PavementTilesMap.corners_right_bottom_open
-	if is_cross_road(borders) && borders.top_left && !borders.top_right && borders.bottom_left && borders.bottom_right:
-		return PavementTilesMap.corners_right_top_open
-	if is_cross_road(borders) && !borders.top_left && borders.top_right && borders.bottom_left && borders.bottom_right:
-		return PavementTilesMap.corners_left_top_open
-	if is_cross_road(borders) && borders.top_left && borders.top_right && borders.bottom_left && borders.bottom_right:
-		return PavementTilesMap.thin_cross_road
+	if is_cross_road(borders):
+		if !borders.top_left && !borders.top_right && borders.bottom_left && borders.bottom_right :
+			return PavementTilesMap.corners_bottom
+		if !borders.bottom_left && !borders.bottom_right && borders.top_left && borders.top_right:
+			return PavementTilesMap.corners_top
+		if  borders.top_left && borders.bottom_left && !borders.top_right && !borders.bottom_right:
+			return PavementTilesMap.corners_left
+		if  borders.top_right && borders.bottom_right && !borders.top_left && !borders.bottom_left:
+			return PavementTilesMap.corners_right
+		if  borders.top_left && borders.bottom_right && !borders.top_right && !borders.bottom_left:
+			return PavementTilesMap.diagonal_left_top
+		if  !borders.top_left && !borders.bottom_right && borders.top_right && borders.bottom_left:
+			return PavementTilesMap.diagonal_right_top
+		if  borders.top_left && borders.top_right && !borders.bottom_left && borders.bottom_right:
+			return PavementTilesMap.corners_left_bottom_open
+		if  borders.top_left && borders.top_right && borders.bottom_left && !borders.bottom_right:
+			return PavementTilesMap.corners_right_bottom_open
+		if  borders.top_left && !borders.top_right && borders.bottom_left && borders.bottom_right:
+			return PavementTilesMap.corners_right_top_open
+		if  !borders.top_left && borders.top_right && borders.bottom_left && borders.bottom_right:
+			return PavementTilesMap.corners_left_top_open
+		if  borders.top_left && borders.top_right && borders.bottom_left && borders.bottom_right:
+			return PavementTilesMap.thin_cross_road
 	if borders.top && borders.bottom && !borders.left && !borders.right: # ok
 		return PavementTilesMap.left_right
 	if borders.left && borders.right && !borders.top && !borders.bottom: #ok
