@@ -43,44 +43,50 @@ static func has_all_left_borders(borders:PavementBorders):
 	return borders.left && borders.bottom_left && borders.top_left
 static func has_all_right_borders(borders:PavementBorders):
 	return borders.right && borders.top_right && borders.bottom_right
-	
+
+static func no_vertical(borders:PavementBorders):
+	return !borders.top && !borders.bottom
+
+static func no_horizontal(borders:PavementBorders):
+	return !borders.left && !borders.right
+
 static func get_tile(borders: PavementBorders) -> Vector2i:
-	if borders.left &&  !borders.right && !borders.bottom_right && !borders.top_right  && !borders.top && !borders.bottom && !borders.top_right && !borders.bottom_right:
-		return PavementTilesMap.wide_left
-	if borders.right && !borders.left && !borders.top_left && !borders.bottom_left &&  !borders.top && !borders.bottom:
+	if borders.left && !borders.right && no_vertical(borders) && !borders.top_right && !borders.bottom_right:
+			return PavementTilesMap.wide_left
+	if borders.right && !borders.left && !borders.top_left && !borders.bottom_left &&  no_vertical(borders):
 		return PavementTilesMap.wide_right
-	if borders.bottom && !borders.top && !borders.top_left && !borders.top_right && !borders.left && !borders.right:
+	if borders.bottom && !borders.top && !borders.top_left && !borders.top_right && no_horizontal(borders):
 		return PavementTilesMap.wide_bottom
-	if borders.top && !borders.bottom && !borders.bottom_left && !borders.bottom_right && !borders.left && !borders.right:
+	if borders.top && !borders.bottom && !borders.bottom_left && !borders.bottom_right && no_horizontal(borders):
 		return PavementTilesMap.wide_top
 	if borders.right && !borders.left && !borders.top && !borders.bottom && borders.top_left && borders.bottom_left:
 		return PavementTilesMap.t_cross_right
-	if borders.left &&  borders.top_right && borders.bottom_right && !borders.bottom && !borders.top && !borders.right:
+	if borders.left &&  borders.top_right && borders.bottom_right && no_vertical(borders) && !borders.right:
 		return PavementTilesMap.t_cross_left
-	if borders.top && borders.bottom_left && borders.bottom_right && !borders.left && !borders.right && !borders.bottom:
+	if borders.top && borders.bottom_left && borders.bottom_right && no_horizontal(borders) && !borders.bottom:
 		return PavementTilesMap.t_cross_top
-	if borders.bottom && borders.top_left && borders.top_right && !borders.left && !borders.right && !borders.top :
+	if borders.bottom && borders.top_left && borders.top_right && no_horizontal(borders) && !borders.top :
 		return PavementTilesMap.t_cross_bottom
-	if borders.left && !borders.top && !borders.right && !borders.bottom_right && !borders.bottom:
+	if borders.left && no_vertical(borders) && !borders.right && !borders.bottom_right:
 		return PavementTilesMap.left_border_top_right_corner	
-	if borders.left && borders.bottom_right && !borders.top && !borders.right && !borders.top_right && !borders.bottom:
+	if borders.left && borders.bottom_right && no_vertical(borders) && !borders.right && !borders.top_right:
 		return PavementTilesMap.left_border_bottom_right_corner
-	if borders.right && borders.bottom_left && !borders.top && !borders.top_left && !borders.left && !borders.bottom:
+	if borders.right && borders.bottom_left && no_vertical(borders) && !borders.top_left && !borders.left:
 		return PavementTilesMap.right_border_bottom_left_corner
-	if borders.right && borders.top_left && !borders.bottom && !borders.top && !borders.left && !borders.bottom_left:
+	if borders.right && borders.top_left && no_vertical(borders) && !borders.left && !borders.bottom_left:
 		return PavementTilesMap.right_border_top_left_corner	
-	if borders.top && borders.bottom_left && !borders.bottom && !borders.left && !borders.right && !borders.bottom_right:
+	if borders.top && borders.bottom_left && !borders.bottom && no_horizontal(borders) && !borders.bottom_right:
 		return PavementTilesMap.top_border_bottom_left_corner
-	if borders.top && borders.bottom_right && !borders.bottom && !borders.left && !borders.right && !borders.bottom_left:
+	if borders.top && borders.bottom_right && !borders.bottom && no_horizontal(borders) && !borders.bottom_left:
 		return PavementTilesMap.top_border_bottom_right_corner
-	if borders.bottom && borders.top_right && !borders.top && !borders.left && !borders.right && !borders.top_left:
+	if borders.bottom && borders.top_right && !borders.top && no_horizontal(borders) && !borders.top_left:
 		return PavementTilesMap.bottom_border_top_right_corner
-	if borders.bottom && borders.top_left && !borders.top && !borders.left && !borders.right && !borders.top_right:
+	if borders.bottom && borders.top_left && !borders.top && no_horizontal(borders) && !borders.top_right:
 		return PavementTilesMap.bottom_border_top_left_corner
 
 		
 
-	if borders.left && borders.right && !borders.top && !borders.bottom:
+	if borders.left && borders.right && no_vertical(borders):
 		return PavementTilesMap.top_bottom
 	if has_all_left_borders(borders) && has_all_top_borders(borders) && borders.bottom_right && !borders.right && !borders.bottom:
 		return PavementTilesMap.top_left	
@@ -130,15 +136,15 @@ static func get_tile(borders: PavementBorders) -> Vector2i:
 
 	if borders.top && borders.left && !borders.bottom && !borders.right:
 		return PavementTilesMap.wide_top_left
-	if borders.left && borders.right && borders.top:
+	if borders.left && borders.right && borders.top && !borders.bottom:
 		return PavementTilesMap.top_end
-	if borders.left && borders.right && borders.bottom:
+	if borders.left && borders.right && borders.bottom && !borders.top:
 		return PavementTilesMap.bottom_end
-	if borders.top && borders.right && !borders.bottom:
+	if borders.top && borders.right && !borders.bottom && !borders.left:
 		return PavementTilesMap.wide_top_right
-	if borders.bottom && borders.right && !borders.top:
+	if borders.bottom && borders.right && !borders.top && !borders.left:
 		return PavementTilesMap.wide_bottom_right
-	if borders.bottom && borders.left && !borders.top:
+	if borders.bottom && borders.left && !borders.top && !borders.right:
 		return PavementTilesMap.wide_bottom_left
 	if borders.top_right && !borders.top && !borders.right:
 		return PavementTilesMap.corner_top_right
@@ -149,6 +155,6 @@ static func get_tile(borders: PavementBorders) -> Vector2i:
 	if borders.bottom_right && !borders.bottom && !borders.right:
 		return PavementTilesMap.corner_bottom_right
 		
-	if  borders.top && borders.bottom && !borders.left && !borders.right:
+	if  borders.top && borders.bottom && no_horizontal(borders):
 		return PavementTilesMap.left_right
 	return PavementTilesMap.wide_center
