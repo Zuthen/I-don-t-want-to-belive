@@ -3,6 +3,7 @@ extends GutTest
 var game
 var container
 
+
 func before_each():
 	container = Node.new()
 	get_tree().root.add_child(container)
@@ -12,13 +13,13 @@ func before_each():
 
 	await get_tree().process_frame
 
+
 func after_each():
 	if is_instance_valid(container):
 		container.queue_free()
 		container = null
 		game = null
 
-	await get_tree().process_frame
 	await get_tree().process_frame
 
 
@@ -27,8 +28,9 @@ func test_spawn_player():
 
 	game.spawn_player(spawn_position)
 
-	var players = game.get_children().filter(func(n):
-		return n is Player
+	var players = game.get_children().filter(
+		func(n):
+			return n is Skeptic
 	)
 
 	assert_gt(players.size(), 0)

@@ -1,6 +1,5 @@
 extends Node2D
 
-@onready var camera = $Camera2D
 @onready var tile_map_layer = $BuildingsAndPaths
 @onready var buildings_details = $BuildingsDetails
 var player_scene: PackedScene = preload("uid://b7wo2a5407873")
@@ -16,7 +15,6 @@ var obstacles
 func _ready():
 	Drawers.tile_map_layer = tile_map_layer
 	Drawers.details = buildings_details
-	#fit_map()
 	var generated_paths = genereate_map()
 	var areas = MapCreator.find_areas(generated_paths)
 	var obstacle_regions = MapCreator.find_regions(areas.obstacles)
@@ -33,6 +31,7 @@ func _ready():
 
 	for position in skeptic_positions:
 		spawn_player(position)
+	#spawn_player(skeptic_positions[0])
 
 
 func genereate_map():
@@ -60,10 +59,11 @@ func directions(step: int) -> Dictionary:
 	}
 
 
-func spawn_player(spawn_position: Vector2i):
+func spawn_player(spawn_position: Vector2i) -> Skeptic:
 	var player = player_scene.instantiate()
 	player.position = tile_map_layer.map_to_local(spawn_position)
 	add_child(player)
+	return player
 
 
 func find_next_path(position: Vector2i, previous: Vector2i) -> Array[Vector2i]:
@@ -118,8 +118,7 @@ func find_skeptics_positions(paths: Array[Vector2i]) -> Array[Vector2i]:
 		return [a, b]
 	return []
 
-
-func fit_map():
-	var size = Vector2(860, 860)
-	var screen = get_viewport_rect().size
-	camera.zoom = screen / size
+	#func fit_map():
+	#var size = Vector2(860, 860)
+	#var screen = get_viewport_rect().size
+	#camera.zoom = screen / size
