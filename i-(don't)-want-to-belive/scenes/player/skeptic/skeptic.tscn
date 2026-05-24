@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b7wo2a5407873"]
 
 [ext_resource type="Script" uid="uid://6iy4io5jvrm3" path="res://scenes/player/skeptic/skeptic.gd" id="1_13dnq"]
+[ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="2_30q0i"]
 [ext_resource type="Texture2D" uid="uid://dhsp46crp15wo" path="res://assets/characters/female/tile_0105.png" id="2_gsmgp"]
 [ext_resource type="Texture2D" uid="uid://ccticw3cic5gl" path="res://assets/characters/female/tile_0104.png" id="3_30q0i"]
 [ext_resource type="Texture2D" uid="uid://r2yvyb1d7fvn" path="res://assets/characters/female/tile_0107.png" id="4_xv4aa"]
@@ -12,6 +13,11 @@
 [ext_resource type="Texture2D" uid="uid://btlnby07hfbqw" path="res://assets/characters/female/tile_0133.png" id="10_lrtuk"]
 [ext_resource type="Texture2D" uid="uid://b0y0f1xkadyls" path="res://assets/characters/female/tile_0160.png" id="11_lehjk"]
 [ext_resource type="PackedScene" uid="uid://bddac54674vhl" path="res://scenes/player/skeptic/voice_receiver.tscn" id="12_5x0o7"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_gsmgp"]
+properties/0/path = NodePath(".:global_position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4b4"]
 size = Vector2(8, 12)
@@ -182,7 +188,13 @@ _data = {
 
 [node name="Skeptic" type="CharacterBody2D" unique_id=402508521]
 scale = Vector2(0.45, 0.45)
+collision_layer = 0
 script = ExtResource("1_13dnq")
+
+[node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("2_30q0i")]
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1283327137]
+replication_config = SubResource("SceneReplicationConfig_gsmgp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1318819708]
 position = Vector2(0, 2)

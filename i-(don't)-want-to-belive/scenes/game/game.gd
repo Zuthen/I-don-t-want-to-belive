@@ -2,7 +2,9 @@ extends Node2D
 
 @onready var tile_map_layer = $BuildingsAndPaths
 @onready var buildings_details = $BuildingsDetails
-var player_scene: PackedScene = preload("uid://b7wo2a5407873")
+@onready var multiplayer_spawner = $MultiplayerSpawner
+
+var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var min_position := Vector2i(0, -10)
 var max_position := Vector2i(19, 9)
 var random_generator: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -24,14 +26,27 @@ func _ready():
 		var rects = MapCreator.regions_to_rects(region)
 		obstacle_rects.append_array(MapCreator.merge_small_rectangles(rects))
 
-	var spawn_position = areas.paths.pick_random()
 	Drawers.draw_map(obstacle_rects)
 	Drawers.draw_pavement(areas.paths)
 	var skeptic_positions = find_skeptics_positions(areas.paths)
+	# multiplayer
+	multiplayer_spawner.spawn_function = func(data):
+		var skeptic = skeptic_scene.instantiate() as Skeptic
+		skeptic.name = str(data.peer_id)
+		skeptic.input_multiplayer_authority = data.peer_id
+		if is_multiplayer_authority():
+			skeptic.global_position = skeptic_positions[0]
+		else:
+			skeptic.global_position = skeptic_positions[1]
+		return skeptic
 
-	for position in skeptic_positions:
-		spawn_player(position)
-	#spawn_player(skeptic_positions[0])
+	peer_ready.rpc_id(1)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func peer_ready():
+	var sender_id = multiplayer.get_remote_sender_id()
+	multiplayer_spawner.spawn({ "peer_id": sender_id })
 
 
 func genereate_map():
@@ -60,7 +75,7 @@ func directions(step: int) -> Dictionary:
 
 
 func spawn_player(spawn_position: Vector2i) -> Skeptic:
-	var player = player_scene.instantiate()
+	var player = skeptic_scene.instantiate()
 	player.position = tile_map_layer.map_to_local(spawn_position)
 	add_child(player)
 	return player

@@ -1,14 +1,19 @@
+class_name Skeptic
 extends CharacterBody2D
 
-class_name Skeptic
-
 @onready var animation_player = $AnimationPlayer
-
+@onready var player_input_synchronizer = $PlayerInputSynchronizer
+var input_multiplayer_authority: int
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 
 var voice_emitter_active: = false
 const speed = 100.0
 var direction_sprite := "down"
+
+
+func _ready():
+	player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
+	#set_process(is_multiplayer_authority())
 
 
 func _process(_delta):
@@ -21,7 +26,7 @@ func _physics_process(_delta):
 	var vertical_direction := Input.get_axis("walk_up", "walk_down")
 
 	var direction := Vector2(horizontal_direction, vertical_direction).normalized()
-	velocity = speed * direction
+	velocity = speed * player_input_synchronizer.movement_vector
 	move_and_slide()
 	animate(direction)
 
