@@ -19,9 +19,17 @@ func _listen(area: Area2D):
 		var distance = global_position.distance_to(area.global_position)
 		var icon: Node = icon_scene.instantiate()
 		var center = global_position + (area.global_position - global_position) * 0.5
+		if icon.get_parent() == null:
+			if is_instance_valid(parent) and parent.get_parent():
+				parent.get_parent().add_child(icon)
+			else:
+				add_child(icon)
 		icon.global_position = center
-		get_tree().current_scene.add_child(icon)
-		area.timer.timeout.connect(func(): _hide_icon(icon))
+		if is_instance_valid(area) and area.timer:
+			area.timer.timeout.connect(
+				func(): _hide_icon(icon),
+				CONNECT_ONE_SHOT,
+			)
 
 
 func _hide_icon(icon: Node):
