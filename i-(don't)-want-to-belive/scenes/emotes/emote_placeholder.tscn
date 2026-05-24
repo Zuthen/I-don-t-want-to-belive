@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://d03xota05sdvx"]
+
+[ext_resource type="Script" uid="uid://rw8o05hu8fse" path="res://scenes/emotes/emote_placeholder.gd" id="1_ucead"]
+
+[node name="EmotePlaceholder" type="Node2D" unique_id=1410910992]
+script = ExtResource("1_ucead")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=569521160]

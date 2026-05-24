@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://qt86w2aja6bs"]
+
+[ext_resource type="Script" uid="uid://bt1y85jcls53f" path="res://scenes/player/skeptic/voice_emitter.gd" id="1_g6si4"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_je7p5"]
+radius = 100.0
+
+[node name="VoiceEmitter" type="Area2D" unique_id=1355446826]
+script = ExtResource("1_g6si4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2037927948]
+shape = SubResource("CircleShape2D_je7p5")
+
+[node name="Timer" type="Timer" parent="." unique_id=374123701]
+wait_time = 1.5
+one_shot = true
+autostart = true

@@ -1678,5 +1678,3 @@ tile_set = SubResource("TileSet_kelw5")
 
 [node name="BuildingsDetails" type="TileMapLayer" parent="." unique_id=640382988]
 tile_set = SubResource("TileSet_0sr1o")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1151421429]
