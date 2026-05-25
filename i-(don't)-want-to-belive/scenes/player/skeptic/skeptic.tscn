@@ -4,15 +4,29 @@
 [ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="2_30q0i"]
 [ext_resource type="Texture2D" uid="uid://dhsp46crp15wo" path="res://assets/characters/female/tile_0105.png" id="2_gsmgp"]
 [ext_resource type="Texture2D" uid="uid://ccticw3cic5gl" path="res://assets/characters/female/tile_0104.png" id="3_30q0i"]
+[ext_resource type="Texture2D" uid="uid://difqg4xp0cai7" path="res://assets/characters/male/tile_0429.png" id="4_nm2l5"]
 [ext_resource type="Texture2D" uid="uid://r2yvyb1d7fvn" path="res://assets/characters/female/tile_0107.png" id="4_xv4aa"]
 [ext_resource type="Texture2D" uid="uid://16no27bb04e0" path="res://assets/characters/female/tile_0106.png" id="5_330qm"]
 [ext_resource type="Texture2D" uid="uid://beqlf4h0bb2l5" path="res://assets/characters/female/tile_0132.png" id="6_evm4c"]
+[ext_resource type="Texture2D" uid="uid://7meyknvl7ta3" path="res://assets/characters/male/tile_0428.png" id="6_y0kdb"]
 [ext_resource type="Texture2D" uid="uid://cpsxt0niaknb2" path="res://assets/characters/female/tile_0159.png" id="7_6keqh"]
+[ext_resource type="Texture2D" uid="uid://c5hs72qxplxl8" path="res://assets/characters/male/tile_0431.png" id="8_i5h2m"]
 [ext_resource type="Texture2D" uid="uid://dv7kaprfqvakj" path="res://assets/characters/female/tile_0131.png" id="8_rqyse"]
 [ext_resource type="Texture2D" uid="uid://dbpcs3uvuhyj8" path="res://assets/characters/female/tile_0134.png" id="9_x8xo8"]
+[ext_resource type="Texture2D" uid="uid://dpbydsht6vetf" path="res://assets/characters/male/tile_0430.png" id="10_h8781"]
 [ext_resource type="Texture2D" uid="uid://btlnby07hfbqw" path="res://assets/characters/female/tile_0133.png" id="10_lrtuk"]
 [ext_resource type="Texture2D" uid="uid://b0y0f1xkadyls" path="res://assets/characters/female/tile_0160.png" id="11_lehjk"]
 [ext_resource type="PackedScene" uid="uid://bddac54674vhl" path="res://scenes/player/skeptic/voice_receiver.tscn" id="12_5x0o7"]
+[ext_resource type="Texture2D" uid="uid://bmerogb1dls5d" path="res://assets/characters/male/tile_0456.png" id="13_xfeq8"]
+[ext_resource type="Texture2D" uid="uid://chucw6bk1shln" path="res://assets/characters/male/tile_0483.png" id="14_2cg5n"]
+[ext_resource type="Texture2D" uid="uid://ds1d6am1joncu" path="res://assets/characters/female/tile_0158.png" id="16_obun6"]
+[ext_resource type="Texture2D" uid="uid://cnvb8t1lxdlqg" path="res://assets/characters/male/tile_0455.png" id="17_hoa8u"]
+[ext_resource type="Texture2D" uid="uid://sky6bgpylyx5" path="res://assets/characters/male/tile_0482.png" id="18_hdh7h"]
+[ext_resource type="Texture2D" uid="uid://dr5h7fburdqno" path="res://assets/characters/female/tile_0161.png" id="20_2h417"]
+[ext_resource type="Texture2D" uid="uid://vubpc074ofu" path="res://assets/characters/male/tile_0458.png" id="21_jys3f"]
+[ext_resource type="Texture2D" uid="uid://b6y2tfplpk7qh" path="res://assets/characters/male/tile_0485.png" id="22_ts12s"]
+[ext_resource type="Texture2D" uid="uid://mlrnflwfcfc" path="res://assets/characters/male/tile_0457.png" id="25_cp4pj"]
+[ext_resource type="Texture2D" uid="uid://bbqipggi3td43" path="res://assets/characters/male/tile_0484.png" id="26_2ktkh"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_gsmgp"]
 properties/0/path = NodePath(".:global_position")
@@ -53,6 +67,22 @@ tracks/0/keys = {
 "values": [ExtResource("2_gsmgp")]
 }
 
+[sub_resource type="Animation" id="Animation_hbr48"]
+resource_name = "idle down_boy"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("4_nm2l5")]
+}
+
 [sub_resource type="Animation" id="Animation_cnsyf"]
 resource_name = "idle left"
 loop_mode = 1
@@ -67,6 +97,22 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [ExtResource("3_30q0i")]
+}
+
+[sub_resource type="Animation" id="Animation_oys3d"]
+resource_name = "idle left_boy"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("6_y0kdb")]
 }
 
 [sub_resource type="Animation" id="Animation_007i1"]
@@ -85,6 +131,22 @@ tracks/0/keys = {
 "values": [ExtResource("4_xv4aa")]
 }
 
+[sub_resource type="Animation" id="Animation_3wbso"]
+resource_name = "idle right_boy"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("8_i5h2m")]
+}
+
 [sub_resource type="Animation" id="Animation_6cv16"]
 resource_name = "idle up"
 loop_mode = 1
@@ -99,6 +161,22 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [ExtResource("5_330qm")]
+}
+
+[sub_resource type="Animation" id="Animation_h4tv4"]
+resource_name = "idle up_boy"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("10_h8781")]
 }
 
 [sub_resource type="Animation" id="Animation_j4nxn"]
@@ -119,6 +197,24 @@ tracks/0/keys = {
 "values": [ExtResource("6_evm4c"), ExtResource("7_6keqh")]
 }
 
+[sub_resource type="Animation" id="Animation_u3e7e"]
+resource_name = "move down_boy"
+length = 0.2
+loop_mode = 2
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("13_xfeq8"), ExtResource("14_2cg5n")]
+}
+
 [sub_resource type="Animation" id="Animation_28m0y"]
 resource_name = "move left"
 length = 0.3
@@ -134,7 +230,25 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [ExtResource("8_rqyse"), ExtResource("3_30q0i"), ExtResource("3_30q0i")]
+"values": [ExtResource("8_rqyse"), ExtResource("3_30q0i"), ExtResource("16_obun6")]
+}
+
+[sub_resource type="Animation" id="Animation_qx4er"]
+resource_name = "move left_boy"
+length = 0.3
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("17_hoa8u"), ExtResource("6_y0kdb"), ExtResource("18_hdh7h")]
 }
 
 [sub_resource type="Animation" id="Animation_uniwh"]
@@ -149,15 +263,15 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [ExtResource("9_x8xo8"), ExtResource("4_xv4aa")]
+"values": [ExtResource("9_x8xo8"), ExtResource("4_xv4aa"), ExtResource("20_2h417")]
 }
 
-[sub_resource type="Animation" id="Animation_iqsei"]
-resource_name = "move up"
-length = 0.2
+[sub_resource type="Animation" id="Animation_jte2g"]
+resource_name = "move right_boy"
+length = 0.3
 loop_mode = 1
 step = 0.1
 tracks/0/type = "value"
@@ -167,23 +281,67 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [ExtResource("10_lrtuk"), ExtResource("11_lehjk")]
+"values": [ExtResource("21_jys3f"), ExtResource("8_i5h2m"), ExtResource("22_ts12s")]
+}
+
+[sub_resource type="Animation" id="Animation_iqsei"]
+resource_name = "move up"
+length = 0.3
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("10_lrtuk"), ExtResource("5_330qm"), ExtResource("11_lehjk")]
+}
+
+[sub_resource type="Animation" id="Animation_rl3qd"]
+resource_name = "move up_boy"
+length = 0.3
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("25_cp4pj"), ExtResource("10_h8781"), ExtResource("26_2ktkh")]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_tffgl"]
 _data = {
 &"RESET": SubResource("Animation_yj68g"),
 &"idle down": SubResource("Animation_ioxgp"),
+&"idle down_boy": SubResource("Animation_hbr48"),
 &"idle left": SubResource("Animation_cnsyf"),
+&"idle left_boy": SubResource("Animation_oys3d"),
 &"idle right": SubResource("Animation_007i1"),
+&"idle right_boy": SubResource("Animation_3wbso"),
 &"idle up": SubResource("Animation_6cv16"),
+&"idle up_boy": SubResource("Animation_h4tv4"),
 &"move down": SubResource("Animation_j4nxn"),
+&"move down_boy": SubResource("Animation_u3e7e"),
 &"move left": SubResource("Animation_28m0y"),
+&"move left_boy": SubResource("Animation_qx4er"),
 &"move right": SubResource("Animation_uniwh"),
-&"move up": SubResource("Animation_iqsei")
+&"move right_boy": SubResource("Animation_jte2g"),
+&"move up": SubResource("Animation_iqsei"),
+&"move up_boy": SubResource("Animation_rl3qd")
 }
 
 [node name="Skeptic" type="CharacterBody2D" unique_id=402508521]

@@ -4,6 +4,7 @@ extends CharacterBody2D
 @onready var animation_player = $AnimationPlayer
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 
+var is_male
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
@@ -52,8 +53,6 @@ func _reset_voice_emmitter():
 
 
 func call_other_skeptic():
-	# Ta funkcja została zastąpiona bezpiecznym RPC powyżej,
-	# ale zostawiamy ją, jeśli Twoje testy jednostkowe GUT bezpośrednio ją wywołują!
 	call_other_skeptic_network()
 
 
@@ -64,20 +63,19 @@ func animate(direction: Vector2):
 		"left": Vector2.LEFT,
 		"right": Vector2.RIGHT,
 	}
-	# Mała korekta: normalizujemy wektor kierunku do porównania, na wypadek wartości skośnych
 	var norm_dir = direction.normalized()
-
+	var animation_sprite_name_suffix = "_boy" if is_male else ""
 	if norm_dir.is_equal_approx(directions["down"]):
-		animation_player.play("move down")
-		direction_sprite = "down"
+		animation_player.play("move down" + animation_sprite_name_suffix)
+		direction_sprite = "down" + animation_sprite_name_suffix
 	elif norm_dir.is_equal_approx(directions["up"]):
-		animation_player.play("move up")
-		direction_sprite = "up"
+		animation_player.play("move up" + animation_sprite_name_suffix)
+		direction_sprite = "up" + animation_sprite_name_suffix
 	elif norm_dir.is_equal_approx(directions["left"]):
-		animation_player.play("move left")
-		direction_sprite = "left"
+		animation_player.play("move left" + animation_sprite_name_suffix)
+		direction_sprite = "left" + animation_sprite_name_suffix
 	elif norm_dir.is_equal_approx(directions["right"]):
-		animation_player.play("move right")
-		direction_sprite = "right"
+		animation_player.play("move right" + animation_sprite_name_suffix)
+		direction_sprite = "right" + animation_sprite_name_suffix
 	elif norm_dir == Vector2.ZERO:
-		animation_player.play("idle " + direction_sprite)
+		animation_player.play("idle " + direction_sprite + animation_sprite_name_suffix)
