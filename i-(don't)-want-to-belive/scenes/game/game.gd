@@ -22,6 +22,9 @@ func _ready():
 		skeptic.input_multiplayer_authority = data.peer_id
 		if data.has("spawn_position"):
 			skeptic.position = tile_map_layer.map_to_local(data.spawn_position)
+		if data.has("is_male"):
+			skeptic.is_male = data.is_male
+
 		return skeptic
 
 	if is_multiplayer_authority():
@@ -30,8 +33,7 @@ func _ready():
 
 		var server_position = skeptic_positions[next_spawn_index]
 		next_spawn_index += 1
-
-		multiplayer_spawner.spawn({ "peer_id": 1, "spawn_position": server_position })
+		multiplayer_spawner.spawn({ "peer_id": 1, "spawn_position": server_position, "is_male": true })
 		multiplayer.peer_connected.connect(_on_peer_connected.bind(game_map_seed))
 
 
