@@ -67,15 +67,15 @@ func animate(direction: Vector2):
 	var animation_sprite_name_suffix = "_boy" if is_male else ""
 	if norm_dir.is_equal_approx(directions["down"]):
 		animation_player.play("move down" + animation_sprite_name_suffix)
-		direction_sprite = "down" + animation_sprite_name_suffix
+		direction_sprite = "down"
 	elif norm_dir.is_equal_approx(directions["up"]):
 		animation_player.play("move up" + animation_sprite_name_suffix)
-		direction_sprite = "up" + animation_sprite_name_suffix
+		direction_sprite = "up"
 	elif norm_dir.is_equal_approx(directions["left"]):
 		animation_player.play("move left" + animation_sprite_name_suffix)
-		direction_sprite = "left" + animation_sprite_name_suffix
+		direction_sprite = "left"
 	elif norm_dir.is_equal_approx(directions["right"]):
 		animation_player.play("move right" + animation_sprite_name_suffix)
-		direction_sprite = "right" + animation_sprite_name_suffix
+		direction_sprite = "right"
 	elif norm_dir == Vector2.ZERO:
 		animation_player.play("idle " + direction_sprite + animation_sprite_name_suffix)
