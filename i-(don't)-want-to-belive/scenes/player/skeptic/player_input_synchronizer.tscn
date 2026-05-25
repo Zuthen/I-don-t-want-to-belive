@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://de382n7ge1rld"]
+
+[ext_resource type="Script" uid="uid://c63duttkul4cu" path="res://scenes/player/skeptic/player_input_synchronizer.gd" id="1_51l26"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pj418"]
+properties/0/path = NodePath(".:movement_vector")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[node name="PlayerInputSynchronizer" type="MultiplayerSynchronizer" unique_id=502860847]
+root_path = NodePath(".")
+replication_config = SubResource("SceneReplicationConfig_pj418")
+script = ExtResource("1_51l26")
