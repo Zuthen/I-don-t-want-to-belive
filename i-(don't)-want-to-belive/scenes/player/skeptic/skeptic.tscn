@@ -28,6 +28,21 @@
 [ext_resource type="Texture2D" uid="uid://mlrnflwfcfc" path="res://assets/characters/male/tile_0457.png" id="25_cp4pj"]
 [ext_resource type="Texture2D" uid="uid://bbqipggi3td43" path="res://assets/characters/male/tile_0484.png" id="26_2ktkh"]
 
+[sub_resource type="GDScript" id="GDScript_nm2l5"]
+script/source = "extends MultiplayerSynchronizer
+
+var movement_vector = Vector2.ZERO
+
+
+func _process(_delta):
+	if is_multiplayer_authority():
+		gather_input()
+
+
+func gather_input():
+	movement_vector = Input.get_vector(\"walk_left\", \"walk_right\", \"walk_up\", \"walk_down\")
+"
+
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_gsmgp"]
 properties/0/path = NodePath(".:global_position")
 properties/0/spawn = true
@@ -350,6 +365,7 @@ collision_layer = 0
 script = ExtResource("1_13dnq")
 
 [node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("2_30q0i")]
+script = SubResource("GDScript_nm2l5")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1283327137]
 replication_config = SubResource("SceneReplicationConfig_gsmgp")
@@ -370,3 +386,5 @@ libraries/ = SubResource("AnimationLibrary_tffgl")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1681121901]
 ignore_rotation = false
+enabled = false
+zoom = Vector2(6, 6)
