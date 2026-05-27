@@ -5,10 +5,7 @@ extends CharacterBody2D
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 
 var is_male
-var input_multiplayer_authority: int:
-	set(value):
-		input_multiplayer_authority = value
-		set_multiplayer_authority(value)
+var input_multiplayer_authority: int
 
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var voice_emitter_active := false
@@ -17,11 +14,18 @@ var direction_sprite := "down"
 
 
 func _ready():
-	if has_node("PlayerInput"):
-		player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
+	if input_multiplayer_authority != 0:
+		set_multiplayer_authority(input_multiplayer_authority)
+		if has_node("PlayerInputSynchronizer"):
+			$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
+	callable_initialize_visibility.call_deferred()
+
+
+func callable_initialize_visibility():
 	var local_player = get_tree().get_first_node_in_group("local_player")
 	if local_player and local_player.is_in_group("ufos"):
 		visible = false
+
 	if is_multiplayer_authority():
 		get_tree().call_group("ufos", "set_visible", false)
 
@@ -36,14 +40,13 @@ func _process(_delta):
 
 func _physics_process(_delta):
 	var sync_direction: Vector2 = Vector2.ZERO
-	if has_node("PlayerInput"):
-		sync_direction = player_input_synchronizer.movement_vector
+
+	if has_node("PlayerInputSynchronizer"):
+		sync_direction = $PlayerInputSynchronizer.movement_vector
 
 	if is_multiplayer_authority():
 		velocity = speed * sync_direction
 		move_and_slide()
-	else:
-		pass
 
 	animate(sync_direction)
 

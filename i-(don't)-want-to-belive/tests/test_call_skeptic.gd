@@ -55,6 +55,7 @@ func test_player_can_t_call_outside_range_size():
 	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	get_tree().root.add_child(mock_skeptic)
+	mock_skeptic.global_position = Vector2(99999, 99999)
 
 	# Act
 	mock_skeptic.call_other_skeptic()
@@ -62,7 +63,7 @@ func test_player_can_t_call_outside_range_size():
 
 	# Assert
 	var icons = find_all_icons_in_engine(get_tree().root)
-	assert_eq(icons.size(), 0, "Nie powinno być ikon, jeśli drugi gracz jest poza zasięgiem/nie istnieje")
+	assert_eq(icons.size(), 0)
 
 
 func find_all_icons_in_engine(node: Node) -> Array:
