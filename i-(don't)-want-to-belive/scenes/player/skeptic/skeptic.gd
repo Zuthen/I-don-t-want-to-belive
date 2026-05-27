@@ -17,7 +17,8 @@ var direction_sprite := "down"
 
 
 func _ready():
-	player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
+	if has_node("PlayerInput"):
+		player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
 	var local_player = get_tree().get_first_node_in_group("local_player")
 	if local_player and local_player.is_in_group("ufos"):
 		visible = false
@@ -34,7 +35,9 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
-	var sync_direction: Vector2 = player_input_synchronizer.movement_vector
+	var sync_direction: Vector2 = Vector2.ZERO
+	if has_node("PlayerInput"):
+		sync_direction = player_input_synchronizer.movement_vector
 
 	if is_multiplayer_authority():
 		velocity = speed * sync_direction

@@ -1,33 +1,45 @@
 extends GutTest
 
-var game
+var game: Node
+var skeptic_scene = preload("uid://b7wo2a5407873")
+var mock_skeptic: CharacterBody2D
+var other_skeptic: CharacterBody2D
 
 
 func before_each():
 	game = preload("uid://c4twc836ak4bd").instantiate()
-	add_child_autoqfree(game)
-	await wait_physics_frames(2)
+	get_tree().root.add_child(game)
+
+	for node in get_tree().get_nodes_in_group("local_player"):
+		node.remove_from_group("local_player")
 
 
 func after_each():
-	# Czyścimy TileMapLayer z Godota 4, o którym rozmawialiśmy,
-	# aby całkowicie zresetować fizykę kafelków między testami
+	var leftover_icons = find_all_icons_in_engine(get_tree().root)
+	for icon in leftover_icons:
+		if is_instance_valid(icon):
+			icon.free()
+
+	if is_instance_valid(mock_skeptic):
+		mock_skeptic.queue_free()
+	if is_instance_valid(other_skeptic):
+		other_skeptic.queue_free()
 	if is_instance_valid(game):
-		for child in game.get_children():
-			if child is TileMapLayer:
-				child.update_internals()
-				child.clear()
-	game = null
+		game.queue_free()
+
+	await wait_physics_frames(2)
 
 
 func test_player_can_call_other_player():
 	# Arrange
-	var player = game.spawn_player(Vector2i(0, 0))
-	game.spawn_player(Vector2i(2, 2))
+	mock_skeptic = skeptic_scene.instantiate()
+	get_tree().root.add_child(mock_skeptic)
+
+	other_skeptic = skeptic_scene.instantiate()
+	get_tree().root.add_child(other_skeptic) # Dodany do drzewa, żeby test miał sens fizyczny
 
 	# Act
-	player.call_other_skeptic()
-
+	mock_skeptic.call_other_skeptic()
 	var icons = []
 	var attempts = 0
 	while icons.size() == 0 and attempts < 10:
@@ -36,24 +48,21 @@ func test_player_can_call_other_player():
 		attempts += 1
 
 	# Assert
-	assert_gt(icons.size(), 0)
+	assert_gt(icons.size(), 0, "Powinna pojawić się co najmniej jedna ikonka wywołania")
 
 
 func test_player_can_t_call_outside_range_size():
 	# Arrange
-	var player = game.spawn_player(Vector2i(0, 0))
-	game.spawn_player(Vector2i(10, 10))
+	mock_skeptic = skeptic_scene.instantiate()
+	get_tree().root.add_child(mock_skeptic)
 
 	# Act
-	player.call_other_skeptic()
-
-	# W teście negatywnym czekamy stałe 5 klatek fizyki,
-	# dając silnikowi pełną szansę na ewentualne błędne wykrycie kolizji.
+	mock_skeptic.call_other_skeptic()
 	await wait_physics_frames(5)
 
 	# Assert
 	var icons = find_all_icons_in_engine(get_tree().root)
-	assert_eq(icons.size(), 0)
+	assert_eq(icons.size(), 0, "Nie powinno być ikon, jeśli drugi gracz jest poza zasięgiem/nie istnieje")
 
 
 func find_all_icons_in_engine(node: Node) -> Array:
