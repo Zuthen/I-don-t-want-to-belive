@@ -35,36 +35,38 @@ func test_ufo_hides_when_local_player_is_skeptic():
 	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.add_to_group("skeptics")
-	mock_skeptic.add_to_group("local_player")
+	mock_skeptic.input_multiplayer_authority = 1
 	get_tree().root.add_child(mock_skeptic)
 
 	# Act
 	mock_ufo = ufo_scene.instantiate()
 	mock_ufo.add_to_group("ufos")
+	mock_ufo.input_multiplayer_authority = 999
 	get_tree().root.add_child(mock_ufo)
 
-	await wait_physics_frames(2)
+	await wait_frames(2)
 
 	# Assert
-	assert_false(mock_ufo.visible, "UFO powinno być ukryte dla Sceptyka")
+	assert_false(mock_ufo.visible)
 
 
 func test_skeptic_hides_when_local_player_is_ufo():
 	# Arrange
 	mock_ufo = ufo_scene.instantiate()
 	mock_ufo.add_to_group("ufos")
-	mock_ufo.add_to_group("local_player")
+	mock_ufo.input_multiplayer_authority = 1
 	get_tree().root.add_child(mock_ufo)
 
 	# Act
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.add_to_group("skeptics")
+	mock_skeptic.input_multiplayer_authority = 999
 	get_tree().root.add_child(mock_skeptic)
 
-	await wait_physics_frames(2)
+	await wait_frames(2)
 
 	# Assert
-	assert_false(mock_skeptic.visible, "Sceptyk powinien być ukryty dla UFO")
+	assert_false(mock_skeptic.visible)
 
 
 func test_skeptics_see_each_other():

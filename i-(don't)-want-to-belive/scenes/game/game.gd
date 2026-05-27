@@ -26,7 +26,7 @@ func _ready():
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected.bind(game_map_seed))
 
-		multiplayer_spawner.spawn({ "peer_id": 1, "type": "skeptic", "spawn_position": server_position, "is_male": true })
+		multiplayer_spawner.spawn({ "peer_id": 1, "type": "skeptic", "spawn_position": server_position, "is_male": true, "is_ufo_team": false })
 
 
 func _on_peer_connected(peer_id: int, map_seed: int):
@@ -56,6 +56,7 @@ func _on_peer_connected(peer_id: int, map_seed: int):
 			"peer_id": peer_id,
 			"type": player_type,
 			"spawn_position": spawn_position,
+			"is_ufo_team": (player_type == "ufo"),
 		},
 	)
 

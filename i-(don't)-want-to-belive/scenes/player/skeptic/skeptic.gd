@@ -6,8 +6,12 @@ extends CharacterBody2D
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 
 var is_male
-var input_multiplayer_authority: int
-
+var input_multiplayer_authority: int:
+	set(value):
+		input_multiplayer_authority = value
+		set_multiplayer_authority(value)
+		if has_node("PlayerInputSynchronizer"):
+			$PlayerInputSynchronizer.set_multiplayer_authority(value)
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var voice_emitter_active := false
 const speed = 100.0
@@ -17,12 +21,23 @@ var direction_sprite := "down"
 func _ready():
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
-		if has_node("PlayerInputSynchronizer"):
-			$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
-	callable_initialize_visibility.call_deferred()
+	if has_node("PlayerInputSynchronizer"):
+		$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
+
 	if is_multiplayer_authority() and has_node("Camera2D"):
 		camera.enabled = true
 		camera.make_current()
+
+	await get_tree().process_frame
+
+	var my_own_hero = null
+	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
+		if node.is_multiplayer_authority():
+			my_own_hero = node
+			break
+
+	if my_own_hero and my_own_hero.is_in_group("ufos"):
+		visible = false
 
 
 func callable_initialize_visibility():

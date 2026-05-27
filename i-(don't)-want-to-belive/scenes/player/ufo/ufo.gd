@@ -13,20 +13,33 @@ var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
 		set_multiplayer_authority(value)
+		if has_node("PlayerInputSynchronizer"):
+			$PlayerInputSynchronizer.set_multiplayer_authority(value)
 
 
 func _ready():
-	sprite_2d.texture = sprites.pick_random()
-	if has_node("PlayerInput"):
-		player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
-	var local_player = get_tree().get_first_node_in_group("local_player")
-	if local_player and local_player.is_in_group("skeptics"):
-		visible = false
-	if is_multiplayer_authority():
-		get_tree().call_group("skeptics", "set_visible", false)
+	if typeof(sprites) == TYPE_ARRAY and not sprites.is_empty() and has_node("Sprite2D"):
+		sprite_2d.texture = sprites.pick_random()
+
+	if input_multiplayer_authority != 0:
+		set_multiplayer_authority(input_multiplayer_authority)
+		if has_node("PlayerInputSynchronizer"):
+			$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
+
 	if is_multiplayer_authority() and has_node("Camera2D"):
 		camera.enabled = true
 		camera.make_current()
+
+	await get_tree().process_frame
+
+	var my_own_hero = null
+	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
+		if node.is_multiplayer_authority():
+			my_own_hero = node
+			break
+
+	if my_own_hero and my_own_hero.is_in_group("skeptics"):
+		visible = false
 
 
 func _process(_delta):
