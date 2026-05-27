@@ -5,6 +5,7 @@ extends Node2D
 @onready var multiplayer_spawner = $MultiplayerSpawner
 
 var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
+var ufo_scene: PackedScene = preload("uid://hc74yy2qdg3f")
 var min_position := Vector2i(0, -10)
 var max_position := Vector2i(19, 9)
 var city_atlas_pavement_coords: = Vector2i(9, 1)
@@ -17,28 +18,65 @@ var next_spawn_index: int = 0
 
 func _ready():
 	multiplayer_spawner.spawn_function = func(data):
-		var skeptic = skeptic_scene.instantiate() as Skeptic
-		skeptic.name = str(data.peer_id)
-		skeptic.input_multiplayer_authority = data.peer_id
+		var player_node = null
+		if data.has("type") and data.type == "ufo":
+			player_node = ufo_scene.instantiate() as Ufo
+		else:
+			player_node = skeptic_scene.instantiate() as Skeptic
+
+		player_node.name = str(data.peer_id)
+		player_node.input_multiplayer_authority = data.peer_id
+
 		if data.has("spawn_position"):
-			skeptic.position = tile_map_layer.map_to_local(data.spawn_position)
-		if data.has("is_male"):
-			skeptic.is_male = data.is_male
+			player_node.position = tile_map_layer.map_to_local(data.spawn_position)
 
-		return skeptic
+		if player_node is Skeptic and data.has("is_male"):
+			player_node.is_male = data.is_male
+		if player_node.has_node("PlayerInput"):
+			player_node.get_node("PlayerInput").set_multiplayer_authority(data.peer_id)
+		return player_node
 
-	if is_multiplayer_authority():
+	if multiplayer.is_server():
 		var game_map_seed = randi()
 		skeptic_positions = create_map(game_map_seed)
 
-		var server_position = skeptic_positions[next_spawn_index]
+		var server_position = skeptic_positions[0]
 		next_spawn_index += 1
-		multiplayer_spawner.spawn({ "peer_id": 1, "spawn_position": server_position, "is_male": true })
-		multiplayer.peer_connected.connect(_on_peer_connected.bind(game_map_seed))
+		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
+			multiplayer.peer_connected.connect(_on_peer_connected.bind(game_map_seed))
+
+		multiplayer_spawner.spawn({ "peer_id": 1, "type": "skeptic", "spawn_position": server_position, "is_male": true })
 
 
 func _on_peer_connected(peer_id: int, map_seed: int):
+	if not multiplayer.is_server():
+		return
+
 	client_build_map_instruction.rpc_id(peer_id, map_seed)
+
+	next_spawn_index += 1
+	var spawn_position: Vector2i
+	var player_type = "skeptic"
+
+	if next_spawn_index > 2:
+		player_type = "ufo"
+		var rand_x = randi_range(min_position.x, max_position.x)
+		var rand_y = randi_range(min_position.y, max_position.y)
+		spawn_position = Vector2i(rand_x, rand_y)
+	else:
+		var skeptic_index = next_spawn_index - 1
+		if skeptic_positions.is_empty():
+			spawn_position = Vector2i(0, 0)
+		else:
+			spawn_position = skeptic_positions[skeptic_index % skeptic_positions.size()]
+
+	multiplayer_spawner.spawn(
+		{
+			"peer_id": peer_id,
+			"type": player_type,
+			"spawn_position": spawn_position,
+		},
+	)
 
 
 @rpc("authority", "call_local", "reliable")
@@ -51,14 +89,10 @@ func client_build_map_instruction(map_seed: int):
 
 @rpc("any_peer", "call_local", "reliable")
 func peer_ready():
-	if not is_multiplayer_authority():
+	if not multiplayer.is_server():
 		return
 
 	var sender_id = multiplayer.get_remote_sender_id()
-	var spawn_index = next_spawn_index % skeptic_positions.size()
-	var chosen_position = skeptic_positions[spawn_index]
-	next_spawn_index += 1
-	multiplayer_spawner.spawn({ "peer_id": sender_id, "spawn_position": chosen_position })
 
 
 func create_map(map_seed: int = 0):
@@ -109,13 +143,6 @@ func directions(step: int) -> Dictionary:
 		"left": Vector2i(-step, 0),
 		"right": Vector2i(step, 0),
 	}
-
-
-func spawn_player(spawn_position: Vector2i) -> Skeptic:
-	var player = skeptic_scene.instantiate()
-	player.position = tile_map_layer.map_to_local(spawn_position)
-	add_child(player)
-	return player
 
 
 func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumberGenerator) -> Array[Vector2i]:

@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cok1mrn2x7qdh"]
+
+[ext_resource type="Script" uid="uid://cjan1066exxxu" path="res://scenes/game/player.gd" id="1_avuqy"]
+[ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="2_ld5ca"]
+
+[node name="Player" type="CharacterBody2D" unique_id=740932296]
+scale = Vector2(0.45, 0.45)
+script = ExtResource("1_avuqy")
+
+[node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("2_ld5ca")]
