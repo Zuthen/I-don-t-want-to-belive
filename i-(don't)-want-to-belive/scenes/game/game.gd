@@ -4,8 +4,6 @@ extends Node2D
 @onready var buildings_details = $BuildingsDetails
 @onready var multiplayer_spawner = $MultiplayerSpawner
 
-var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
-var ufo_scene: PackedScene = preload("uid://hc74yy2qdg3f")
 var min_position := Vector2i(0, -10)
 var max_position := Vector2i(19, 9)
 var city_atlas_pavement_coords: = Vector2i(9, 1)
@@ -17,24 +15,7 @@ var next_spawn_index: int = 0
 
 
 func _ready():
-	multiplayer_spawner.spawn_function = func(data):
-		var player_node = null
-		if data.has("type") and data.type == "ufo":
-			player_node = ufo_scene.instantiate() as Ufo
-		else:
-			player_node = skeptic_scene.instantiate() as Skeptic
-
-		player_node.name = str(data.peer_id)
-		player_node.input_multiplayer_authority = data.peer_id
-
-		if data.has("spawn_position"):
-			player_node.position = tile_map_layer.map_to_local(data.spawn_position)
-
-		if player_node is Skeptic and data.has("is_male"):
-			player_node.is_male = data.is_male
-		if player_node.has_node("PlayerInput"):
-			player_node.get_node("PlayerInput").set_multiplayer_authority(data.peer_id)
-		return player_node
+	MultiplayerFeatures.spawn_player(multiplayer_spawner, tile_map_layer)
 
 	if multiplayer.is_server():
 		var game_map_seed = randi()

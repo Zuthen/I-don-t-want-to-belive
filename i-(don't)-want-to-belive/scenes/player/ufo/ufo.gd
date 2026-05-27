@@ -17,6 +17,11 @@ var input_multiplayer_authority: int:
 func _ready():
 	sprite_2d.texture = sprites.pick_random()
 	player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
+	var local_player = get_tree().get_first_node_in_group("local_player")
+	if local_player and local_player.is_in_group("skeptics"):
+		visible = false
+	if is_multiplayer_authority():
+		get_tree().call_group("skeptics", "set_visible", false)
 
 
 func _process(_delta):

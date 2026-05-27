@@ -18,6 +18,11 @@ var direction_sprite := "down"
 
 func _ready():
 	player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
+	var local_player = get_tree().get_first_node_in_group("local_player")
+	if local_player and local_player.is_in_group("ufos"):
+		visible = false
+	if is_multiplayer_authority():
+		get_tree().call_group("ufos", "set_visible", false)
 
 
 func _process(_delta):
