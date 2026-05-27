@@ -1,6 +1,7 @@
 class_name Skeptic
 extends CharacterBody2D
 
+@onready var camera = $Camera2D
 @onready var animation_player = $AnimationPlayer
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 
@@ -19,6 +20,9 @@ func _ready():
 		if has_node("PlayerInputSynchronizer"):
 			$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
 	callable_initialize_visibility.call_deferred()
+	if is_multiplayer_authority() and has_node("Camera2D"):
+		camera.enabled = true
+		camera.make_current()
 
 
 func callable_initialize_visibility():

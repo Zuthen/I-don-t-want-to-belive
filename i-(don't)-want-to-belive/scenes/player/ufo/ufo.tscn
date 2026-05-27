@@ -43,6 +43,8 @@ script = SubResource("GDScript_psnoh")
 replication_config = SubResource("SceneReplicationConfig_t7s1w")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1962525988]
+enabled = false
+zoom = Vector2(3, 3)
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=920700340]
 scale = Vector2(0.25, 0.25)

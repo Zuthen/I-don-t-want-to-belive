@@ -1,6 +1,7 @@
 class_name Ufo
 extends CharacterBody2D
 
+@onready var camera = $Camera2D
 @onready var sprite_2d = $Sprite2D
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 
@@ -23,6 +24,9 @@ func _ready():
 		visible = false
 	if is_multiplayer_authority():
 		get_tree().call_group("skeptics", "set_visible", false)
+	if is_multiplayer_authority() and has_node("Camera2D"):
+		camera.enabled = true
+		camera.make_current()
 
 
 func _process(_delta):

@@ -386,3 +386,5 @@ libraries/ = SubResource("AnimationLibrary_tffgl")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1681121901]
 ignore_rotation = false
+enabled = false
+zoom = Vector2(6, 6)
