@@ -1,5 +1,5 @@
 class_name Ufo
-extends CharacterBody2D
+extends Player
 
 @onready var camera = $Camera2D
 @onready var ship = $Ship
@@ -35,6 +35,7 @@ func _ready():
 	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
 		if node.is_multiplayer_authority():
 			my_own_hero = node
+			my_own_hero.player_role_assigned.emit()
 			break
 
 	if my_own_hero and my_own_hero.is_in_group("skeptics"):
