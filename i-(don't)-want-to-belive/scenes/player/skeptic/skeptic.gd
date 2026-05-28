@@ -1,5 +1,5 @@
 class_name Skeptic
-extends CharacterBody2D
+extends Player
 
 @onready var camera = $Camera2D
 @onready var animation_player = $AnimationPlayer
@@ -43,6 +43,7 @@ func _ready():
 func callable_initialize_visibility():
 	var local_player = get_tree().get_first_node_in_group("local_player")
 	if local_player and local_player.is_in_group("ufos"):
+		local_player.player_role_assigned.emit()
 		visible = false
 
 	if is_multiplayer_authority():

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bt6so2huvttp0" path="res://scenes/game/game.gd" id="1_kelw5"]
 [ext_resource type="Texture2D" uid="uid://dm3js0r4mwqdm" path="res://assets/tilemap_packed.png" id="2_7h61r"]
+[ext_resource type="PackedScene" uid="uid://cjks5cw6xyieq" path="res://scenes/ui/user_interface.tscn" id="3_0sr1o"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kelw5"]
 texture = ExtResource("2_7h61r")
@@ -1682,3 +1683,9 @@ tile_set = SubResource("TileSet_kelw5")
 
 [node name="BuildingsDetails" type="TileMapLayer" parent="." unique_id=640382988]
 tile_set = SubResource("TileSet_0sr1o")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1325387949]
+
+[node name="UserInterface" parent="CanvasLayer" unique_id=96406378 instance=ExtResource("3_0sr1o")]
+offset_left = -2.0
+offset_right = 118.0

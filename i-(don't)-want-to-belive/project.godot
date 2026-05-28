@@ -25,7 +25,7 @@ UfosTextures="*uid://u00ubso3s74i"
 
 [display]
 
-window/size/viewport_width=700
+window/size/viewport_width=820
 window/size/viewport_height=700
 window/stretch/mode="canvas_items"
 

@@ -14,6 +14,7 @@ func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLaye
 			player_node = skeptic_scene.instantiate() as Skeptic
 
 		player_node.name = str(data.peer_id)
+		player_node.id = data.peer_id
 		player_node.input_multiplayer_authority = data.peer_id
 
 		if data.has("spawn_position"):

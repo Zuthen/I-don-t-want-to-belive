@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://cjks5cw6xyieq"]
+
+[ext_resource type="Texture2D" uid="uid://d0oookm6lwggb" path="res://assets/ui/button_rectangle_flat.png" id="1_284y0"]
+[ext_resource type="Script" uid="uid://bdititb3yf3rj" path="res://scenes/ui/user_interface.gd" id="1_rcgkl"]
+[ext_resource type="Texture2D" uid="uid://dbjdyoew6bdm1" path="res://assets/ui/keyboard_q.png" id="2_a44fs"]
+[ext_resource type="FontFile" uid="uid://cf0tsyd35wvs8" path="res://assets/fonts/kenney_input_keyboard_&_mouse.ttf" id="3_rcgkl"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_vnpvo"]
+font = ExtResource("3_rcgkl")
+font_color = Color(0.53333336, 0.5372549, 0.7882353, 1)
+
+[node name="UserInterface" type="Control" unique_id=96406378]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rcgkl")
+
+[node name="Panel" type="TextureRect" parent="." unique_id=1700910613]
+layout_mode = 0
+offset_left = 695.0
+offset_top = -1.0
+offset_right = 823.0
+offset_bottom = 701.0
+texture = ExtResource("1_284y0")
+
+[node name="QButton" type="TextureRect" parent="." unique_id=653790531]
+modulate = Color(0.53333336, 0.5372549, 0.7882353, 1)
+layout_mode = 0
+offset_left = 726.0
+offset_top = 32.0
+offset_right = 790.0
+offset_bottom = 96.0
+texture = ExtResource("2_a44fs")
+
+[node name="QLabel" type="Label" parent="." unique_id=1612655071]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 233.0
+offset_top = -254.0
+offset_right = 344.0
+offset_bottom = -231.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "dupa"
+label_settings = SubResource("LabelSettings_vnpvo")
+horizontal_alignment = 1
