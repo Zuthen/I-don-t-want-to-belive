@@ -1,9 +1,6 @@
 [gd_scene format=3 uid="uid://dnsiqidfpctrc"]
 
 [ext_resource type="Script" uid="uid://ds1ankoro2mpq" path="res://scenes/player/ufo/laser.gd" id="1_1byu6"]
-[ext_resource type="Texture2D" uid="uid://cl882ycjgpaff" path="res://assets/characters/ufos/laserBeige1.png" id="1_g1xqf"]
-[ext_resource type="Texture2D" uid="uid://bgyrqpcgit6d5" path="res://assets/characters/ufos/laserBeige2.png" id="2_1byu6"]
-[ext_resource type="Texture2D" uid="uid://dbxf7yvrhjp60" path="res://assets/characters/ufos/laserBeige3.png" id="3_3fwan"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_1byu6"]
 properties/0/path = NodePath(".:global_position")
@@ -110,6 +107,9 @@ _data = {
 &"laser pointing": SubResource("Animation_psnoh")
 }
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_40bio"]
+size = Vector2(40, 108)
+
 [node name="Laser" type="Node2D" unique_id=1601299045]
 scale = Vector2(0.25, 0.25)
 script = ExtResource("1_1byu6")
@@ -125,16 +125,21 @@ libraries/ = SubResource("AnimationLibrary_p8ene")
 visible = false
 position = Vector2(0, 84)
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("1_g1xqf")
 
 [node name="LaserMiddle" type="Sprite2D" parent="." unique_id=1552451004]
 visible = false
 position = Vector2(0, 132)
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_1byu6")
 
 [node name="LaserPointer" type="Sprite2D" parent="." unique_id=908462423]
 visible = false
 position = Vector2(0, 176)
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("3_3fwan")
+
+[node name="LaserRange" type="Area2D" parent="." unique_id=297645565]
+position = Vector2(0, 128)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LaserRange" unique_id=1879772477]
+position = Vector2(0, 2)
+shape = SubResource("RectangleShape2D_40bio")
+disabled = true

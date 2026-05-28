@@ -6,7 +6,7 @@ extends CharacterBody2D
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
-
+var ufo_sprites: UfosTextures.UfoTextures
 const speed = 150.0
 
 var input_multiplayer_authority: int:
@@ -28,8 +28,8 @@ func _ready():
 		camera.make_current()
 
 	await get_tree().process_frame
-	var global_textures = UfosTextures.ufo_textures
-	ship.texture = global_textures[0].ship
+	ufo_sprites = UfosTextures.ufo_textures[0]
+	ship.texture = ufo_sprites.ship
 
 	var my_own_hero = null
 	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
@@ -64,3 +64,7 @@ func server_spawn_laser(position: Vector2):
 		var laser = laser_scene.instantiate()
 		laser.global_position = position
 		get_parent().add_child(laser)
+
+
+func spawn_laser(position: Vector2):
+	server_spawn_laser(position)

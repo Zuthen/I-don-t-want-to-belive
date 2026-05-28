@@ -11,22 +11,30 @@ var second_ufo: CharacterBody2D
 
 func before_each():
 	for node in get_tree().get_nodes_in_group("local_player"):
-		node.remove_from_group("local_player")
+		if is_instance_valid(node):
+			node.remove_from_group("local_player")
 	for node in get_tree().get_nodes_in_group("skeptics"):
-		node.remove_from_group("skeptics")
+		if is_instance_valid(node):
+			node.remove_from_group("skeptics")
 	for node in get_tree().get_nodes_in_group("ufos"):
-		node.remove_from_group("ufos")
+		if is_instance_valid(node):
+			node.remove_from_group("ufos")
 
 
 func after_each():
 	if is_instance_valid(mock_skeptic):
 		mock_skeptic.queue_free()
 	if is_instance_valid(mock_ufo):
-		mock_ufo.free()
+		mock_ufo.queue_free()
 	if is_instance_valid(another_skeptic):
 		another_skeptic.queue_free()
 	if is_instance_valid(second_ufo):
 		second_ufo.queue_free()
+
+	var leftover_lasers = find_all_lasers(get_tree().root)
+	for laser in leftover_lasers:
+		if is_instance_valid(laser):
+			laser.queue_free()
 
 	await wait_physics_frames(2)
 
@@ -35,16 +43,17 @@ func test_ufo_hides_when_local_player_is_skeptic():
 	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.add_to_group("skeptics")
-	mock_skeptic.input_multiplayer_authority = 1
 	get_tree().root.add_child(mock_skeptic)
+	mock_skeptic.set_multiplayer_authority(1)
 
-	# Act
 	mock_ufo = ufo_scene.instantiate()
 	mock_ufo.add_to_group("ufos")
-	mock_ufo.input_multiplayer_authority = 999
 	get_tree().root.add_child(mock_ufo)
+	mock_ufo.set_multiplayer_authority(2)
 
+	#Act
 	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert
 	assert_false(mock_ufo.visible)
@@ -98,3 +107,69 @@ func test_ufos_see_each_other():
 
 	# Assert
 	assert_true(second_ufo.visible)
+
+
+func test_as_ufo_i_can_see_my_laser():
+	# Arrange
+	mock_ufo = ufo_scene.instantiate()
+	mock_ufo.add_to_group("ufos")
+	mock_ufo.add_to_group("local_player")
+	get_tree().root.add_child(mock_ufo)
+
+	# Act
+	mock_ufo.spawn_laser(Vector2.ZERO)
+
+	# Assert
+	var lasers = find_all_lasers(get_tree().root)
+	assert_true(lasers.size() == 1)
+
+
+func test_as_ufo_i_can_see_other_ufo_laser():
+	# Arrange
+	mock_ufo = ufo_scene.instantiate()
+	mock_ufo.add_to_group("ufos")
+	get_tree().root.add_child(mock_ufo)
+	mock_ufo.set_multiplayer_authority(1)
+
+	second_ufo = ufo_scene.instantiate()
+	second_ufo.add_to_group("ufos")
+	get_tree().root.add_child(second_ufo)
+	second_ufo.set_multiplayer_authority(2)
+
+	# Act
+	second_ufo.server_spawn_laser(second_ufo.global_position)
+
+	# Assert
+	var lasers = find_all_lasers(get_tree().root)
+	assert_true(lasers.size() == 1)
+
+
+func test_as_skeptic_i_can_see_ufos_laser():
+	# Arrange
+	mock_skeptic = skeptic_scene.instantiate()
+	mock_skeptic.add_to_group("skeptics")
+	get_tree().root.add_child(mock_skeptic)
+	mock_skeptic.set_multiplayer_authority(1)
+
+	mock_ufo = ufo_scene.instantiate()
+	mock_ufo.add_to_group("ufos")
+	get_tree().root.add_child(mock_ufo)
+	mock_ufo.set_multiplayer_authority(2)
+
+	# Act
+	mock_ufo.server_spawn_laser(mock_ufo.global_position)
+
+	# Assert
+	var lasers = find_all_lasers(get_tree().root)
+	assert_true(lasers.size() == 1)
+
+
+func find_all_lasers(node: Node) -> Array:
+	var result = []
+	if not is_instance_valid(node):
+		return result
+	if node is UfoLaser:
+		result.append(node)
+	for child in node.get_children():
+		result += find_all_lasers(child)
+	return result
