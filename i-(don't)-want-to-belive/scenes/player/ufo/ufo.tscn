@@ -2,10 +2,6 @@
 
 [ext_resource type="Script" uid="uid://de6sywk55p8ge" path="res://scenes/player/ufo/ufo.gd" id="1_psnoh"]
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="2_p8ene"]
-[ext_resource type="Texture2D" uid="uid://bsck3e0jfp5fu" path="res://assets/characters/ufos/shipBlue_manned.png" id="3_1aexw"]
-[ext_resource type="Texture2D" uid="uid://3w21pkq8n8b0" path="res://assets/characters/ufos/shipGreen_manned.png" id="4_uci1n"]
-[ext_resource type="Texture2D" uid="uid://7rljy2deue53" path="res://assets/characters/ufos/shipPink_manned.png" id="5_57vl2"]
-[ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="6_fkdpu"]
 [ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="7_j8uuj"]
 
 [sub_resource type="GDScript" id="GDScript_psnoh"]
@@ -34,7 +30,6 @@ properties/0/replication_mode = 1
 collision_layer = 0
 collision_mask = 0
 script = ExtResource("1_psnoh")
-sprites = Array[Texture]([ExtResource("2_p8ene"), ExtResource("3_1aexw"), ExtResource("4_uci1n"), ExtResource("5_57vl2"), ExtResource("6_fkdpu")])
 
 [node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("7_j8uuj")]
 script = SubResource("GDScript_psnoh")
@@ -46,9 +41,9 @@ replication_config = SubResource("SceneReplicationConfig_t7s1w")
 enabled = false
 zoom = Vector2(3, 3)
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=920700340]
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("4_uci1n")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=126880545]
 shape = SubResource("CapsuleShape2D_hv1eg")
+
+[node name="Ship" type="Sprite2D" parent="." unique_id=1311477454]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_p8ene")
