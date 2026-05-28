@@ -32,5 +32,6 @@ func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLaye
 func assign_to_group(data, player_node):
 	if data.has("type") and data.type == "ufo":
 		player_node.add_to_group("ufos")
+
 	elif data.has("type") and data.type == "skeptic":
 		player_node.add_to_group("skeptics")

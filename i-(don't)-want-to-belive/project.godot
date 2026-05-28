@@ -21,6 +21,7 @@ MapCreator="*uid://b1ypbtaykhwyw"
 Drawers="*uid://bqmmu5bpq48t7"
 PavementTilesMap="*uid://dp1fr0vbdlnle"
 MultiplayerFeatures="*uid://bwlv64apx2xv"
+UfosTextures="*uid://u00ubso3s74i"
 
 [display]
 
@@ -59,6 +60,11 @@ walk_down={
 ]
 }
 call_other_skeptic={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":81,"key_label":0,"unicode":113,"location":0,"echo":false,"script":null)
+]
+}
+laser_point={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":81,"key_label":0,"unicode":113,"location":0,"echo":false,"script":null)
 ]
