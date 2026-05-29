@@ -2,12 +2,15 @@ class_name VoiceReceiver
 extends Area2D
 
 @export var icons_count: int = 3
-var icon_scene: PackedScene = preload("uid://d03xota05sdvx")
 @onready var collision_shape_2d = $CollisionShape2D
+var icon_scene: PackedScene = preload("uid://d03xota05sdvx")
+
+var role: MultiplayerFeatures.Role
 
 
 func _ready():
 	area_entered.connect(_listen)
+	role = MultiplayerFeatures.get_role()
 
 
 func _listen(area: Area2D):
@@ -17,7 +20,8 @@ func _listen(area: Area2D):
 		if parent == area_parent:
 			return
 		var distance = global_position.distance_to(area.global_position)
-		var icon: Node = icon_scene.instantiate()
+		var icon: IconPlaceholder = icon_scene.instantiate()
+		icon.accepts_role = MultiplayerFeatures.Role.SKEPTIC
 		var center = global_position + (area.global_position - global_position) * 0.5
 		if icon.get_parent() == null:
 			if is_instance_valid(parent) and parent.get_parent():
@@ -33,4 +37,5 @@ func _listen(area: Area2D):
 
 
 func _hide_icon(icon: Node):
-	icon.queue_free()
+	if icon != null:
+		icon.queue_free()

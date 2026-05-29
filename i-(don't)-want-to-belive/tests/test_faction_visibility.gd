@@ -36,6 +36,11 @@ func after_each():
 		if is_instance_valid(laser):
 			laser.queue_free()
 
+	var leftover_icons = find_all_icons(get_tree().root)
+	for icon in leftover_icons:
+		if is_instance_valid(icon):
+			icon.queue_free()
+
 	await wait_physics_frames(2)
 
 
@@ -164,6 +169,45 @@ func test_as_skeptic_i_can_see_ufos_laser():
 	assert_true(lasers.size() == 1)
 
 
+func test_as_ufo_i_cannot_see_skeptic_calls():
+	# Arrange
+	mock_skeptic = skeptic_scene.instantiate()
+	mock_skeptic.set_multiplayer_authority(2)
+	mock_skeptic.add_to_group("skeptics")
+	get_tree().root.add_child(mock_skeptic)
+
+	another_skeptic = skeptic_scene.instantiate()
+	another_skeptic.set_multiplayer_authority(3)
+	another_skeptic.add_to_group("skeptics")
+	get_tree().root.add_child(another_skeptic)
+
+	mock_ufo = ufo_scene.instantiate()
+	mock_ufo.set_multiplayer_authority(1)
+	mock_ufo.add_to_group("ufos")
+	mock_ufo.add_to_group("local_player")
+	get_tree().root.add_child(mock_ufo)
+
+	# Act
+	mock_skeptic.call_other_skeptic()
+
+	await wait_physics_frames(5)
+
+	# Assert
+	var icons = find_all_icons(get_tree().root)
+	for icon in icons:
+		if icon is IconPlaceholder:
+			icon.setup(MultiplayerFeatures.Role.UFO)
+	var visible_icons = icons.filter(
+		func(icon):
+			var sprite = icon.get_node_or_null("Sprite2D") as Sprite2D
+			if sprite != null:
+				return sprite.visible and icon.is_visible_in_tree()
+			return false
+	)
+
+	assert_eq(visible_icons.size(), 0)
+
+
 func find_all_lasers(node: Node) -> Array:
 	var result = []
 	if not is_instance_valid(node):
@@ -172,4 +216,15 @@ func find_all_lasers(node: Node) -> Array:
 		result.append(node)
 	for child in node.get_children():
 		result += find_all_lasers(child)
+	return result
+
+
+func find_all_icons(node: Node) -> Array:
+	var result = []
+	if not is_instance_valid(node):
+		return result
+	if node is IconPlaceholder:
+		result.append(node)
+	for child in node.get_children():
+		result += find_all_icons(child)
 	return result

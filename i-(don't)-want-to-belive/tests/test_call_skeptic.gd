@@ -48,7 +48,7 @@ func test_player_can_call_other_player():
 		attempts += 1
 
 	# Assert
-	assert_gt(icons.size(), 0, "Powinna pojawić się co najmniej jedna ikonka wywołania")
+	assert_gt(icons.size(), 0)
 
 
 func test_player_can_t_call_outside_range_size():
