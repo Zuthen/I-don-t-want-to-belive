@@ -1,6 +1,8 @@
 class_name Multiplayer
 extends Node
 
+enum Role { UFO, SKEPTIC }
+
 var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://hc74yy2qdg3f")
 
@@ -36,3 +38,22 @@ func assign_to_group(data, player_node):
 
 	elif data.has("type") and data.type == "skeptic":
 		player_node.add_to_group("skeptics")
+
+
+func get_role() -> Role:
+	var player = get_local_player()
+	if player is Ufo:
+		return Role.UFO
+	else:
+		return Role.SKEPTIC
+
+
+func get_local_player() -> Player:
+	var my_id = multiplayer.get_unique_id()
+	var all_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics")
+
+	for player in all_players:
+		if player is Player and player.id == my_id:
+			return player
+
+	return null
