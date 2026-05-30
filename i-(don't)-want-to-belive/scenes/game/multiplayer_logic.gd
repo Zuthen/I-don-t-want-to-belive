@@ -1,19 +1,23 @@
 class_name Multiplayer
 extends Node
 
-enum Role { UFO, SKEPTIC }
+enum Role { NONE, UFO, SKEPTIC }
 
 var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://hc74yy2qdg3f")
+var player_role = Role.NONE
 
 
 func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 	multiplayer_spawner.spawn_function = func(data):
 		var player_node = null
+		var role_name = Role.NONE
 		if data.has("type") and data.type == "ufo":
 			player_node = ufo_scene.instantiate() as Ufo
+			role_name = Role.UFO
 		else:
 			player_node = skeptic_scene.instantiate() as Skeptic
+			role_name = Role.SKEPTIC
 
 		player_node.name = str(data.peer_id)
 		player_node.id = data.peer_id
@@ -28,6 +32,7 @@ func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLaye
 			player_node.get_node("PlayerInput").set_multiplayer_authority(data.peer_id)
 		if player_node.get_multiplayer_authority() == multiplayer.get_unique_id():
 			player_node.add_to_group("local_player")
+			player_role = role_name
 		assign_to_group(data, player_node)
 		return player_node
 
@@ -41,11 +46,7 @@ func assign_to_group(data, player_node):
 
 
 func get_role() -> Role:
-	var player = get_local_player()
-	if player is Ufo:
-		return Role.UFO
-	else:
-		return Role.SKEPTIC
+	return player_role
 
 
 func get_local_player() -> Player:
