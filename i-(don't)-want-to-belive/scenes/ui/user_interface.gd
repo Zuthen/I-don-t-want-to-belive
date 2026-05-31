@@ -3,7 +3,9 @@ extends Control
 class_name UserInterface
 
 @onready var q_label = $QLabel
-@onready var win_label = $WinLabel
+@onready var win_info = $WinInfo
+@onready var win_label = $WinInfo/WinLabel
+@onready var faction_label = $WinInfo/FactionLabel
 @onready var belive_points_counter_background = $Belive_Points_Counter_Background
 @onready var belive_points_counter = $Belive_Points_Counter
 
@@ -20,7 +22,7 @@ takie latają!"
 
 func _ready():
 	ufos_sprites = belive_points_counter.get_children()
-	win_label.visible = false
+	win_info.visible = false
 
 	var player: Player = null
 	for i in range(20):
@@ -71,13 +73,15 @@ func _on_skeptic_win():
 @rpc("any_peer", "call_local", "reliable")
 func show_ufo_victory_screen():
 	win_label.text = UFO_WINS
-	win_label.visible = true
+	faction_label.text = "Wygrywają ufoki"
+	win_info.visible = true
 
 
 @rpc("any_peer", "call_local", "reliable")
 func show_skeptics_victory_screen():
 	win_label.text = SKEPTICS_WIN
-	win_label.visible = true
+	faction_label.text = "Wygrywają sceptycy"
+	win_info.visible = true
 
 
 func _on_belive_points_changed(amount):
