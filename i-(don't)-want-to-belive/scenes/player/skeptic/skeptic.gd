@@ -4,21 +4,34 @@ extends Player
 @onready var camera = $Camera2D
 @onready var animation_player = $AnimationPlayer
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
+@onready var dialog_timer = $DialogTimer
+@onready var dialog_placements = $DialogPlacements
+
+var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 
 var is_male
+var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
+var voice_emitter_active := false
+const speed = 100.0
+var direction_sprite := "down"
+const max_belive_points := 5
+var belive_points: int = 0
+
+signal belive_points_changed(amount: int)
+signal laser_seen
+
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
 		set_multiplayer_authority(value)
 		if has_node("PlayerInputSynchronizer"):
 			$PlayerInputSynchronizer.set_multiplayer_authority(value)
-var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
-var voice_emitter_active := false
-const speed = 100.0
-var direction_sprite := "down"
 
 
 func _ready():
+	belive_points_changed.connect(_on_belive_points_changed)
+	laser_seen.connect(_on_laser_seen)
+
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
 	if has_node("PlayerInputSynchronizer"):
@@ -85,6 +98,36 @@ func _reset_voice_emmitter():
 
 func call_other_skeptic():
 	call_other_skeptic_network()
+
+
+func _on_belive_points_changed(hit_points: int):
+	belive_points += hit_points
+	if belive_points >= max_belive_points:
+		ufo_wins.emit()
+
+
+func _on_laser_seen():
+	var dialogs = dialog_placements.get_children()
+	var dialog = dialogs.pick_random() as Marker2D
+	var target_position = dialog.global_position + global_position
+	var icon_placeholder = icon_placeholder_scene.instantiate()
+
+	icon_placeholder.accepts_role = [MultiplayerFeatures.Role.UFO, MultiplayerFeatures.Role.SKEPTIC] as Array[MultiplayerFeatures.Role]
+	icon_placeholder.icon = preload("uid://ddjkfec0jsuw")
+
+	get_tree().root.add_child(icon_placeholder)
+
+	icon_placeholder.global_position = target_position
+	icon_placeholder.scale = Vector2(0.6, 0.6)
+	var role = MultiplayerFeatures.get_role()
+	icon_placeholder.setup(role, icon_placeholder.icon)
+	dialog_timer.timeout.connect(func(): _on_dialog_timer_timeout(icon_placeholder))
+	dialog_timer.start()
+
+
+func _on_dialog_timer_timeout(node: Node2D):
+	if node != null:
+		node.queue_free()
 
 
 func animate(direction: Vector2):

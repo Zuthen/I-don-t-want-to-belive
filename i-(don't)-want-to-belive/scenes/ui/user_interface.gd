@@ -1,33 +1,71 @@
 extends Control
 
+class_name UserInterface
+
 @onready var q_label = $QLabel
+@onready var win_label = $WinLabel
+@onready var belive_points_counter_background = $Belive_Points_Counter_Background
+@onready var belive_points_counter = $Belive_Points_Counter
+
+var ufos_sprites
+var hit_points: int = 0
+
+const UFO_WINS := "Prawda 
+	nas jeszcze 
+	zadziwi..."
 
 
 func _ready():
-	var my_player: Player = null
+	ufos_sprites = belive_points_counter.get_children()
+	win_label.visible = false
 
+	var player: Player = null
 	for i in range(20):
-		my_player = MultiplayerFeatures.get_local_player()
-		if my_player != null:
+		player = MultiplayerFeatures.get_local_player()
+		if player != null:
 			break
 		await get_tree().create_timer(0.05).timeout
 
-	if my_player != null:
-		my_player.player_role_assigned.connect(_on_player_role_assigned)
+	if player != null:
+		player.player_role_assigned.connect(_on_player_role_assigned)
+		player.ufo_wins.connect(_on_ufo_wins)
+
 		var role = MultiplayerFeatures.get_role()
-		_update_ui_text(role)
+		if role == MultiplayerFeatures.Role.SKEPTIC:
+			player.belive_points_changed.connect(_on_belive_points_changed)
+		_setup_ui(role)
 	else:
 		printerr("[UI] Błąd sieciowy: Klient o ID ", multiplayer.get_unique_id(), " nie doczekał się swojej postaci!")
 
 
 func _on_player_role_assigned():
 	var role = MultiplayerFeatures.get_role()
-	_update_ui_text(role)
+	_setup_ui(role)
 
 
-func _update_ui_text(role: MultiplayerFeatures.Role):
+func _setup_ui(role: MultiplayerFeatures.Role):
+	for ufo in ufos_sprites:
+		ufo.visible = false
 	match role:
 		MultiplayerFeatures.Role.UFO:
-			q_label.text = "Wystrzel laser"
+			q_label.text = "Wystrzel 
+			laser"
+			belive_points_counter_background.visible = false
+			belive_points_counter.visible = false
 		MultiplayerFeatures.Role.SKEPTIC:
 			q_label.text = "Zawołaj"
+
+
+func _on_ufo_wins():
+	show_victory_screen.rpc_id(0)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func show_victory_screen():
+	win_label.text = UFO_WINS
+	win_label.visible = true
+
+
+func _on_belive_points_changed(amount):
+	ufos_sprites[hit_points].visible = true
+	hit_points += amount

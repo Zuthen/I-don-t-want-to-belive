@@ -21,7 +21,7 @@ func _listen(area: Area2D):
 			return
 		var distance = global_position.distance_to(area.global_position)
 		var icon: IconPlaceholder = icon_scene.instantiate()
-		icon.accepts_role = MultiplayerFeatures.Role.SKEPTIC
+		icon.accepts_role = [MultiplayerFeatures.Role.SKEPTIC]
 		var center = global_position + (area.global_position - global_position) * 0.5
 		if icon.get_parent() == null:
 			if is_instance_valid(parent) and parent.get_parent():
