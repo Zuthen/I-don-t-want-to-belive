@@ -39,8 +39,6 @@ func before_each():
 	ui_instance.ufos_sprites = [mock_sprite1, mock_sprite2]
 	ui_instance.hit_points = 0
 
-	get_tree().root.add_child(ui_instance)
-
 	for node in get_tree().get_nodes_in_group("local_player"):
 		node.remove_from_group("local_player")
 	for node in get_tree().get_nodes_in_group("skeptics"):
