@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://3tmj30gufla"]
+
+[ext_resource type="Shader" uid="uid://cxgvq2wk2sbt5" path="res://scenes/game/night_layer.gdshader" id="1_07lhl"]
+[ext_resource type="Script" uid="uid://cnyep4nx72ket" path="res://scenes/game/night_layer.gd" id="2_07lhl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_024xv"]
+shader = ExtResource("1_07lhl")
+shader_parameter/player_screen_pos = Vector2(0, 0)
+shader_parameter/inner_radius = 50.0
+shader_parameter/outer_radius = 150.0
+shader_parameter/min_alpha = 0.5
+
+[node name="NightLayer" type="ColorRect" unique_id=361862169]
+modulate = Color(0.0736, 0.104880005, 0.23, 0.9411765)
+material = SubResource("ShaderMaterial_024xv")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.075899996, 0.10415163, 0.23, 0.9019608)
+script = ExtResource("2_07lhl")
