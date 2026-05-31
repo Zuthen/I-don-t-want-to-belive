@@ -7,7 +7,11 @@ extends Player
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
+var laser_shoot_blocked := false
 const speed = 150.0
+const laser_shoot_timeout_seconds: float = 5.0
+
+signal laser_shoot(time: float)
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -54,7 +58,8 @@ func _physics_process(_delta):
 		velocity = speed * sync_direction
 		move_and_slide()
 		if Input.is_action_just_pressed("laser_point"):
-			server_spawn_laser.rpc(global_position)
+			if !laser_shoot_blocked:
+				fire_laser()
 	else:
 		pass
 
@@ -69,3 +74,19 @@ func server_spawn_laser(position: Vector2):
 
 func spawn_laser(position: Vector2):
 	server_spawn_laser(position)
+
+
+func fire_laser():
+	laser_shoot.emit(laser_shoot_timeout_seconds)
+	server_spawn_laser.rpc(global_position)
+	var timer = Timer.new()
+	timer.one_shot = true
+	add_child(timer)
+	laser_shoot_blocked = true
+	timer.timeout.connect(_unblock_laser_shoot)
+	timer.timeout.connect(timer.queue_free)
+	timer.start(laser_shoot_timeout_seconds)
+
+
+func _unblock_laser_shoot():
+	laser_shoot_blocked = false

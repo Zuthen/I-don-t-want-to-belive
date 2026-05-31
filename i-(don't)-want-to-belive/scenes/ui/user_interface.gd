@@ -2,8 +2,10 @@ extends Control
 
 class_name UserInterface
 
-@onready var q_label = $QLabel
-@onready var win_label = $WinLabel
+@onready var q = $SkillsPanel/Q
+@onready var win_info = $WinInfo
+@onready var win_label = $WinInfo/WinLabel
+@onready var faction_label = $WinInfo/FactionLabel
 @onready var belive_points_counter_background = $Belive_Points_Counter_Background
 @onready var belive_points_counter = $Belive_Points_Counter
 
@@ -20,7 +22,7 @@ takie latają!"
 
 func _ready():
 	ufos_sprites = belive_points_counter.get_children()
-	win_label.visible = false
+	win_info.visible = false
 
 	var player: Player = null
 	for i in range(20):
@@ -37,6 +39,8 @@ func _ready():
 		var role = MultiplayerFeatures.get_role()
 		if role == MultiplayerFeatures.Role.SKEPTIC:
 			player.belive_points_changed.connect(_on_belive_points_changed)
+		elif role == MultiplayerFeatures.Role.UFO:
+			player.laser_shoot.connect(_on_q_skill_fired)
 		_setup_ui(role)
 	else:
 		printerr("[UI] Błąd sieciowy: Klient o ID ", multiplayer.get_unique_id(), " nie doczekał się swojej postaci!")
@@ -52,12 +56,14 @@ func _setup_ui(role: MultiplayerFeatures.Role):
 		ufo.visible = false
 	match role:
 		MultiplayerFeatures.Role.UFO:
-			q_label.text = "Wystrzel 
-			laser"
+			q.set_icon_text(
+				"Wystrzel 
+			laser",
+			)
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		MultiplayerFeatures.Role.SKEPTIC:
-			q_label.text = "Zawołaj"
+			q.set_icon_text("Zawołaj")
 
 
 func _on_ufo_wins():
@@ -68,16 +74,22 @@ func _on_skeptic_win():
 	show_skeptics_victory_screen.rpc_id(0)
 
 
+func _on_q_skill_fired(time):
+	q.start_cooldown(time)
+
+
 @rpc("any_peer", "call_local", "reliable")
 func show_ufo_victory_screen():
 	win_label.text = UFO_WINS
-	win_label.visible = true
+	faction_label.text = "Wygrywają ufoki"
+	win_info.visible = true
 
 
 @rpc("any_peer", "call_local", "reliable")
 func show_skeptics_victory_screen():
 	win_label.text = SKEPTICS_WIN
-	win_label.visible = true
+	faction_label.text = "Wygrywają sceptycy"
+	win_info.visible = true
 
 
 func _on_belive_points_changed(amount):
