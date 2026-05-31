@@ -70,6 +70,12 @@ laser_point={
 ]
 }
 
+[layer_names]
+
+2d_render/layer_2="voices"
+2d_render/layer_3="skeptic"
+2d_render/layer_4="ufo_powers"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

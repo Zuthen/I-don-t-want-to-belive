@@ -208,6 +208,37 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 	assert_eq(visible_icons.size(), 0)
 
 
+func test_laser_seen_creates_icon_at_dialog_placement():
+	# Arrange
+	mock_skeptic = skeptic_scene.instantiate()
+	get_tree().root.add_child(mock_skeptic)
+	var mock_marker = Marker2D.new()
+	mock_marker.global_position = Vector2(40, 60)
+
+	if mock_skeptic.dialog_placements == null:
+		mock_skeptic.dialog_placements = Node2D.new()
+		mock_skeptic.add_child(mock_skeptic.dialog_placements)
+
+	mock_skeptic.dialog_placements.add_child(mock_marker)
+
+	if mock_skeptic.dialog_timer == null:
+		mock_skeptic.dialog_timer = Timer.new()
+		mock_skeptic.add_child(mock_skeptic.dialog_timer)
+
+	mock_skeptic.global_position = Vector2(100, 200)
+
+	# Act
+	mock_skeptic._on_laser_seen()
+
+	# Assert
+	var icons = find_all_icons(get_tree().root)
+	assert_eq(icons.size(), 1)
+
+	var spawned_icon = icons[0] as Node2D
+
+	assert_eq(spawned_icon.scale, Vector2(0.6, 0.6))
+
+
 func find_all_lasers(node: Node) -> Array:
 	var result = []
 	if not is_instance_valid(node):

@@ -3,11 +3,23 @@
 [ext_resource type="Texture2D" uid="uid://d0oookm6lwggb" path="res://assets/ui/button_rectangle_flat.png" id="1_284y0"]
 [ext_resource type="Script" uid="uid://bdititb3yf3rj" path="res://scenes/ui/user_interface.gd" id="1_rcgkl"]
 [ext_resource type="Texture2D" uid="uid://dbjdyoew6bdm1" path="res://assets/ui/keyboard_q.png" id="2_a44fs"]
-[ext_resource type="FontFile" uid="uid://cf0tsyd35wvs8" path="res://assets/fonts/kenney_input_keyboard_&_mouse.ttf" id="3_rcgkl"]
+[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="5_vo76m"]
+[ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="6_xg44s"]
+[ext_resource type="Texture2D" uid="uid://dqsvg26olobps" path="res://assets/characters/ufos/shipYellow.png" id="7_fhs8v"]
+[ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="8_fhs8v"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vnpvo"]
-font = ExtResource("3_rcgkl")
+font = ExtResource("5_vo76m")
+font_size = 17
 font_color = Color(0.53333336, 0.5372549, 0.7882353, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
+font = ExtResource("5_vo76m")
+font_size = 80
+font_color = Color(0.8932403, 0.34896463, 0.46216196, 1)
+outline_size = 2
+outline_color = Color(0.2, 0.2, 0.2, 1)
+shadow_size = 7
 
 [node name="UserInterface" type="Control" unique_id=96406378]
 layout_mode = 3
@@ -52,3 +64,79 @@ grow_vertical = 2
 text = "dupa"
 label_settings = SubResource("LabelSettings_vnpvo")
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WinLabel" type="Label" parent="." unique_id=1507794450]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -422.0
+offset_top = -117.0
+offset_right = 185.5
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "
+Wygrywają!"
+label_settings = SubResource("LabelSettings_vo76m")
+horizontal_alignment = 1
+
+[node name="Belive_Points_Counter_Background" type="TextureRect" parent="." unique_id=94978155]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 200.0
+offset_bottom = 69.0
+texture = ExtResource("6_xg44s")
+
+[node name="Belive_Points_Counter" type="GridContainer" parent="." unique_id=1614719022]
+layout_direction = 2
+layout_mode = 0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 195.0
+offset_bottom = 60.0
+columns = 5
+
+[node name="TextureRect" type="TextureRect" parent="Belive_Points_Counter" unique_id=572921364]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("7_fhs8v")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect2" type="TextureRect" parent="Belive_Points_Counter" unique_id=1936506902]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("7_fhs8v")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect3" type="TextureRect" parent="Belive_Points_Counter" unique_id=1526565568]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("7_fhs8v")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect4" type="TextureRect" parent="Belive_Points_Counter" unique_id=1224194718]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("8_fhs8v")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect5" type="TextureRect" parent="Belive_Points_Counter" unique_id=224882449]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("8_fhs8v")
+expand_mode = 1
+stretch_mode = 5

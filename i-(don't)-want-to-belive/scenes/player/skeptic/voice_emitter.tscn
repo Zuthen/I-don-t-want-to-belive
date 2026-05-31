@@ -6,6 +6,8 @@
 radius = 100.0
 
 [node name="VoiceEmitter" type="Area2D" unique_id=1355446826]
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_g6si4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2037927948]
