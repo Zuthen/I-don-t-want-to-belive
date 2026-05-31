@@ -2,16 +2,11 @@
 
 [ext_resource type="Texture2D" uid="uid://d0oookm6lwggb" path="res://assets/ui/button_rectangle_flat.png" id="1_284y0"]
 [ext_resource type="Script" uid="uid://bdititb3yf3rj" path="res://scenes/ui/user_interface.gd" id="1_rcgkl"]
-[ext_resource type="Texture2D" uid="uid://dbjdyoew6bdm1" path="res://assets/ui/keyboard_q.png" id="2_a44fs"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="5_vo76m"]
 [ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="6_xg44s"]
 [ext_resource type="Texture2D" uid="uid://dqsvg26olobps" path="res://assets/characters/ufos/shipYellow.png" id="7_fhs8v"]
+[ext_resource type="PackedScene" uid="uid://dcefoyhqiavv6" path="res://scenes/ui/skill.tscn" id="7_xg44s"]
 [ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="8_fhs8v"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_vnpvo"]
-font = ExtResource("5_vo76m")
-font_size = 17
-font_color = Color(0.53333336, 0.5372549, 0.7882353, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
 font = ExtResource("5_vo76m")
@@ -45,33 +40,6 @@ offset_right = 823.0
 offset_bottom = 701.0
 texture = ExtResource("1_284y0")
 
-[node name="QButton" type="TextureRect" parent="." unique_id=653790531]
-modulate = Color(0.53333336, 0.5372549, 0.7882353, 1)
-layout_mode = 0
-offset_left = 726.0
-offset_top = 32.0
-offset_right = 790.0
-offset_bottom = 96.0
-texture = ExtResource("2_a44fs")
-
-[node name="QLabel" type="Label" parent="." unique_id=1612655071]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 233.0
-offset_top = -254.0
-offset_right = 344.0
-offset_bottom = -231.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "dupa"
-label_settings = SubResource("LabelSettings_vnpvo")
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="WinInfo" type="VBoxContainer" parent="." unique_id=1994821199]
 layout_mode = 1
 anchors_preset = 8
@@ -80,9 +48,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -349.0
-offset_top = -194.0
+offset_top = -196.0
 offset_right = 117.0
-offset_bottom = 50.0
+offset_bottom = 48.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -158,3 +126,14 @@ size_flags_vertical = 3
 texture = ExtResource("8_fhs8v")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="SkillsPanel" type="VBoxContainer" parent="." unique_id=849279169]
+layout_mode = 0
+offset_left = 726.0
+offset_top = 21.0
+offset_right = 790.0
+offset_bottom = 110.0
+alignment = 1
+
+[node name="Q" parent="SkillsPanel" unique_id=688888508 instance=ExtResource("7_xg44s")]
+layout_mode = 2

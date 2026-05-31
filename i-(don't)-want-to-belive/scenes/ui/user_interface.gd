@@ -2,7 +2,7 @@ extends Control
 
 class_name UserInterface
 
-@onready var q_label = $QLabel
+@onready var q = $SkillsPanel/Q
 @onready var win_info = $WinInfo
 @onready var win_label = $WinInfo/WinLabel
 @onready var faction_label = $WinInfo/FactionLabel
@@ -39,6 +39,8 @@ func _ready():
 		var role = MultiplayerFeatures.get_role()
 		if role == MultiplayerFeatures.Role.SKEPTIC:
 			player.belive_points_changed.connect(_on_belive_points_changed)
+		elif role == MultiplayerFeatures.Role.UFO:
+			player.laser_shoot.connect(_on_q_skill_fired)
 		_setup_ui(role)
 	else:
 		printerr("[UI] Błąd sieciowy: Klient o ID ", multiplayer.get_unique_id(), " nie doczekał się swojej postaci!")
@@ -54,12 +56,14 @@ func _setup_ui(role: MultiplayerFeatures.Role):
 		ufo.visible = false
 	match role:
 		MultiplayerFeatures.Role.UFO:
-			q_label.text = "Wystrzel 
-			laser"
+			q.set_icon_text(
+				"Wystrzel 
+			laser",
+			)
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		MultiplayerFeatures.Role.SKEPTIC:
-			q_label.text = "Zawołaj"
+			q.set_icon_text("Zawołaj")
 
 
 func _on_ufo_wins():
@@ -68,6 +72,10 @@ func _on_ufo_wins():
 
 func _on_skeptic_win():
 	show_skeptics_victory_screen.rpc_id(0)
+
+
+func _on_q_skill_fired(time):
+	q.start_cooldown(time)
 
 
 @rpc("any_peer", "call_local", "reliable")
