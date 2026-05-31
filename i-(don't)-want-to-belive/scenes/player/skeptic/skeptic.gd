@@ -6,9 +6,9 @@ extends Player
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 @onready var dialog_timer = $DialogTimer
 @onready var dialog_placements = $DialogPlacements
+@onready var collision_area = $CollisionArea
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
-
 var is_male
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var voice_emitter_active := false
@@ -31,6 +31,7 @@ var input_multiplayer_authority: int:
 func _ready():
 	belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
+	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
 
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
@@ -128,6 +129,12 @@ func _on_laser_seen():
 func _on_dialog_timer_timeout(node: Node2D):
 	if node != null:
 		node.queue_free()
+
+
+func _on_skeptic_find_other_skeptic(area: Area2D):
+	var object = area.get_parent()
+	if object is Skeptic:
+		skeptics_win.emit()
 
 
 func animate(direction: Vector2):

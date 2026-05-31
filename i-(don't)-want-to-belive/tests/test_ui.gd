@@ -4,8 +4,10 @@ var game: Node
 var skeptic_scene = preload("uid://b7wo2a5407873")
 var ufo_scene = preload("uid://hc74yy2qdg3f")
 var ui_scene = preload("uid://cjks5cw6xyieq")
+
 var mock_skeptic: CharacterBody2D
 var mock_ufo: CharacterBody2D
+
 var ui_instance: UserInterface
 var mock_counter: Control
 var mock_sprite1: TextureRect
@@ -13,48 +15,35 @@ var mock_sprite2: TextureRect
 
 
 func before_each():
-	ui_instance = ui_scene.instantiate() as UserInterface
-	mock_sprite1 = TextureRect.new()
-	mock_sprite2 = TextureRect.new()
-	mock_sprite1.visible = false
-	mock_sprite2.visible = false
-	ui_instance.ufos_sprites = [mock_sprite1, mock_sprite2]
-	ui_instance.hit_points = 0
-	get_tree().root.add_child(ui_instance)
-	ui_instance.win_label = Label.new()
-	ui_instance.q_label = Label.new()
-	ui_instance.belive_points_counter_background = TextureRect.new()
-
-	mock_counter = Control.new()
-	mock_sprite1 = TextureRect.new()
-	mock_sprite2 = TextureRect.new()
-
-	mock_sprite1.visible = false
-	mock_sprite2.visible = false
-
-	mock_counter.add_child(mock_sprite1)
-	mock_counter.add_child(mock_sprite2)
-	ui_instance.belive_points_counter = mock_counter
-
-	ui_instance.ufos_sprites = [mock_sprite1, mock_sprite2]
-	ui_instance.hit_points = 0
-
-	get_tree().root.add_child(ui_instance)
-
 	for node in get_tree().get_nodes_in_group("local_player"):
-		node.remove_from_group("local_player")
+		if is_instance_valid(node):
+			node.remove_from_group("local_player")
 	for node in get_tree().get_nodes_in_group("skeptics"):
-		node.remove_from_group("skeptics")
+		if is_instance_valid(node):
+			node.remove_from_group("skeptics")
 
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.belive_points = mock_skeptic.max_belive_points - 1
-
 	mock_skeptic.add_to_group("local_player")
 	mock_skeptic.add_to_group("skeptics")
 	get_tree().root.add_child(mock_skeptic)
 
-	game = preload("uid://c4twc836ak4bd").instantiate()
-	get_tree().root.add_child(game)
+	ui_instance = ui_scene.instantiate() as UserInterface
+	get_tree().root.add_child(ui_instance)
+
+	mock_counter = ui_instance.belive_points_counter
+	mock_sprite1 = TextureRect.new()
+	mock_sprite2 = TextureRect.new()
+	mock_sprite1.visible = false
+	mock_sprite2.visible = false
+
+	for child in mock_counter.get_children():
+		child.queue_free()
+	mock_counter.add_child(mock_sprite1)
+	mock_counter.add_child(mock_sprite2)
+
+	ui_instance.ufos_sprites = [mock_sprite1, mock_sprite2]
+	ui_instance.hit_points = 0
 
 
 func after_each():
@@ -72,31 +61,42 @@ func after_each():
 func test_show_ufo_wins_when_skeptic_belives():
 	# Act
 	mock_skeptic._on_belive_points_changed(1)
-
-	var ui_node = find_ui_script(game)
-	if ui_node != null and ui_node.has_method("show_victory_screen"):
-		ui_node.show_victory_screen()
+	ui_instance.show_ufo_victory_screen()
 
 	await wait_frames(2)
 
-	# Assert
-	var ui_labels = find_labels(get_tree().root)
-	var labels_text_list = get_labels_text(ui_labels)
+	assert_true(ui_instance.win_label.visible)
+	assert_eq(ui_instance.win_label.text, UserInterface.UFO_WINS)
 
-	assert_true(labels_text_list.has(UserInterface.UFO_WINS), "UI powinno wyświetlić napis o wygranej UFO.")
+
+func test_show_skeptic_wins_when_skeptics_find_other():
+	# Arrange
+	var mock_other_area = Area2D.new()
+	var mock_other_skeptic = skeptic_scene.instantiate()
+	mock_other_skeptic.add_child(mock_other_area)
+	get_tree().root.add_child(mock_other_skeptic)
+
+	# Act
+	mock_skeptic._on_skeptic_find_other_skeptic(mock_other_area)
+	ui_instance.show_skeptics_victory_screen()
+
+	await wait_frames(2)
+
+	assert_true(ui_instance.win_label.visible)
+	assert_eq(ui_instance.win_label.text, UserInterface.SKEPTICS_WIN)
+
+	mock_other_skeptic.queue_free()
 
 
 func test_should_activate_ufo_sprites_on_belive_points_changed():
 	ui_instance._on_belive_points_changed(1)
 
-	# Assert
 	assert_true(mock_sprite1.visible)
 	assert_false(mock_sprite2.visible)
 	assert_eq(ui_instance.hit_points, 1)
 
 	ui_instance._on_belive_points_changed(1)
 
-	# Assert
 	assert_true(mock_sprite2.visible)
 	assert_eq(ui_instance.hit_points, 2)
 
@@ -117,15 +117,3 @@ func get_labels_text(labels: Array[Label]) -> Array[String]:
 	for label in labels:
 		texts.append(label.text)
 	return texts
-
-
-func find_ui_script(node: Node) -> Node:
-	if not is_instance_valid(node):
-		return null
-	if node.has_method("show_victory_screen") and node.has_node("WinLabel"):
-		return node
-	for child in node.get_children():
-		var found = find_ui_script(child)
-		if found != null:
-			return found
-	return null

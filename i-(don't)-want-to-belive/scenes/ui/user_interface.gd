@@ -14,6 +14,9 @@ const UFO_WINS := "Prawda
 	nas jeszcze 
 	zadziwi..."
 
+const SKEPTICS_WIN := "Od dawna 
+takie latają!"
+
 
 func _ready():
 	ufos_sprites = belive_points_counter.get_children()
@@ -29,6 +32,7 @@ func _ready():
 	if player != null:
 		player.player_role_assigned.connect(_on_player_role_assigned)
 		player.ufo_wins.connect(_on_ufo_wins)
+		player.skeptics_win.connect(_on_skeptic_win)
 
 		var role = MultiplayerFeatures.get_role()
 		if role == MultiplayerFeatures.Role.SKEPTIC:
@@ -57,12 +61,22 @@ func _setup_ui(role: MultiplayerFeatures.Role):
 
 
 func _on_ufo_wins():
-	show_victory_screen.rpc_id(0)
+	show_ufo_victory_screen.rpc_id(0)
+
+
+func _on_skeptic_win():
+	show_skeptics_victory_screen.rpc_id(0)
 
 
 @rpc("any_peer", "call_local", "reliable")
-func show_victory_screen():
+func show_ufo_victory_screen():
 	win_label.text = UFO_WINS
+	win_label.visible = true
+
+
+@rpc("any_peer", "call_local", "reliable")
+func show_skeptics_victory_screen():
+	win_label.text = SKEPTICS_WIN
 	win_label.visible = true
 
 
