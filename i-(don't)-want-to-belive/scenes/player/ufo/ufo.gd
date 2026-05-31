@@ -7,12 +7,14 @@ extends Player
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
+
 var laser_shoot_blocked := false
+var movement_blocked: = false
+
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
-
 signal laser_shoot(time: float)
-
+var ufo_laser_shoot_animation_time: float
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
@@ -55,11 +57,11 @@ func _physics_process(_delta):
 	var sync_direction: Vector2 = player_input_synchronizer.movement_vector
 
 	if is_multiplayer_authority():
-		velocity = speed * sync_direction
-		move_and_slide()
-		if Input.is_action_just_pressed("laser_point"):
-			if !laser_shoot_blocked:
-				fire_laser()
+		if !movement_blocked:
+			velocity = speed * sync_direction
+			move_and_slide()
+		if Input.is_action_just_pressed("laser_point") && !laser_shoot_blocked:
+			fire_laser()
 	else:
 		pass
 
@@ -68,8 +70,10 @@ func _physics_process(_delta):
 func server_spawn_laser(position: Vector2):
 	if multiplayer.is_server():
 		var laser = laser_scene.instantiate()
-		laser.global_position = position
 		get_parent().add_child(laser)
+		laser.global_position = position
+	if ufo_laser_shoot_animation_time == 0.0:
+		_get_animation_time()
 
 
 func spawn_laser(position: Vector2):
@@ -79,14 +83,25 @@ func spawn_laser(position: Vector2):
 func fire_laser():
 	laser_shoot.emit(laser_shoot_timeout_seconds)
 	server_spawn_laser.rpc(global_position)
+	movement_blocked = true
+	laser_shoot_blocked = true
+
+	_start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = false)
+	_start_cooldown_timer(ufo_laser_shoot_animation_time, func(): movement_blocked = false)
+
+
+func _get_animation_time():
+	var temp_laser = laser_scene.instantiate()
+	get_tree().root.add_child(temp_laser)
+	var time = temp_laser.get_animation_time()
+	temp_laser.queue_free()
+	return time
+
+
+func _start_cooldown_timer(time: float, callback: Callable):
 	var timer = Timer.new()
 	timer.one_shot = true
 	add_child(timer)
-	laser_shoot_blocked = true
-	timer.timeout.connect(_unblock_laser_shoot)
+	timer.timeout.connect(callback)
 	timer.timeout.connect(timer.queue_free)
-	timer.start(laser_shoot_timeout_seconds)
-
-
-func _unblock_laser_shoot():
-	laser_shoot_blocked = false
+	timer.start(time)
