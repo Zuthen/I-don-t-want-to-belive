@@ -74,8 +74,6 @@ func peer_ready():
 	if not multiplayer.is_server():
 		return
 
-	var sender_id = multiplayer.get_remote_sender_id()
-
 
 func create_map(map_seed: int = 0):
 	paths.clear()
@@ -86,6 +84,7 @@ func create_map(map_seed: int = 0):
 	var areas = MapCreator.find_areas(generated_paths)
 	var obstacle_regions = MapCreator.find_regions(areas.obstacles)
 	var obstacle_rects: Array[Rect2i] = []
+	# TODO: use for creating map borders
 	var map_borders_obstacle_rects := MapCreator.create_left_borders(Rect2i(Vector2i(-1, -10), Vector2i(8, 19)))
 	for region in obstacle_regions:
 		var rects = MapCreator.regions_to_rects(region)
