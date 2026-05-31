@@ -17,7 +17,7 @@ font_color = Color(0.53333336, 0.5372549, 0.7882353, 1)
 font = ExtResource("5_vo76m")
 font_size = 80
 font_color = Color(0.8932403, 0.34896463, 0.46216196, 1)
-outline_size = 2
+outline_size = 13
 outline_color = Color(0.2, 0.2, 0.2, 1)
 shadow_size = 7
 
