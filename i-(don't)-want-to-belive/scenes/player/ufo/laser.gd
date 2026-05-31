@@ -31,3 +31,7 @@ func _on_skeptic_see_laser(other):
 	if player is Skeptic:
 		player.belive_points_changed.emit(laser_hit_points)
 		player.laser_seen.emit()
+
+
+func get_animation_time() -> float:
+	return animation_player.get_animation("laser pointing").length
