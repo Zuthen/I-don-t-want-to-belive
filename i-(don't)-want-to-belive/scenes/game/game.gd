@@ -4,8 +4,6 @@ extends Node2D
 @onready var buildings_details = $BuildingsDetails
 @onready var multiplayer_spawner = $MultiplayerSpawner
 
-var min_position := Vector2i(0, -10)
-var max_position := Vector2i(19, 9)
 var city_atlas_pavement_coords: = Vector2i(9, 1)
 var city_atlas_obstacles_coords = Vector2i(22, 8)
 var paths: Array[Vector2i] = []
@@ -41,8 +39,8 @@ func _on_peer_connected(peer_id: int, map_seed: int):
 
 	if next_spawn_index > 2:
 		player_type = "ufo"
-		var rand_x = randi_range(min_position.x, max_position.x)
-		var rand_y = randi_range(min_position.y, max_position.y)
+		var rand_x = randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
+		var rand_y = randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
 		spawn_position = Vector2i(rand_x, rand_y)
 	else:
 		var skeptic_index = next_spawn_index - 1
@@ -84,8 +82,6 @@ func create_map(map_seed: int = 0):
 	var areas = MapCreator.find_areas(generated_paths)
 	var obstacle_regions = MapCreator.find_regions(areas.obstacles)
 	var obstacle_rects: Array[Rect2i] = []
-	# TODO: use for creating map borders
-	var map_borders_obstacle_rects := MapCreator.create_left_borders(Rect2i(Vector2i(-1, -10), Vector2i(8, 19)))
 	for region in obstacle_regions:
 		var rects = MapCreator.regions_to_rects(region)
 		obstacle_rects.append_array(MapCreator.merge_small_rectangles(rects))
@@ -102,10 +98,12 @@ func genereate_map(map_seed: int = 0):
 	var random = RandomNumberGenerator.new()
 	random.seed = map_seed
 
-	var start: Vector2i = Vector2i(random.randi_range(0, 19), random.randi_range(-10, 9))
+	var rand_x = random.randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
+	var rand_y = random.randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
+	var start: Vector2i = Vector2i(rand_x, rand_y)
 	var next: Array[Vector2i] = find_next_path(start, Vector2i.ZERO, random)
 
-	for i in range(100):
+	for i in range(MapSettings.paths_tiles):
 		var way = find_next_path(next[0], next[1], random)
 		next = way
 	return paths
@@ -144,9 +142,9 @@ func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumber
 			continue
 		if paths.has(next):
 			continue
-		if next.x < min_position.x or next.x > max_position.x:
+		if next.x < MapSettings.min_position.x or next.x > MapSettings.max_position.x:
 			continue
-		if next.y < min_position.y or next.y > max_position.y:
+		if next.y < MapSettings.min_position.y or next.y > MapSettings.max_position.y:
 			continue
 
 		valid_dirs[key] = dest_vec
@@ -168,19 +166,20 @@ func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumber
 
 
 func find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberGenerator) -> Array[Vector2i]:
-	for i in range(100):
+	if paths_array.is_empty():
+		return []
+	var dynamic_min_distance: float = sqrt(MapSettings.paths_tiles) * 0.85
+	for i in range(MapSettings.paths_tiles / 2):
 		var random_index_a = random.randi() % paths_array.size()
-		var a = paths_array[random_index_a]
+		var random_index_b = random.randi() % paths_array.size()
 
-		var candidates = paths_array.filter(
-			func(p):
-				return p.distance_to(a) > 9
-		)
-
-		if candidates.is_empty():
+		if random_index_a == random_index_b:
 			continue
 
-		var random_index_b = random.randi() % candidates.size()
-		var b = candidates[random_index_b]
-		return [a, b]
-	return []
+		var a = paths_array[random_index_a]
+		var b = paths_array[random_index_b]
+
+		if a.distance_to(b) >= dynamic_min_distance:
+			return [a, b]
+
+	return [paths_array[0], paths_array[paths_array.size() - 1]]

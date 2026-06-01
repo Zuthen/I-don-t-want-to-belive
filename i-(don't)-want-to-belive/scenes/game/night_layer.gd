@@ -1,10 +1,8 @@
 extends TileMapLayer
 
 @export var buildings_layer: TileMapLayer
-@export var vision_radius: int = 12
+@export var vision_radius: int = 1
 
-var min_position := Vector2i(0, -10)
-var max_position := Vector2i(19, 9)
 var black_tile_coords: Vector2i = Vector2i(9, 1)
 
 const ATLAS_SOURCE_ID: int = 2
@@ -21,13 +19,19 @@ func _ready():
 		push_error("Set buildings layer")
 		return
 
+	await get_tree().process_frame
 	initialize_fog()
 
 
 func initialize_fog():
-	for x in range(min_position.x - 15, max_position.x + 15):
-		for y in range(min_position.y - 15, max_position.y + 15):
-			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
+	var cells_pck: Array[Vector2i] = []
+
+	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
+		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
+			cells_pck.append(Vector2i(x, y))
+
+	for cell in cells_pck:
+		set_cell(cell, ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
 
 func _process(_delta):
@@ -52,21 +56,32 @@ func _process(_delta):
 
 
 func setup_ufo_view():
-	for x in range(min_position.x - 15, max_position.x + 15):
-		for y in range(min_position.y - 15, max_position.y + 15):
-			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
+	var cells_pck: Array[Vector2i] = []
+
+	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
+		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
+			cells_pck.append(Vector2i(x, y))
+
+	for cell in cells_pck:
+		set_cell(cell, ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
 
 
 func reset_old_fog(center_tile: Vector2i):
-	for x in range(-1, 2):
-		for y in range(-1, 2):
-			set_cell(center_tile + Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
+	for x in range(-vision_radius, vision_radius + 1):
+		for y in range(-vision_radius, vision_radius + 1):
+			var target_tile = center_tile + Vector2i(x, y)
+
+			if vision_radius == 1 or center_tile.distance_to(target_tile) <= vision_radius:
+				set_cell(target_tile, ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
 
 func apply_new_fog(center_tile: Vector2i):
-	for x in range(-1, 2):
-		for y in range(-1, 2):
-			set_cell(center_tile + Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_NEAR_LIGHT)
+	for x in range(-vision_radius, vision_radius + 1):
+		for y in range(-vision_radius, vision_radius + 1):
+			var target_tile = center_tile + Vector2i(x, y)
+
+			if vision_radius == 1 or center_tile.distance_to(target_tile) <= vision_radius:
+				set_cell(target_tile, ATLAS_SOURCE_ID, black_tile_coords, TILE_NEAR_LIGHT)
 
 
 func get_local_player() -> Node2D:
