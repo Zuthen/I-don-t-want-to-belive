@@ -357,7 +357,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4b4"]
-size = Vector2(8, 12)
+size = Vector2(7.3333335, 11.444445)
 
 [node name="Skeptic" type="CharacterBody2D" unique_id=402508521]
 scale = Vector2(0.45, 0.45)
@@ -398,7 +398,7 @@ scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_3j4b4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1318819708]
-position = Vector2(0, 2)
+position = Vector2(0.6666665, 2.5555553)
 scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_3j4b4")
 

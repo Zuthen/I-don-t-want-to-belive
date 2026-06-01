@@ -1,37 +1,72 @@
-extends ColorRect
+extends TileMapLayer
 
-@export var sceptic_inner_radius: float = 0.02
-@export var sceptic_outer_radius: float = 0.1
-@export var sceptic_alpha: float = 0.96
-@export var ufo_alpha: float = 0.9
+@export var buildings_layer: TileMapLayer
+@export var vision_radius: int = 12
+
+var min_position := Vector2i(0, -10)
+var max_position := Vector2i(19, 9)
+var black_tile_coords: Vector2i = Vector2i(9, 1)
+
+const ATLAS_SOURCE_ID: int = 2
+
+const TILE_DEEP_NIGHT = 3
+const TILE_HALF_SHADOW = 7
+const TILE_NEAR_LIGHT = 8
+
+var last_player_tile := Vector2i(-999, -999)
+
+
+func _ready():
+	if not buildings_layer:
+		push_error("Set buildings layer")
+		return
+
+	initialize_fog()
+
+
+func initialize_fog():
+	for x in range(min_position.x - 15, max_position.x + 15):
+		for y in range(min_position.y - 15, max_position.y + 15):
+			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
 
 func _process(_delta):
 	var local_player = get_local_player()
 	if not local_player:
-		visible = false
 		return
 
-	visible = true
+	if local_player.is_in_group("ufos"):
+		if last_player_tile == Vector2i(-999, -999):
+			last_player_tile = Vector2i(0, 0)
+			setup_ufo_view()
+		return
 
-	if local_player.is_in_group("skeptics"):
-		self.color.a = sceptic_alpha
-		material.set_shader_parameter("inner_radius", sceptic_inner_radius)
-		material.set_shader_parameter("outer_radius", sceptic_outer_radius)
-		material.set_shader_parameter("min_alpha", 0.60)
+	var current_tile = buildings_layer.local_to_map(local_player.global_position)
 
-		var canvas_pos = local_player.get_global_transform_with_canvas().origin
-		var screen_size = get_viewport_rect().size
-		var player_screen_uv = canvas_pos / screen_size
-		material.set_shader_parameter("player_screen_pos", player_screen_uv)
+	if current_tile != last_player_tile:
+		if last_player_tile != Vector2i(-999, -999):
+			reset_old_fog(last_player_tile)
 
-	elif local_player.is_in_group("ufos"):
-		self.color.a = ufo_alpha
+		last_player_tile = current_tile
+		apply_new_fog(current_tile)
 
-		material.set_shader_parameter("min_alpha", 1.0)
-		material.set_shader_parameter("inner_radius", 0.0)
-		material.set_shader_parameter("outer_radius", 0.0)
-		material.set_shader_parameter("player_screen_pos", Vector2(-1.0, -1.0))
+
+func setup_ufo_view():
+	for x in range(min_position.x - 15, max_position.x + 15):
+		for y in range(min_position.y - 15, max_position.y + 15):
+			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
+
+
+func reset_old_fog(center_tile: Vector2i):
+	for x in range(-1, 2):
+		for y in range(-1, 2):
+			set_cell(center_tile + Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
+
+
+func apply_new_fog(center_tile: Vector2i):
+	for x in range(-1, 2):
+		for y in range(-1, 2):
+			set_cell(center_tile + Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_NEAR_LIGHT)
 
 
 func get_local_player() -> Node2D:
