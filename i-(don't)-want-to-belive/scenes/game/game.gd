@@ -117,41 +117,32 @@ func occupy_rect(rect: Rect2i, occupied: Dictionary):
 
 
 func generate_map_borders():
-	var map_area = MapSettings.get_map_area()
-	var tile_size = MapSettings.tile_size
+	var edges = MapSettings.get_map_limits()
 
-	var width_tiles = map_area.start.y - map_area.start.x
-	var height_tiles = map_area.end.y - map_area.end.x
+	var map_width_px = edges.right - edges.left
+	var map_height_px = edges.bottom - edges.top
 
-	var map_width_px = width_tiles * tile_size
-	var map_height_px = height_tiles * tile_size
-
-	var left_edge_px = map_area.start.x * tile_size
-	var right_edge_px = map_area.start.y * tile_size
-	var top_edge_px = map_area.end.x * tile_size
-	var bottom_edge_px = map_area.end.y * tile_size
-
-	var left_right_size = Vector2(tile_size, map_height_px)
-	var top_bottom_size = Vector2(map_width_px, tile_size)
+	var left_right_size = Vector2(MapSettings.tile_size, map_height_px)
+	var top_bottom_size = Vector2(map_width_px, MapSettings.tile_size)
 
 	var left_position = Vector2(
-		left_edge_px - (tile_size / 2.0),
-		top_edge_px + (map_height_px / 2.0),
+		edges.left - (MapSettings.tile_size / 2.0),
+		edges.top + (map_height_px / 2.0),
 	)
 
 	var right_position = Vector2(
-		right_edge_px + (tile_size / 2.0),
-		top_edge_px + (map_height_px / 2.0),
+		edges.right + (MapSettings.tile_size / 2.0),
+		edges.top + (map_height_px / 2.0),
 	)
 
 	var top_position = Vector2(
-		left_edge_px + (map_width_px / 2.0),
-		top_edge_px - (tile_size / 2.0),
+		edges.left + (map_width_px / 2.0),
+		edges.top - (MapSettings.tile_size / 2.0),
 	)
 
 	var bottom_position = Vector2(
-		left_edge_px + (map_width_px / 2.0),
-		bottom_edge_px + (tile_size / 2.0),
+		edges.left + (map_width_px / 2.0),
+		edges.bottom + (MapSettings.tile_size / 2.0),
 	)
 
 	generate_collider(left_right_size, left_position)
