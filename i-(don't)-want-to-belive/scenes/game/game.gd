@@ -91,6 +91,7 @@ func create_map(map_seed: int = 0):
 
 	var random = RandomNumberGenerator.new()
 	random.seed = map_seed
+	generate_map_borders()
 	return find_skeptics_positions(areas.paths, random)
 
 
@@ -113,6 +114,66 @@ func occupy_rect(rect: Rect2i, occupied: Dictionary):
 	for y in range(rect.position.y, rect.position.y + rect.size.y):
 		for x in range(rect.position.x, rect.position.x + rect.size.x):
 			occupied[Vector2i(x, y)] = true
+
+
+func generate_map_borders():
+	var map_area = MapSettings.get_map_area()
+	var tile_size = MapSettings.tile_size
+
+	var width_tiles = map_area.start.y - map_area.start.x
+	var height_tiles = map_area.end.y - map_area.end.x
+
+	var map_width_px = width_tiles * tile_size
+	var map_height_px = height_tiles * tile_size
+
+	var left_edge_px = map_area.start.x * tile_size
+	var right_edge_px = map_area.start.y * tile_size
+	var top_edge_px = map_area.end.x * tile_size
+	var bottom_edge_px = map_area.end.y * tile_size
+
+	var left_right_size = Vector2(tile_size, map_height_px)
+	var top_bottom_size = Vector2(map_width_px, tile_size)
+
+	var left_position = Vector2(
+		left_edge_px - (tile_size / 2.0),
+		top_edge_px + (map_height_px / 2.0),
+	)
+
+	var right_position = Vector2(
+		right_edge_px + (tile_size / 2.0),
+		top_edge_px + (map_height_px / 2.0),
+	)
+
+	var top_position = Vector2(
+		left_edge_px + (map_width_px / 2.0),
+		top_edge_px - (tile_size / 2.0),
+	)
+
+	var bottom_position = Vector2(
+		left_edge_px + (map_width_px / 2.0),
+		bottom_edge_px + (tile_size / 2.0),
+	)
+
+	generate_collider(left_right_size, left_position)
+	generate_collider(left_right_size, right_position)
+	generate_collider(top_bottom_size, top_position)
+	generate_collider(top_bottom_size, bottom_position)
+
+
+func generate_collider(size: Vector2, position: Vector2):
+	var collider_shape = RectangleShape2D.new()
+	collider_shape.size = size
+
+	var border = StaticBody2D.new()
+	border.position = position
+	border.set_collision_layer_value(5, true)
+	border.set_collision_layer_value(6, true)
+
+	var border_collider = CollisionShape2D.new()
+	border_collider.shape = collider_shape
+
+	border.add_child(border_collider)
+	tile_map_layer.add_child(border)
 
 
 func directions(step: int) -> Dictionary:
