@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bt6so2huvttp0" path="res://scenes/game/game.gd" id="1_kelw5"]
 [ext_resource type="Texture2D" uid="uid://dm3js0r4mwqdm" path="res://assets/tilemap_packed.png" id="2_7h61r"]
 [ext_resource type="PackedScene" uid="uid://cjks5cw6xyieq" path="res://scenes/ui/user_interface.tscn" id="3_0sr1o"]
-[ext_resource type="PackedScene" uid="uid://3tmj30gufla" path="res://scenes/game/night_layer.tscn" id="3_kelw5"]
+[ext_resource type="Script" uid="uid://cnyep4nx72ket" path="res://scenes/game/night_layer.gd" id="3_kelw5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kelw5"]
 texture = ExtResource("2_7h61r")
@@ -559,8 +559,14 @@ texture = ExtResource("2_7h61r")
 7:1/0 = 0
 7:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 8:1/0 = 0
-9:1/next_alternative_id = 3
+9:1/next_alternative_id = 9
 9:1/0 = 0
+9:1/3 = 3
+9:1/3/modulate = Color(0.075899996, 0.10415163, 0.23, 0.98039216)
+9:1/7 = 7
+9:1/7/modulate = Color(0.0736, 0.104880005, 0.23, 0.9019608)
+9:1/8 = 8
+9:1/8/modulate = Color(0.075899996, 0.10415163, 0.23, 0.78431374)
 10:1/0 = 0
 11:1/0 = 0
 12:1/0 = 0
@@ -1685,14 +1691,10 @@ tile_set = SubResource("TileSet_kelw5")
 [node name="BuildingsDetails" type="TileMapLayer" parent="." unique_id=640382988]
 tile_set = SubResource("TileSet_0sr1o")
 
-[node name="NightLayer" parent="." unique_id=361862169 instance=ExtResource("3_kelw5")]
-offset_left = -7500.0
-offset_top = -7964.0
-offset_right = -6700.0
-offset_bottom = -7164.0
-scale = Vector2(22.480003, 19.599998)
-size_flags_horizontal = 4
-size_flags_vertical = 4
+[node name="Night" type="TileMapLayer" parent="." unique_id=537802689 node_paths=PackedStringArray("buildings_layer")]
+tile_set = SubResource("TileSet_kelw5")
+script = ExtResource("3_kelw5")
+buildings_layer = NodePath("../BuildingsAndPaths")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1325387949]
 

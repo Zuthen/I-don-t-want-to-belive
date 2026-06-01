@@ -27,6 +27,7 @@
 [ext_resource type="Texture2D" uid="uid://b6y2tfplpk7qh" path="res://assets/characters/male/tile_0485.png" id="22_ts12s"]
 [ext_resource type="Texture2D" uid="uid://mlrnflwfcfc" path="res://assets/characters/male/tile_0457.png" id="25_cp4pj"]
 [ext_resource type="Texture2D" uid="uid://bbqipggi3td43" path="res://assets/characters/male/tile_0484.png" id="26_2ktkh"]
+[ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/coordinates.tscn" id="28_y0kdb"]
 
 [sub_resource type="GDScript" id="GDScript_nm2l5"]
 script/source = "extends MultiplayerSynchronizer
@@ -357,7 +358,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4b4"]
-size = Vector2(8, 12)
+size = Vector2(7.3333335, 11.444445)
 
 [node name="Skeptic" type="CharacterBody2D" unique_id=402508521]
 scale = Vector2(0.45, 0.45)
@@ -398,7 +399,7 @@ scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_3j4b4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1318819708]
-position = Vector2(0, 2)
+position = Vector2(0.6666665, 2.5555553)
 scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_3j4b4")
 
@@ -435,3 +436,5 @@ scale = Vector2(0.45, 0.45)
 [node name="Dialog5" type="Marker2D" parent="DialogPlacements" unique_id=924489978]
 position = Vector2(0, 12)
 scale = Vector2(0.45, 0.45)
+
+[node name="Coordinates" parent="." unique_id=1593133795 instance=ExtResource("28_y0kdb")]

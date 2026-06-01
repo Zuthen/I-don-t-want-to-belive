@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://m50kbdge4ggk"
-path="res://.godot/imported/playdate_button_menu.png-98aa7ebe4489379ce979814b6626ed5a.ctex"
+uid="uid://cj766dki20mjg"
+path="res://.godot/imported/generic_button_circle.png-b033fd28e9b3b9e9b6826d5a33bd23fe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/keboard_buttons/playdate_button_menu.png"
-dest_files=["res://.godot/imported/playdate_button_menu.png-98aa7ebe4489379ce979814b6626ed5a.ctex"]
+source_file="res://assets/ui/keboard_buttons/generic_button_circle.png"
+dest_files=["res://.godot/imported/generic_button_circle.png-b033fd28e9b3b9e9b6826d5a33bd23fe.ctex"]
 
 [params]
 

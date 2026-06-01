@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://bqxxtb22y4v3c"]
+
+[ext_resource type="FontFile" uid="uid://yovp4qpp5pqo" path="res://assets/fonts/Kenney Rocket Square.ttf" id="1_2tght"]
+[ext_resource type="Script" uid="uid://bjpy7cdpqncfv" path="res://scenes/ui/coordinates.gd" id="1_vcfnq"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_vcfnq"]
+font = ExtResource("1_2tght")
+font_size = 20
+font_color = Color(0.23137255, 0.9490196, 0.52156866, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_8qnfe"]
+font = ExtResource("1_2tght")
+font_size = 20
+font_color = Color(0.28235295, 0.85882354, 0.9843137, 1)
+
+[node name="Coordinates" type="CanvasLayer" unique_id=1593133795]
+script = ExtResource("1_vcfnq")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1144061536]
+offset_left = 24.0
+offset_top = 648.0
+offset_right = 68.0
+offset_bottom = 688.0
+
+[node name="Letter" type="Label" parent="HBoxContainer" unique_id=684351665]
+layout_mode = 2
+text = "A"
+label_settings = SubResource("LabelSettings_vcfnq")
+
+[node name="Number" type="Label" parent="HBoxContainer" unique_id=1969585312]
+layout_mode = 2
+text = "1"
+label_settings = SubResource("LabelSettings_8qnfe")
