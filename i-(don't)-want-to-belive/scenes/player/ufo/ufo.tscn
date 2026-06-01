@@ -28,8 +28,8 @@ properties/0/replication_mode = 1
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hv1eg"]
 
 [node name="Ufo" type="CharacterBody2D" unique_id=709787266]
-collision_layer = 0
-collision_mask = 0
+collision_layer = 32
+collision_mask = 16
 script = ExtResource("1_psnoh")
 
 [node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("7_j8uuj")]

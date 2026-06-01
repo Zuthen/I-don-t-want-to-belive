@@ -91,6 +91,7 @@ func create_map(map_seed: int = 0):
 
 	var random = RandomNumberGenerator.new()
 	random.seed = map_seed
+	generate_map_borders()
 	return find_skeptics_positions(areas.paths, random)
 
 
@@ -113,6 +114,57 @@ func occupy_rect(rect: Rect2i, occupied: Dictionary):
 	for y in range(rect.position.y, rect.position.y + rect.size.y):
 		for x in range(rect.position.x, rect.position.x + rect.size.x):
 			occupied[Vector2i(x, y)] = true
+
+
+func generate_map_borders():
+	var edges = MapSettings.get_map_limits()
+
+	var map_width_px = edges.right - edges.left
+	var map_height_px = edges.bottom - edges.top
+
+	var left_right_size = Vector2(MapSettings.tile_size, map_height_px)
+	var top_bottom_size = Vector2(map_width_px, MapSettings.tile_size)
+
+	var left_position = Vector2(
+		edges.left - (MapSettings.tile_size / 2.0),
+		edges.top + (map_height_px / 2.0),
+	)
+
+	var right_position = Vector2(
+		edges.right + (MapSettings.tile_size / 2.0),
+		edges.top + (map_height_px / 2.0),
+	)
+
+	var top_position = Vector2(
+		edges.left + (map_width_px / 2.0),
+		edges.top - (MapSettings.tile_size / 2.0),
+	)
+
+	var bottom_position = Vector2(
+		edges.left + (map_width_px / 2.0),
+		edges.bottom + (MapSettings.tile_size / 2.0),
+	)
+
+	generate_collider(left_right_size, left_position)
+	generate_collider(left_right_size, right_position)
+	generate_collider(top_bottom_size, top_position)
+	generate_collider(top_bottom_size, bottom_position)
+
+
+func generate_collider(size: Vector2, position: Vector2):
+	var collider_shape = RectangleShape2D.new()
+	collider_shape.size = size
+
+	var border = StaticBody2D.new()
+	border.position = position
+	border.set_collision_layer_value(5, true)
+	border.set_collision_layer_value(6, true)
+
+	var border_collider = CollisionShape2D.new()
+	border_collider.shape = collider_shape
+
+	border.add_child(border_collider)
+	tile_map_layer.add_child(border)
 
 
 func directions(step: int) -> Dictionary:

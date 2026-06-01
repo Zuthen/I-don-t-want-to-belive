@@ -363,6 +363,7 @@ size = Vector2(7.3333335, 11.444445)
 [node name="Skeptic" type="CharacterBody2D" unique_id=402508521]
 scale = Vector2(0.45, 0.45)
 collision_layer = 0
+collision_mask = 17
 script = ExtResource("1_13dnq")
 
 [node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("2_30q0i")]

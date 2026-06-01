@@ -30,8 +30,7 @@ func _ready():
 			$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
 
 	if is_multiplayer_authority() and has_node("Camera2D"):
-		camera.enabled = true
-		camera.make_current()
+		set_camera(camera)
 
 	await get_tree().process_frame
 	ufo_sprites = UfosTextures.ufo_textures[0]
