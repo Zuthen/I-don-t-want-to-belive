@@ -82,11 +82,8 @@ func spawn_laser(position: Vector2):
 func fire_laser():
 	laser_shoot.emit(laser_shoot_timeout_seconds)
 	server_spawn_laser.rpc(global_position)
-	movement_blocked = true
-	laser_shoot_blocked = true
-
-	start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = false)
-	start_cooldown_timer(ufo_laser_shoot_animation_time, func(): movement_blocked = false)
+	start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = !laser_shoot_blocked)
+	start_cooldown_timer(ufo_laser_shoot_animation_time, func(): movement_blocked = !movement_blocked)
 
 
 func _get_animation_time():
