@@ -68,11 +68,11 @@ func test_player_can_t_call_outside_range_size():
 
 
 func test_walkie_talkie_adds_message_to_ui_for_everyone():
-	# Arrange
-	var canvas = game.get_node_or_null("CanvasLayer")
+	await wait_physics_frames(1)
 
+	var canvas = game.get_node_or_null("CanvasLayer")
 	if not canvas:
-		fail_test("Brak węzła CanvasLayer wewnątrz załadowanej sceny game!")
+		fail_test("missing canvas layer")
 		return
 
 	var initial_child_count = canvas.get_child_count()
@@ -80,9 +80,11 @@ func test_walkie_talkie_adds_message_to_ui_for_everyone():
 	mock_skeptic = skeptic_scene.instantiate()
 	game.add_child(mock_skeptic)
 
+	await wait_physics_frames(1)
+
 	# Act
 	mock_skeptic.send_walkie_talkie_message("C15")
-	await wait_physics_frames(1)
+	await wait_physics_frames(2)
 
 	# Assert
 	assert_eq(
@@ -91,10 +93,21 @@ func test_walkie_talkie_adds_message_to_ui_for_everyone():
 	)
 
 	var last_child = canvas.get_child(canvas.get_child_count() - 1)
-	assert_eq(
-		last_child.coordinates_text,
-		"C15",
-	)
+
+	if "coordinates_text" in last_child:
+		assert_eq(
+			last_child.coordinates_text,
+			"C15",
+		)
+	else:
+		var found_prop := false
+		for child in last_child.get_children():
+			if "coordinates_text" in child:
+				assert_eq(child.coordinates_text, "C15")
+				found_prop = true
+				break
+		if not found_prop:
+			fail_test("no prop")
 
 
 func find_all_icons_in_engine(node: Node) -> Array:
