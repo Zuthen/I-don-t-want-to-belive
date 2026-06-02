@@ -12,6 +12,7 @@ var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var walkie_talkie_message_scene: PackedScene = preload("uid://tgygvek1j0wa")
 var is_male
+var can_send_coordinates = true
 var voice_emitter_active := false
 const walkie_talkie_timeout_seconds: float = 60 * 2
 const speed = 100.0
@@ -73,8 +74,9 @@ func _process(_delta):
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
 		call_other_skeptic_network.rpc()
 
-	if Input.is_action_just_pressed("send_walkie_talkie_message"):
+	if Input.is_action_just_pressed("send_walkie_talkie_message") and can_send_coordinates:
 		walkie_talkie_message()
+		start_cooldown_timer(walkie_talkie_timeout_seconds, func(): can_send_coordinates = !can_send_coordinates)
 
 
 func _physics_process(_delta):

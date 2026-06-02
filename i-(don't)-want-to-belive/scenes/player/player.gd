@@ -52,6 +52,7 @@ func get_column_name(col_idx: int) -> String:
 
 
 func start_cooldown_timer(time: float, callback: Callable):
+	callback.call()
 	var timer = Timer.new()
 	timer.one_shot = true
 	add_child(timer)
