@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://tgygvek1j0wa"]
+
+[ext_resource type="Texture2D" uid="uid://docqhanuu25rr" path="res://assets/ui/button_rectangle_border.png" id="1_cklnq"]
+[ext_resource type="Script" uid="uid://0ocmqxsvwnsj" path="res://scenes/ui/walkie_talkie_message.gd" id="1_iy84m"]
+[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="2_iy84m"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_2fyms"]
+font = ExtResource("2_iy84m")
+font_size = 15
+font_color = Color(0.12156863, 0.06666667, 0.20784314, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_d4vci"]
+font = ExtResource("2_iy84m")
+font_size = 24
+font_color = Color(0.23137255, 0.9490196, 0.52156866, 1)
+
+[node name="WalkieTalkieMessage" type="Control" unique_id=1820157147]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_iy84m")
+
+[node name="Timer" type="Timer" parent="." unique_id=1350565986]
+wait_time = 1.5
+one_shot = true
+autostart = true
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=2046162837]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 250.0
+offset_top = 246.0
+offset_right = 508.5
+offset_bottom = 374.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_cklnq")
+expand_mode = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=967137233]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 267.25
+offset_top = 273.0
+offset_right = 491.25
+offset_bottom = 347.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Text" type="Label" parent="VBoxContainer" unique_id=2067871112]
+layout_mode = 2
+text = "Sceptyk nadał wiadomość: "
+label_settings = SubResource("LabelSettings_2fyms")
+horizontal_alignment = 1
+
+[node name="Coordinates" type="Label" parent="VBoxContainer" unique_id=1794977822]
+layout_mode = 2
+text = "A8"
+label_settings = SubResource("LabelSettings_d4vci")
+horizontal_alignment = 1
+vertical_alignment = 1

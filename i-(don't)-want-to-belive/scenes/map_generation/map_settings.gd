@@ -4,6 +4,8 @@ var min_position := Vector2i(0, -30)
 var max_position := Vector2i(59, 29)
 var paths_tiles: = 750
 var tile_size: = 16
+const sector_tile_size: int = 6
+var sector_pixel_size: float = tile_size * sector_tile_size
 
 
 class MapArea:

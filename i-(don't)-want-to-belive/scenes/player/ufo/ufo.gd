@@ -85,8 +85,8 @@ func fire_laser():
 	movement_blocked = true
 	laser_shoot_blocked = true
 
-	_start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = false)
-	_start_cooldown_timer(ufo_laser_shoot_animation_time, func(): movement_blocked = false)
+	start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = false)
+	start_cooldown_timer(ufo_laser_shoot_animation_time, func(): movement_blocked = false)
 
 
 func _get_animation_time():
@@ -95,12 +95,3 @@ func _get_animation_time():
 	var time = temp_laser.get_animation_time()
 	temp_laser.queue_free()
 	return time
-
-
-func _start_cooldown_timer(time: float, callback: Callable):
-	var timer = Timer.new()
-	timer.one_shot = true
-	add_child(timer)
-	timer.timeout.connect(callback)
-	timer.timeout.connect(timer.queue_free)
-	timer.start(time)
