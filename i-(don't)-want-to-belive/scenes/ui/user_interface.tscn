@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://dqsvg26olobps" path="res://assets/characters/ufos/shipYellow.png" id="7_fhs8v"]
 [ext_resource type="PackedScene" uid="uid://dcefoyhqiavv6" path="res://scenes/ui/skill.tscn" id="7_xg44s"]
 [ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="8_fhs8v"]
+[ext_resource type="Texture2D" uid="uid://d25q2or8yvuv7" path="res://assets/ui/keboard_buttons/keyboard_e.png" id="8_kw8g8"]
+[ext_resource type="Texture2D" uid="uid://cbur3mmig4oxr" path="res://assets/ui/keboard_buttons/keyboard_e_outline.png" id="9_737vb"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
 font = ExtResource("5_vo76m")
@@ -129,11 +131,16 @@ stretch_mode = 5
 
 [node name="SkillsPanel" type="VBoxContainer" parent="." unique_id=849279169]
 layout_mode = 0
-offset_left = 726.0
+offset_left = 704.0
 offset_top = 21.0
-offset_right = 790.0
-offset_bottom = 110.0
+offset_right = 816.0
+offset_bottom = 201.0
 alignment = 1
 
 [node name="Q" parent="SkillsPanel" unique_id=688888508 instance=ExtResource("7_xg44s")]
 layout_mode = 2
+
+[node name="E" parent="SkillsPanel" unique_id=969601462 instance=ExtResource("7_xg44s")]
+layout_mode = 2
+icon_active_texture = ExtResource("8_kw8g8")
+icon_not_active_texture = ExtResource("9_737vb")

@@ -9,9 +9,11 @@ extends Player
 @onready var collision_area = $CollisionArea
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
-var is_male
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
+var walkie_talkie_message_scene: PackedScene = preload("uid://tgygvek1j0wa")
+var is_male
 var voice_emitter_active := false
+const walkie_talkie_timeout_seconds: float = 60 * 2
 const speed = 100.0
 var direction_sprite := "down"
 const max_belive_points := 5
@@ -19,6 +21,7 @@ var belive_points: int = 0
 
 signal belive_points_changed(amount: int)
 signal laser_seen
+signal walkie_talkie_message_sent(time: float)
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -70,6 +73,9 @@ func _process(_delta):
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
 		call_other_skeptic_network.rpc()
 
+	if Input.is_action_just_pressed("send_walkie_talkie_message"):
+		walkie_talkie_message()
+
 
 func _physics_process(_delta):
 	var sync_direction: Vector2 = Vector2.ZERO
@@ -80,7 +86,6 @@ func _physics_process(_delta):
 	if is_multiplayer_authority():
 		velocity = speed * sync_direction
 		move_and_slide()
-
 	animate(sync_direction)
 
 
@@ -90,6 +95,34 @@ func call_other_skeptic_network():
 	var voice_emitter = voice_emitter_scene.instantiate()
 	add_child(voice_emitter)
 	voice_emitter.timer.timeout.connect(_reset_voice_emmitter)
+
+
+func walkie_talkie_message():
+	var message: String
+	var coordinates = get_coordinates(global_position)
+	var is_letter_send = randi() % 100 < 40
+	if !is_letter_send:
+		message = str(coordinates.number)
+	else:
+		var is_number_send = randi() % 100 < 40
+		if is_number_send:
+			message = coordinates.letter + str(coordinates.number)
+		else:
+			message = coordinates.letter
+	walkie_talkie_message_sent.emit(walkie_talkie_timeout_seconds)
+	send_walkie_talkie_message.rpc(message)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func send_walkie_talkie_message(message: String):
+	var ui = get_tree().current_scene.get_node_or_null("CanvasLayer")
+	if not ui:
+		ui = get_tree().root.find_child("CanvasLayer", true, false)
+	var walkie_talkie_message = walkie_talkie_message_scene.instantiate()
+	if is_multiplayer_authority():
+		walkie_talkie_message.message = "Nadana wiadomość:"
+	walkie_talkie_message.coordinates_text = message
+	ui.add_child(walkie_talkie_message)
 
 
 func _reset_voice_emmitter():

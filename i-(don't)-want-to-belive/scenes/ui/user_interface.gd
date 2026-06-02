@@ -3,6 +3,7 @@ extends Control
 class_name UserInterface
 
 @onready var q = $SkillsPanel/Q
+@onready var e = $SkillsPanel/E
 @onready var win_info = $WinInfo
 @onready var win_label = $WinInfo/WinLabel
 @onready var faction_label = $WinInfo/FactionLabel
@@ -39,6 +40,7 @@ func _ready():
 		var role = MultiplayerFeatures.get_role()
 		if role == MultiplayerFeatures.Role.SKEPTIC:
 			player.belive_points_changed.connect(_on_belive_points_changed)
+			player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
 		elif role == MultiplayerFeatures.Role.UFO:
 			player.laser_shoot.connect(_on_q_skill_fired)
 		_setup_ui(role)
@@ -56,13 +58,12 @@ func _setup_ui(role: MultiplayerFeatures.Role):
 		ufo.visible = false
 	match role:
 		MultiplayerFeatures.Role.UFO:
-			q.set_icon_text(
-				"Wystrzel 
-			laser",
-			)
+			e.visible = false
+			q.set_icon_text("Wystrzel laser")
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		MultiplayerFeatures.Role.SKEPTIC:
+			e.set_icon_text("Wyślij swoją pozycję")
 			q.set_icon_text("Zawołaj")
 
 
@@ -76,6 +77,10 @@ func _on_skeptic_win():
 
 func _on_q_skill_fired(time):
 	q.start_cooldown(time)
+
+
+func _on_e_skill_fired(time):
+	e.start_cooldown(time)
 
 
 @rpc("any_peer", "call_local", "reliable")
