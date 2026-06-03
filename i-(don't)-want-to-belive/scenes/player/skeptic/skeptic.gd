@@ -218,6 +218,7 @@ func _teleport_network_rpc(pixel_position: Vector2):
 func trigger_captured_effects_network(ufo_index: int, target_pos: Vector2i):
 	if is_multiplayer_authority():
 		var ufo_texture = UfosTextures.ufo_textures[ufo_index].ship
+		belive_points_changed.emit(3)
 		_play_captured_animation(ufo_texture, target_pos)
 	else:
 		pass
