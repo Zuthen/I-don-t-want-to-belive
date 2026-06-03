@@ -117,7 +117,6 @@ func server_request_capture(node_path: NodePath, position: Vector2i):
 		return
 	var player = get_node_or_null(node_path)
 	if player and player is Skeptic:
-		player.belive_points_changed.emit(3)
 		var ufo_index: int = 0
 		player.trigger_captured_effects_network.rpc(ufo_index, position)
 
