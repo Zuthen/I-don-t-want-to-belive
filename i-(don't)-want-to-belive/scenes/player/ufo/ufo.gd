@@ -4,16 +4,24 @@ extends Player
 @onready var camera = $Camera2D
 @onready var ship = $Ship
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
+@onready var capture_area = $CaptureArea
+@onready var animation_player = $AnimationPlayer
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
 
 var laser_shoot_blocked := false
 var movement_blocked: = false
+var capture_blocked = false
 
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
+#const capture_timeout_seconds: float = 120.0
+const capture_timeout_seconds: float = 1
+
 signal laser_shoot(time: float)
+signal captured(time: float)
+
 var ufo_laser_shoot_animation_time: float
 var input_multiplayer_authority: int:
 	set(value):
@@ -24,6 +32,7 @@ var input_multiplayer_authority: int:
 
 
 func _ready():
+	capture_area.area_entered.connect(_on_capture)
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
 		if has_node("PlayerInputSynchronizer"):
@@ -61,8 +70,22 @@ func _physics_process(_delta):
 			move_and_slide()
 		if Input.is_action_just_pressed("laser_point") && !laser_shoot_blocked:
 			fire_laser()
+		if Input.is_action_just_pressed("capture") && !capture_blocked:
+			_capture()
 	else:
 		pass
+
+
+func _capture():
+	animation_player.play("capture")
+	captured.emit(capture_timeout_seconds)
+	start_cooldown_timer(capture_timeout_seconds, func(): capture_blocked = !capture_blocked)
+
+
+func _on_capture(other):
+	var player = other.get_parent()
+	if player is Skeptic:
+		print("skeptic captured")
 
 
 @rpc("any_peer", "call_local", "reliable")

@@ -47,7 +47,7 @@ func get_column_name(col_idx: int) -> String:
 	var temp = col_idx
 	while temp >= 0:
 		name = char(65 + (temp % 26)) + name
-		temp = (temp / 26) - 1
+		temp = int(temp / 26) - 1
 	return name
 
 
