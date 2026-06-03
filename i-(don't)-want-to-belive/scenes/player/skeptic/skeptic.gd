@@ -185,8 +185,6 @@ func _play_captured_animation(texture: Texture2D, target_position):
 	animation.texture = texture
 	animation.target_position = pixel_position
 	animation.time = capture_animation_time
-	print("camera zoom")
-	print(camera.zoom)
 	camera.zoom = Vector2(1.5, 1.5)
 	add_child(animation)
 	var camera_tween = create_tween()

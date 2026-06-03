@@ -7,6 +7,7 @@ extends Player
 @onready var capture_area = $CaptureArea
 @onready var animation_player = $AnimationPlayer
 @onready var capture_area_collision = $CaptureArea/CaptureArea
+@onready var captured_label = $CapturedLabel
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
@@ -18,7 +19,7 @@ var game: Node2D
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
 const capture_timeout_seconds: float = 1.0
-
+const capture_label_time: float = 1.5
 signal laser_shoot(time: float)
 signal captured(time: float)
 
@@ -32,7 +33,7 @@ var input_multiplayer_authority: int:
 
 
 func _ready():
-	game = get_parent()
+	game = get_parent() as Node2D
 	capture_area_collision.disabled = true
 	capture_area.area_entered.connect(_on_capture)
 	if input_multiplayer_authority != 0:
@@ -104,8 +105,7 @@ func _change_skeptic_position(player, position: Vector2i):
 func _on_capture(other):
 	var player = other.get_parent()
 	if player is Skeptic:
-		print("Wykryto sceptyka, wysyłam prośbę do serwera...")
-		print("Czy mam prawo do RPC (Authority)?: ", is_multiplayer_authority())
+		start_cooldown_timer(capture_label_time, func(): captured_label.visible = !captured_label.visible)
 		var skeptic_path = player.get_path()
 		var new_skeptic_position = _get_new_captured_skeptic_position()
 		server_request_capture.rpc(skeptic_path, new_skeptic_position)

@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/coordinates.tscn" id="4_elve6"]
 [ext_resource type="Texture2D" uid="uid://dbxf7yvrhjp60" path="res://assets/characters/ufos/laserBeige3.png" id="5_grf6f"]
 [ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="7_j8uuj"]
+[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="7_psnoh"]
 
 [sub_resource type="GDScript" id="GDScript_psnoh"]
 script/source = "extends MultiplayerSynchronizer
@@ -142,6 +143,12 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1aexw"]
 size = Vector2(76, 78)
 
+[sub_resource type="LabelSettings" id="LabelSettings_p8ene"]
+line_spacing = 0.2
+font = ExtResource("7_psnoh")
+font_size = 4
+font_color = Color(0.23137255, 0.9490196, 0.52156866, 1)
+
 [node name="Ufo" type="CharacterBody2D" unique_id=709787266]
 position = Vector2(0, 27)
 collision_layer = 32
@@ -182,3 +189,15 @@ collision_mask = 4
 [node name="CaptureArea" type="CollisionShape2D" parent="CaptureArea" unique_id=278924925]
 position = Vector2(0, 29)
 shape = SubResource("RectangleShape2D_1aexw")
+
+[node name="CapturedLabel" type="Label" parent="." unique_id=1773935356]
+visible = false
+offset_left = -13.0
+offset_top = -37.0
+offset_right = 14.0
+offset_bottom = -20.0
+text = "Pochwycenie udane!"
+label_settings = SubResource("LabelSettings_p8ene")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
