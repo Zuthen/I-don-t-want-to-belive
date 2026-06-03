@@ -13,7 +13,7 @@ var ufo_sprites: UfosTextures.UfoTextures
 var laser_shoot_blocked := false
 var movement_blocked: = false
 var capture_blocked = false
-
+var game: Node2D
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
 #const capture_timeout_seconds: float = 120.0
@@ -32,6 +32,7 @@ var input_multiplayer_authority: int:
 
 
 func _ready():
+	game = get_parent()
 	capture_area.area_entered.connect(_on_capture)
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
@@ -82,10 +83,32 @@ func _capture():
 	start_cooldown_timer(capture_timeout_seconds, func(): capture_blocked = !capture_blocked)
 
 
+func _get_new_captured_skeptic_position() -> Vector2i:
+	var all_paths = game.paths
+	var start_position = game.tile_map_layer.local_to_map(global_position)
+	var new_skeptic_position = game.find_new_skeptic_position(all_paths, start_position)
+	return new_skeptic_position
+
+
+func _change_skeptic_position(player, position):
+	player.position = game.tile_map_layer.map_to_local(position)
+
+
 func _on_capture(other):
 	var player = other.get_parent()
 	if player is Skeptic:
-		print("skeptic captured")
+		var skeptic_path = player.get_path()
+		server_request_capture.rpc(skeptic_path)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func server_request_capture(node_path: NodePath):
+	if not multiplayer.is_server():
+		return
+	var player = get_node_or_null(node_path)
+	var new_skeptic_position = _get_new_captured_skeptic_position()
+	_change_skeptic_position(player, new_skeptic_position)
+	# trzeba będzie jeszcze pokazać i sceptykowi i ufokowi co się stało
 
 
 @rpc("any_peer", "call_local", "reliable")
