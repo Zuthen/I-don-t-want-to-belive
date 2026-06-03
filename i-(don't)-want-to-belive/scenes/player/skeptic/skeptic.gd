@@ -7,11 +7,15 @@ extends Player
 @onready var dialog_timer = $DialogTimer
 @onready var dialog_placements = $DialogPlacements
 @onready var collision_area = $CollisionArea
+@onready var sprite_2d = $Sprite2D
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var walkie_talkie_message_scene: PackedScene = preload("uid://tgygvek1j0wa")
+var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
+var ufo_type_camera_scene: PackedScene = preload("uid://cba40e72olvj2")
 var is_male
+var movement_blocked := false
 var can_send_coordinates = true
 var voice_emitter_active := false
 const walkie_talkie_timeout_seconds: float = 60 * 2
@@ -19,10 +23,11 @@ const speed = 100.0
 var direction_sprite := "down"
 const max_belive_points := 5
 var belive_points: int = 0
-
+const capture_animation_time: float = 4.0
 signal belive_points_changed(amount: int)
 signal laser_seen
 signal walkie_talkie_message_sent(time: float)
+var camera_zoom: Vector2
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -33,6 +38,7 @@ var input_multiplayer_authority: int:
 
 
 func _ready():
+	camera_zoom = camera.zoom
 	belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
 	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
@@ -85,7 +91,7 @@ func _physics_process(_delta):
 	if has_node("PlayerInputSynchronizer"):
 		sync_direction = $PlayerInputSynchronizer.movement_vector
 
-	if is_multiplayer_authority():
+	if is_multiplayer_authority() && !movement_blocked:
 		velocity = speed * sync_direction
 		move_and_slide()
 	animate(sync_direction)
@@ -169,6 +175,52 @@ func _on_skeptic_find_other_skeptic(area: Area2D):
 	var object = area.get_parent()
 	if object is Skeptic:
 		skeptics_win.emit()
+
+
+func _play_captured_animation(texture: Texture2D, target_position):
+	sprite_2d.visible = false
+	var pixel_position = get_parent().tile_map_layer.map_to_local(target_position)
+	var animation = captured_animation_scene.instantiate()
+	movement_blocked = true
+	animation.texture = texture
+	animation.target_position = pixel_position
+	animation.time = capture_animation_time
+	camera.zoom = Vector2(1.5, 1.5)
+	add_child(animation)
+	var camera_tween = create_tween()
+	camera_tween.tween_property(camera, "global_position", pixel_position, capture_animation_time) \
+			.set_trans(Tween.TRANS_CUBIC) \
+			.set_ease(Tween.EASE_OUT)
+	camera_tween.tween_callback(_capture_animation_cleanup.bind(pixel_position))
+
+
+func _capture_animation_cleanup(pixel_position: Vector2):
+	sprite_2d.visible = true
+	camera.zoom = camera_zoom
+	movement_blocked = false
+	rpc("_teleport_network_rpc", pixel_position)
+
+
+@rpc("authority", "call_local", "reliable")
+func _teleport_network_rpc(pixel_position: Vector2):
+	player_input_synchronizer.set_process(false)
+	player_input_synchronizer.set_physics_process(false)
+	global_position = pixel_position
+	visible = true
+	sprite_2d.visible = true
+	if is_multiplayer_authority():
+		camera.global_position = pixel_position
+		player_input_synchronizer.set_process(true)
+		player_input_synchronizer.set_physics_process(false)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func trigger_captured_effects_network(ufo_index: int, target_pos: Vector2i):
+	if is_multiplayer_authority():
+		var ufo_texture = UfosTextures.ufo_textures[ufo_index].ship
+		_play_captured_animation(ufo_texture, target_pos)
+	else:
+		pass
 
 
 func animate(direction: Vector2):

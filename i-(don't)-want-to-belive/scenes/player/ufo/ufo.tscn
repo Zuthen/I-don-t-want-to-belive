@@ -2,8 +2,11 @@
 
 [ext_resource type="Script" uid="uid://de6sywk55p8ge" path="res://scenes/player/ufo/ufo.gd" id="1_psnoh"]
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="2_p8ene"]
+[ext_resource type="PackedScene" uid="uid://cba40e72olvj2" path="res://scenes/player/ufo_type_camera.tscn" id="3_vy8hg"]
 [ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/coordinates.tscn" id="4_elve6"]
+[ext_resource type="Texture2D" uid="uid://dbxf7yvrhjp60" path="res://assets/characters/ufos/laserBeige3.png" id="5_grf6f"]
 [ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="7_j8uuj"]
+[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="7_psnoh"]
 
 [sub_resource type="GDScript" id="GDScript_psnoh"]
 script/source = "extends MultiplayerSynchronizer
@@ -25,9 +28,129 @@ properties/0/path = NodePath(".:global_position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
 
+[sub_resource type="Animation" id="Animation_vy8hg"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("pointer:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("5_grf6f")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("pointer:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("pointer:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.8, 0.8)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Ship:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_psnoh"]
+resource_name = "capture"
+length = 1.4
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("pointer:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.1),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("5_grf6f")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("pointer:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 1.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [false, true, false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("pointer:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.1, 1.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.8, 0.8), Vector2(0.1, 0.1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Ship:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.6, 1.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 27), Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_p8ene"]
+_data = {
+&"RESET": SubResource("Animation_vy8hg"),
+&"capture": SubResource("Animation_psnoh")
+}
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hv1eg"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1aexw"]
+size = Vector2(76, 78)
+
+[sub_resource type="LabelSettings" id="LabelSettings_p8ene"]
+line_spacing = 0.2
+font = ExtResource("7_psnoh")
+font_size = 4
+font_color = Color(0.23137255, 0.9490196, 0.52156866, 1)
+
 [node name="Ufo" type="CharacterBody2D" unique_id=709787266]
+position = Vector2(0, 27)
 collision_layer = 32
 collision_mask = 16
 script = ExtResource("1_psnoh")
@@ -38,9 +161,10 @@ script = SubResource("GDScript_psnoh")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1226729287]
 replication_config = SubResource("SceneReplicationConfig_t7s1w")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1962525988]
-enabled = false
-zoom = Vector2(3, 3)
+[node name="Camera2D" parent="." unique_id=1105090035 instance=ExtResource("3_vy8hg")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=718705382]
+libraries/ = SubResource("AnimationLibrary_p8ene")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=126880545]
 shape = SubResource("CapsuleShape2D_hv1eg")
@@ -49,4 +173,31 @@ shape = SubResource("CapsuleShape2D_hv1eg")
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_p8ene")
 
+[node name="pointer" type="Sprite2D" parent="." unique_id=241246050]
+visible = false
+position = Vector2(0, 53)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("5_grf6f")
+
 [node name="Coordinates" parent="." unique_id=1593133795 instance=ExtResource("4_elve6")]
+
+[node name="CaptureArea" type="Area2D" parent="." unique_id=309654053]
+position = Vector2(0, 26)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CaptureArea" type="CollisionShape2D" parent="CaptureArea" unique_id=278924925]
+position = Vector2(0, 29)
+shape = SubResource("RectangleShape2D_1aexw")
+
+[node name="CapturedLabel" type="Label" parent="." unique_id=1773935356]
+visible = false
+offset_left = -13.0
+offset_top = -37.0
+offset_right = 14.0
+offset_bottom = -20.0
+text = "Pochwycenie udane!"
+label_settings = SubResource("LabelSettings_p8ene")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2

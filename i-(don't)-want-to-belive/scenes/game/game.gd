@@ -10,6 +10,7 @@ var paths: Array[Vector2i] = []
 var obstacles
 var skeptic_positions = []
 var next_spawn_index: int = 0
+var random: RandomNumberGenerator
 
 
 func _ready():
@@ -92,11 +93,12 @@ func create_map(map_seed: int = 0):
 	var random = RandomNumberGenerator.new()
 	random.seed = map_seed
 	generate_map_borders()
+	paths = areas.paths
 	return find_skeptics_positions(areas.paths, random)
 
 
 func genereate_map(map_seed: int = 0):
-	var random = RandomNumberGenerator.new()
+	random = RandomNumberGenerator.new()
 	random.seed = map_seed
 
 	var rand_x = random.randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
@@ -235,3 +237,19 @@ func find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberG
 			return [a, b]
 
 	return [paths_array[0], paths_array[paths_array.size() - 1]]
+
+
+func find_new_skeptic_position(paths_array: Array[Vector2i], current_position) -> Vector2i:
+	var dynamic_min_distance: float = sqrt(MapSettings.paths_tiles) * 0.85
+	for i in range(MapSettings.paths_tiles / 2):
+		var random_index = random.randi() % paths_array.size()
+
+		if current_position == paths_array[random_index]:
+			continue
+
+		var new_position = paths_array[random_index]
+
+		if current_position.distance_to(new_position) >= dynamic_min_distance:
+			return new_position
+
+	return paths_array[0]

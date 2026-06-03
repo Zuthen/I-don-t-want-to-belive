@@ -43,6 +43,7 @@ func _ready():
 			player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
 		elif role == MultiplayerFeatures.Role.UFO:
 			player.laser_shoot.connect(_on_q_skill_fired)
+			player.captured.connect(_on_e_skill_fired)
 		_setup_ui(role)
 	else:
 		printerr("[UI] Błąd sieciowy: Klient o ID ", multiplayer.get_unique_id(), " nie doczekał się swojej postaci!")
@@ -58,8 +59,8 @@ func _setup_ui(role: MultiplayerFeatures.Role):
 		ufo.visible = false
 	match role:
 		MultiplayerFeatures.Role.UFO:
-			e.visible = false
 			q.set_icon_text("Wystrzel laser")
+			e.set_icon_text("Pochwyć")
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		MultiplayerFeatures.Role.SKEPTIC:
@@ -98,5 +99,8 @@ func show_skeptics_victory_screen():
 
 
 func _on_belive_points_changed(amount):
-	ufos_sprites[hit_points].visible = true
 	hit_points += amount
+	if hit_points > ufos_sprites.size():
+		hit_points = ufos_sprites.size()
+	for i in range(hit_points):
+		ufos_sprites[i].visible = (i < hit_points)

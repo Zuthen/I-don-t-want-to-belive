@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://68od6wexu11a"]
+
+[ext_resource type="Script" uid="uid://c2iqdrycqvw15" path="res://scenes/player/skeptic/captured_animation.gd" id="1_n3f08"]
+
+[node name="CapturedAnimation" type="Node2D" unique_id=278131588]
+script = ExtResource("1_n3f08")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=411937273]
