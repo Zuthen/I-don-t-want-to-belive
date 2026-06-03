@@ -180,6 +180,6 @@ position = Vector2(0, 26)
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CaptureArea" unique_id=278924925]
+[node name="CaptureArea" type="CollisionShape2D" parent="CaptureArea" unique_id=278924925]
 position = Vector2(0, 29)
 shape = SubResource("RectangleShape2D_1aexw")

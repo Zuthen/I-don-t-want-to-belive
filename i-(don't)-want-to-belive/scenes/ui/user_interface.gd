@@ -99,5 +99,8 @@ func show_skeptics_victory_screen():
 
 
 func _on_belive_points_changed(amount):
-	ufos_sprites[hit_points].visible = true
 	hit_points += amount
+	if hit_points > ufos_sprites.size():
+		hit_points = ufos_sprites.size()
+	for i in range(hit_points):
+		ufos_sprites[i].visible = (i < hit_points)

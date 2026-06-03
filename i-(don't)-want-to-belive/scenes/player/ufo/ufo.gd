@@ -6,6 +6,7 @@ extends Player
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 @onready var capture_area = $CaptureArea
 @onready var animation_player = $AnimationPlayer
+@onready var capture_area_collision = $CaptureArea/CaptureArea
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
@@ -33,6 +34,7 @@ var input_multiplayer_authority: int:
 
 func _ready():
 	game = get_parent()
+	capture_area_collision.disabled = true
 	capture_area.area_entered.connect(_on_capture)
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
@@ -79,8 +81,12 @@ func _physics_process(_delta):
 
 func _capture():
 	animation_player.play("capture")
-	captured.emit(capture_timeout_seconds)
+	var animation_time = animation_player.get_animation("capture").length
+	capture_area_collision.set_deferred("disabled", false)
+	start_cooldown_timer(animation_time, func(): capture_area_collision.set_deferred("disabled", false))
 	start_cooldown_timer(capture_timeout_seconds, func(): capture_blocked = !capture_blocked)
+	start_cooldown_timer(animation_time, func(): movement_blocked = !movement_blocked)
+	captured.emit(capture_timeout_seconds)
 
 
 func _get_new_captured_skeptic_position() -> Vector2i:
@@ -106,6 +112,7 @@ func server_request_capture(node_path: NodePath):
 	if not multiplayer.is_server():
 		return
 	var player = get_node_or_null(node_path)
+	player.belive_points_changed.emit(3)
 	var new_skeptic_position = _get_new_captured_skeptic_position()
 	_change_skeptic_position(player, new_skeptic_position)
 	# trzeba będzie jeszcze pokazać i sceptykowi i ufokowi co się stało
