@@ -213,18 +213,34 @@ func _teleport_network_rpc(pixel_position: Vector2):
 	player_input_synchronizer.set_process(false)
 	player_input_synchronizer.set_physics_process(false)
 	global_position = pixel_position
-	visible = true
-	sprite_2d.visible = true
+
+	var local_player = null
+	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
+		if node.is_multiplayer_authority():
+			local_player = node
+			break
+
+	if local_player and local_player.is_in_group("skeptics"):
+		visible = true
+		sprite_2d.visible = true
+	else:
+		visible = false
+		sprite_2d.visible = false
+
 	var dynamic_smoothing = false
 	if is_multiplayer_authority():
 		dynamic_smoothing = camera.position_smoothing_enabled
+		camera.position_smoothing_enabled = false
+
 	collision_area.set_deferred("monitoring", true)
 	collision_area.set_deferred("monitorable", true)
 	collision_shape.set_deferred("disabled", false)
+
 	if is_multiplayer_authority():
 		camera.global_position = pixel_position
 		camera.offset = Vector2.ZERO
 		camera.zoom = camera_zoom
+		camera.position_smoothing_enabled = dynamic_smoothing
 		player_input_synchronizer.set_process(true)
 		player_input_synchronizer.set_physics_process(false)
 

@@ -66,6 +66,9 @@ func _setup_ui(role: MultiplayerFeatures.Role):
 		MultiplayerFeatures.Role.SKEPTIC:
 			e.set_icon_text("Wyślij swoją pozycję")
 			q.set_icon_text("Zawołaj")
+		MultiplayerFeatures.Role.ALIEN:
+			q.set_icon_text("Zawołaj")
+			e.visible = false
 
 
 func _on_ufo_wins():
