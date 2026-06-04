@@ -10,12 +10,15 @@ extends Player
 @onready var captured_label = $CapturedLabel
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
+var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
 var ufo_sprites: UfosTextures.UfoTextures
-
+var capture_hit_target := false
 var laser_shoot_blocked := false
 var movement_blocked := false
 var capture_blocked := false
+var capture_processing := false
 var game: Node2D
+var ufo_idx: int = 0
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
 const capture_timeout_seconds: float = 1.0
@@ -45,7 +48,7 @@ func _ready():
 		set_camera(camera)
 
 	await get_tree().process_frame
-	ufo_sprites = UfosTextures.ufo_textures[0]
+	ufo_sprites = UfosTextures.ufo_textures[ufo_idx]
 	ship.texture = ufo_sprites.ship
 
 	var my_own_hero = null
@@ -81,14 +84,78 @@ func _capture():
 	var animation_time = animation_player.get_animation("capture").length
 	animation_player.play("capture")
 	captured.emit(capture_timeout_seconds)
+	capture_hit_target = false
+	capture_processing = true
 	start_cooldown_timer(animation_time, func(): movement_blocked = !movement_blocked)
 	start_cooldown_timer(
 		animation_time,
 		func():
 			capture_area_collision.set_deferred("disabled", !capture_area_collision.disabled)
+			_check_capture_result()
 	)
 	start_cooldown_timer(capture_timeout_seconds, func(): capture_blocked = false)
 	captured.emit(capture_timeout_seconds)
+
+
+func _check_capture_result():
+	if not capture_processing:
+		return
+
+	capture_processing = false
+
+	if not capture_hit_target:
+		var my_tile_position = game.tile_map_layer.local_to_map(global_position)
+
+		if game.paths.has(my_tile_position):
+			place_crashed_ufo.rpc(ufo_idx, global_position)
+		else:
+			var nearest_tile = find_nearest_path(global_position)
+			var nearest_pixel_path = game.tile_map_layer.map_to_local(nearest_tile)
+			place_crashed_ufo.rpc(ufo_idx, nearest_pixel_path)
+
+
+func find_nearest_path(pos_pixels: Vector2) -> Vector2i:
+	var possible_paths = []
+	var search_radius_tiles = 1
+	while possible_paths.size() == 0 and search_radius_tiles < 50:
+		possible_paths = find_paths_in_radius(pos_pixels, search_radius_tiles)
+		search_radius_tiles += 1
+
+	if possible_paths.is_empty():
+		return game.tile_map_layer.local_to_map(pos_pixels)
+
+	return Vector2i(possible_paths.pick_random())
+
+
+func find_paths_in_radius(pos_pixels: Vector2, radius: int) -> Array[Vector2i]:
+	var tile_position = game.tile_map_layer.local_to_map(pos_pixels)
+	var possibilities: Array[Vector2i] = []
+
+	var upper_row_idx = tile_position.y - radius
+	for i in range(tile_position.x - radius, tile_position.x + radius + 1):
+		var temp_tile = Vector2i(i, upper_row_idx)
+		if game.paths.has(temp_tile):
+			possibilities.append(temp_tile)
+
+	var bottom_row_idx = tile_position.y + radius
+	for i in range(tile_position.x - radius, tile_position.x + radius + 1):
+		var temp_tile = Vector2i(i, bottom_row_idx)
+		if game.paths.has(temp_tile):
+			possibilities.append(temp_tile)
+
+	var left_column_idx = tile_position.x - radius
+	for i in range(tile_position.y - radius + 1, tile_position.y + radius):
+		var temp_tile = Vector2i(left_column_idx, i)
+		if game.paths.has(temp_tile):
+			possibilities.append(temp_tile)
+
+	var right_column_idx = tile_position.x + radius
+	for i in range(tile_position.y - radius + 1, tile_position.y + radius):
+		var temp_tile = Vector2i(right_column_idx, i)
+		if game.paths.has(temp_tile):
+			possibilities.append(temp_tile)
+
+	return possibilities
 
 
 func _get_new_captured_skeptic_position() -> Vector2i:
@@ -105,10 +172,28 @@ func _change_skeptic_position(player, position: Vector2i):
 func _on_capture(other):
 	var player = other.get_parent()
 	if player is Skeptic:
+		capture_hit_target = true
 		start_cooldown_timer(capture_label_time, func(): captured_label.visible = !captured_label.visible)
 		var skeptic_path = player.get_path()
 		var new_skeptic_position = _get_new_captured_skeptic_position()
 		server_request_capture.rpc(skeptic_path, new_skeptic_position)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func place_crashed_ufo(ufo_index: int, target_global_position: Vector2):
+	if not multiplayer.is_server():
+		return
+
+	var sender_id = multiplayer.get_remote_sender_id()
+	var crashed_ufo = crashed_ufo_scene.instantiate() as CrashedUfo
+	crashed_ufo.peer_id = sender_id
+
+	crashed_ufo.name = "CrashedUfo_" + str(sender_id) + "_" + str(randi() % 1000)
+
+	var selected_texture = UfosTextures.ufo_textures[ufo_index].ship_crashed
+	crashed_ufo.texture = selected_texture
+	game.add_child(crashed_ufo, true)
+	crashed_ufo.position = target_global_position
 
 
 @rpc("any_peer", "call_local", "reliable")

@@ -90,7 +90,7 @@ func create_map(map_seed: int = 0):
 	Drawers.draw_map(obstacle_rects)
 	Drawers.draw_pavement(areas.paths)
 
-	var random = RandomNumberGenerator.new()
+	random = RandomNumberGenerator.new()
 	random.seed = map_seed
 	generate_map_borders()
 	paths = areas.paths

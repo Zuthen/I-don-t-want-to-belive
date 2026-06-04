@@ -20,6 +20,7 @@ class UfoTextures:
 	var laser_pointing: Texture2D
 	var laser_burst: Texture2D
 	var laser_ground_burst: Texture2D
+	var ship_crashed: Texture2D
 
 
 func get_all_ufos_sprites() -> Array[String]:
@@ -56,6 +57,7 @@ func map_to_ufo_texture(files_list: Array[String]):
 		ufo_sprites.laser2 = load(FOLDER_PATH + "laser" + color + "2.png")
 		ufo_sprites.laser_pointing = load(FOLDER_PATH + "laser" + color + "3.png")
 		ufo_sprites.laser_burst = load(FOLDER_PATH + "laser" + color + "_burst.png")
-		ufo_sprites.laser_ground_burst = load(FOLDER_PATH + "laser" + color + "_groundBurst.png") # Uwaga na wielkie B w groundBurst!
+		ufo_sprites.laser_ground_burst = load(FOLDER_PATH + "laser" + color + "_groundBurst.png")
+		ufo_sprites.ship_crashed = load(FOLDER_PATH + "ship" + color + "_damage2.png")
 
 		ufo_textures.append(ufo_sprites)
