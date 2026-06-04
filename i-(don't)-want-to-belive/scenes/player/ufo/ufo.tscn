@@ -150,7 +150,6 @@ font_size = 4
 font_color = Color(0.23137255, 0.9490196, 0.52156866, 1)
 
 [node name="Ufo" type="CharacterBody2D" unique_id=709787266]
-position = Vector2(0, 27)
 collision_layer = 32
 collision_mask = 16
 script = ExtResource("1_psnoh")

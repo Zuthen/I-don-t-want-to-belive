@@ -1,10 +1,11 @@
 class_name Multiplayer
 extends Node
 
-enum Role { NONE, UFO, SKEPTIC }
+enum Role { NONE, UFO, SKEPTIC, ALIEN }
 
 var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://hc74yy2qdg3f")
+var alien_scene: PackedScene = preload("uid://157ip2c8a5yg")
 var player_role = Role.NONE
 
 
@@ -15,6 +16,9 @@ func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLaye
 		if data.has("type") and data.type == "ufo":
 			player_node = ufo_scene.instantiate() as Ufo
 			role_name = Role.UFO
+		elif data.has("type") and data.type == "alien":
+			player_node = alien_scene.instantiate() as Alien
+			role_name = Role.ALIEN
 		else:
 			player_node = skeptic_scene.instantiate() as Skeptic
 			role_name = Role.SKEPTIC

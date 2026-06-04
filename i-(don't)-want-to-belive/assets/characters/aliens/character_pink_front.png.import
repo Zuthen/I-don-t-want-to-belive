@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://0dn0jikj4cuu"
-path="res://.godot/imported/shipPink_damage.png-1a70e79eb759f079ebb842f748469d39.ctex"
+uid="uid://bijsijbtomwtr"
+path="res://.godot/imported/character_pink_front.png-60c35af68065dfe74aea8534b8241b4a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/ufos/shipPink_damage.png"
-dest_files=["res://.godot/imported/shipPink_damage.png-1a70e79eb759f079ebb842f748469d39.ctex"]
+source_file="res://assets/characters/aliens/character_pink_front.png"
+dest_files=["res://.godot/imported/character_pink_front.png-60c35af68065dfe74aea8534b8241b4a.ctex"]
 
 [params]
 
