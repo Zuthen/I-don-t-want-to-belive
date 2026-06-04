@@ -190,6 +190,7 @@ func _play_captured_animation(texture: Texture2D, target_position):
 	animation.texture = texture
 	animation.target_position = pixel_position
 	animation.time = capture_animation_time
+	animation.position = relative_offset
 	camera.zoom = Vector2(1.5, 1.5)
 	add_child(animation)
 	var camera_tween = create_tween()
@@ -201,10 +202,10 @@ func _play_captured_animation(texture: Texture2D, target_position):
 
 func _capture_animation_cleanup(pixel_position: Vector2):
 	sprite_2d.visible = true
-	camera.offset = Vector2.ZERO
-	camera.zoom = camera_zoom
 	movement_blocked = false
 	rpc("_teleport_network_rpc", pixel_position)
+	camera.offset = Vector2.ZERO
+	camera.zoom = camera_zoom
 
 
 @rpc("authority", "call_local", "reliable")
@@ -214,11 +215,16 @@ func _teleport_network_rpc(pixel_position: Vector2):
 	global_position = pixel_position
 	visible = true
 	sprite_2d.visible = true
+	var dynamic_smoothing = false
+	if is_multiplayer_authority():
+		dynamic_smoothing = camera.position_smoothing_enabled
 	collision_area.set_deferred("monitoring", true)
 	collision_area.set_deferred("monitorable", true)
 	collision_shape.set_deferred("disabled", false)
 	if is_multiplayer_authority():
 		camera.global_position = pixel_position
+		camera.offset = Vector2.ZERO
+		camera.zoom = camera_zoom
 		player_input_synchronizer.set_process(true)
 		player_input_synchronizer.set_physics_process(false)
 
