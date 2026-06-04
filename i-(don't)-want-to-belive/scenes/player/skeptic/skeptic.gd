@@ -8,6 +8,7 @@ extends Player
 @onready var dialog_placements = $DialogPlacements
 @onready var collision_area = $CollisionArea
 @onready var sprite_2d = $Sprite2D
+@onready var collision_shape = $CollisionShape2D
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
@@ -179,7 +180,11 @@ func _on_skeptic_find_other_skeptic(area: Area2D):
 
 func _play_captured_animation(texture: Texture2D, target_position):
 	sprite_2d.visible = false
+	collision_area.set_deferred("monitoring", false)
+	collision_area.set_deferred("monitorable", false)
+	collision_shape.set_deferred("disabled", true)
 	var pixel_position = get_parent().tile_map_layer.map_to_local(target_position)
+	var relative_offset = pixel_position - global_position
 	var animation = captured_animation_scene.instantiate()
 	movement_blocked = true
 	animation.texture = texture
@@ -188,7 +193,7 @@ func _play_captured_animation(texture: Texture2D, target_position):
 	camera.zoom = Vector2(1.5, 1.5)
 	add_child(animation)
 	var camera_tween = create_tween()
-	camera_tween.tween_property(camera, "global_position", pixel_position, capture_animation_time) \
+	camera_tween.tween_property(camera, "offset", relative_offset, capture_animation_time) \
 			.set_trans(Tween.TRANS_CUBIC) \
 			.set_ease(Tween.EASE_OUT)
 	camera_tween.tween_callback(_capture_animation_cleanup.bind(pixel_position))
@@ -196,6 +201,7 @@ func _play_captured_animation(texture: Texture2D, target_position):
 
 func _capture_animation_cleanup(pixel_position: Vector2):
 	sprite_2d.visible = true
+	camera.offset = Vector2.ZERO
 	camera.zoom = camera_zoom
 	movement_blocked = false
 	rpc("_teleport_network_rpc", pixel_position)
@@ -208,6 +214,9 @@ func _teleport_network_rpc(pixel_position: Vector2):
 	global_position = pixel_position
 	visible = true
 	sprite_2d.visible = true
+	collision_area.set_deferred("monitoring", true)
+	collision_area.set_deferred("monitorable", true)
+	collision_shape.set_deferred("disabled", false)
 	if is_multiplayer_authority():
 		camera.global_position = pixel_position
 		player_input_synchronizer.set_process(true)
