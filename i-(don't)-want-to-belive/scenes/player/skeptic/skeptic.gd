@@ -193,19 +193,26 @@ func _play_captured_animation(texture: Texture2D, target_position):
 	animation.position = relative_offset
 	camera.zoom = Vector2(1.5, 1.5)
 	add_child(animation)
-	var camera_tween = create_tween()
-	camera_tween.tween_property(camera, "offset", relative_offset, capture_animation_time) \
-			.set_trans(Tween.TRANS_CUBIC) \
-			.set_ease(Tween.EASE_OUT)
-	camera_tween.tween_callback(_capture_animation_cleanup.bind(pixel_position))
+
+	if is_multiplayer_authority() and is_instance_valid(camera):
+		camera.zoom = Vector2(1.5, 1.5)
+		var camera_tween = create_tween()
+		camera_tween.tween_property(camera, "offset", relative_offset, capture_animation_time) \
+				.set_trans(Tween.TRANS_CUBIC) \
+				.set_ease(Tween.EASE_OUT)
+		camera_tween.tween_callback(_capture_animation_cleanup.bind(pixel_position))
+	else:
+		var fallback_timer = get_tree().create_timer(capture_animation_time)
+		fallback_timer.timeout.connect(_capture_animation_cleanup.bind(pixel_position))
 
 
 func _capture_animation_cleanup(pixel_position: Vector2):
 	sprite_2d.visible = true
 	movement_blocked = false
+	if is_multiplayer_authority() and is_instance_valid(camera):
+		camera.offset = Vector2.ZERO
+		camera.zoom = camera_zoom
 	rpc("_teleport_network_rpc", pixel_position)
-	camera.offset = Vector2.ZERO
-	camera.zoom = camera_zoom
 
 
 @rpc("authority", "call_local", "reliable")

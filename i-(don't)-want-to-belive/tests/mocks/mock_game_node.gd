@@ -10,3 +10,7 @@ func local_to_map(pos: Vector2) -> Vector2i:
 
 func map_to_local(grid_position: Vector2i) -> Vector2:
 	return Vector2(grid_position.x * 16, grid_position.y * 16)
+
+
+func find_new_skeptic_position(paths_array: Array[Vector2i], current_position: Vector2i) -> Vector2i:
+	return Vector2i(20, 20)

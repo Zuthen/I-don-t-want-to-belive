@@ -81,37 +81,46 @@ func _physics_process(_delta):
 
 
 func _capture():
+	# Blokujemy sterowanie i możliwość ponownego kliknięcia akcji
+	capture_blocked = true
+	capture_hit_target = false
+	capture_processing = true
+	movement_blocked = true
+
 	var animation_time = animation_player.get_animation("capture").length
 	animation_player.play("capture")
 	captured.emit(capture_timeout_seconds)
-	capture_hit_target = false
-	capture_processing = true
-	start_cooldown_timer(animation_time, func(): movement_blocked = !movement_blocked)
-	start_cooldown_timer(
-		animation_time,
+	capture_area_collision.disabled = false
+	var capture_tween = create_tween()
+
+	capture_tween.tween_interval(animation_time)
+
+	capture_tween.tween_callback(
 		func():
-			capture_area_collision.set_deferred("disabled", !capture_area_collision.disabled)
+			capture_area_collision.disabled = true
 			_check_capture_result()
+			movement_blocked = false
 	)
-	start_cooldown_timer(capture_timeout_seconds, func(): capture_blocked = false)
-	captured.emit(capture_timeout_seconds)
+
+	var cooldown_tween = create_tween()
+	cooldown_tween.tween_interval(capture_timeout_seconds)
+	cooldown_tween.tween_callback(func(): capture_blocked = false)
 
 
 func _check_capture_result():
 	if not capture_processing:
 		return
-
 	capture_processing = false
 
-	if not capture_hit_target:
-		var my_tile_position = game.tile_map_layer.local_to_map(global_position)
-
-		if game.paths.has(my_tile_position):
-			place_crashed_ufo.rpc(ufo_idx, global_position)
-		else:
-			var nearest_tile = find_nearest_path(global_position)
-			var nearest_pixel_path = game.tile_map_layer.map_to_local(nearest_tile)
-			place_crashed_ufo.rpc(ufo_idx, nearest_pixel_path)
+	if capture_hit_target:
+		return
+	var my_position = game.tile_map_layer.local_to_map(global_position)
+	if game.paths.has(my_position):
+		place_crashed_ufo.rpc(ufo_idx, global_position)
+	else:
+		var nearest_tile = find_nearest_path(global_position)
+		var nearest_pixel_path = game.tile_map_layer.map_to_local(nearest_tile)
+		place_crashed_ufo.rpc(ufo_idx, nearest_pixel_path)
 
 
 func find_nearest_path(pos_pixels: Vector2) -> Vector2i:
