@@ -28,7 +28,8 @@ func afterEach():
 
 
 func test_play_captured_animation_initializes_correctly():
-	var local_skeptic = SkepticScene.instantiate()
+	var local_skeptic = partial_double(SkepticScene).instantiate()
+
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
 	var mock_anim_player = AnimationPlayer.new()
@@ -73,7 +74,7 @@ func test_play_captured_animation_initializes_correctly():
 
 
 func test_capture_animation_cleanup_restores_state():
-	var local_skeptic = SkepticScene.instantiate()
+	var local_skeptic = partial_double(SkepticScene).instantiate()
 
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
@@ -87,13 +88,14 @@ func test_capture_animation_cleanup_restores_state():
 	get_tree().root.add_child(local_skeptic)
 
 	local_skeptic.movement_blocked = true
+
 	stub(local_skeptic, "rpc").to_do_nothing()
 
 	var target_pixel_pos = Vector2(200, 300)
 	local_skeptic._capture_animation_cleanup(target_pixel_pos)
 
 	assert_not_null(local_skeptic)
-	assert_false(local_skeptic.movement_blocked)
+	assert_false(local_skeptic.movement_blocked, "Blokada ruchu powinna zostać zdjęta w funkcji cleanup")
 
 	local_skeptic.queue_free()
 
