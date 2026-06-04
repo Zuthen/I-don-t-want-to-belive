@@ -28,8 +28,10 @@ func afterEach():
 
 
 func test_play_captured_animation_initializes_correctly():
-	var local_skeptic = partial_double(SkepticScene).instantiate()
+	# 1. Tworzymy zwykłą instancję Sceptyka (bez kombinowania ze skryptami)
+	var local_skeptic = SkepticScene.instantiate()
 
+	# 2. Tworzymy makiety komponentów dla stanu początkowego
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
 	var mock_anim_player = AnimationPlayer.new()
@@ -42,6 +44,7 @@ func test_play_captured_animation_initializes_correctly():
 	local_skeptic.sprite_2d = mock_sprite
 	local_skeptic.animation_player = mock_anim_player
 
+	# 3. Tworzymy makiety warstw i rodzica gry
 	var mock_parent = Node2D.new()
 	var parent_script = GDScript.new()
 	parent_script.source_code = "extends Node2D\nvar tile_map_layer: Node2D"
@@ -60,9 +63,11 @@ func test_play_captured_animation_initializes_correctly():
 	mock_parent.add_child(local_skeptic)
 	get_tree().root.add_child(mock_parent)
 
-	var mock_texture = Texture2D.new()
+	var mock_multiplayer = SceneMultiplayer.new()
+	mock_multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+	get_tree().set_multiplayer(mock_multiplayer, local_skeptic.get_path())
 
-	stub(local_skeptic, "rpc").to_do_nothing()
+	var mock_texture = Texture2D.new()
 
 	local_skeptic._play_captured_animation(mock_texture, Vector2i(0, 0))
 
@@ -74,7 +79,7 @@ func test_play_captured_animation_initializes_correctly():
 
 
 func test_capture_animation_cleanup_restores_state():
-	var local_skeptic = partial_double(SkepticScene).instantiate()
+	var local_skeptic = SkepticScene.instantiate()
 
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
@@ -87,9 +92,11 @@ func test_capture_animation_cleanup_restores_state():
 
 	get_tree().root.add_child(local_skeptic)
 
-	local_skeptic.movement_blocked = true
+	var mock_multiplayer = SceneMultiplayer.new()
+	mock_multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+	get_tree().set_multiplayer(mock_multiplayer, local_skeptic.get_path())
 
-	stub(local_skeptic, "rpc").to_do_nothing()
+	local_skeptic.movement_blocked = true
 
 	var target_pixel_pos = Vector2(200, 300)
 	local_skeptic._capture_animation_cleanup(target_pixel_pos)
