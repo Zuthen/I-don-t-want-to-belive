@@ -18,6 +18,7 @@ func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLaye
 			role_name = Role.UFO
 		elif data.has("type") and data.type == "alien":
 			player_node = alien_scene.instantiate() as Alien
+			player_node.remove_from_group("ufos")
 			role_name = Role.ALIEN
 		else:
 			player_node = skeptic_scene.instantiate() as Skeptic

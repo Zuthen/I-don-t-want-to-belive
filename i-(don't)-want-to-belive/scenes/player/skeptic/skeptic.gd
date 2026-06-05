@@ -19,6 +19,7 @@ var is_male
 var movement_blocked := false
 var can_send_coordinates = true
 var voice_emitter_active := false
+var seen_ufos: Array[int] = []
 const walkie_talkie_timeout_seconds: float = 60 * 2
 const speed = 100.0
 var direction_sprite := "down"
@@ -43,7 +44,6 @@ func _ready():
 	belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
 	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
-
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
 	if has_node("PlayerInputSynchronizer"):
@@ -260,6 +260,12 @@ func trigger_captured_effects_network(ufo_index: int, target_pos: Vector2i):
 		_play_captured_animation(ufo_texture, target_pos)
 	else:
 		pass
+
+
+func _on_crashed_ufo_discovered(ufo_peer_id: int):
+	if not seen_ufos.has(ufo_peer_id):
+		seen_ufos.append(ufo_peer_id)
+		belive_points_changed.emit(1)
 
 
 func animate(direction: Vector2):
