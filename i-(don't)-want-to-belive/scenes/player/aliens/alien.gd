@@ -17,48 +17,53 @@ var voice_emitter_active := false
 const speed = 120.0
 var direction_sprite := "down"
 
+# Prosty, czysty setter dla autorytetu sieciowego
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
-		set_multiplayer_authority(value)
-		if has_node("PlayerInputSynchronizer"):
-			$PlayerInputSynchronizer.set_multiplayer_authority(value)
+		# Flaga 'true' na końcu automatycznie przekazuje to ID w głąb (na Kamerę też!)
+		set_multiplayer_authority(value, true)
+
+# Setter dla skórki kosmity z rozbitego UFO
+var ufo_idx: int = 0:
+	set(value):
+		ufo_idx = value
+		if is_inside_tree() and animation_player:
+			if AliensTextures.alien_textures.size() > ufo_idx:
+				var my_skin = AliensTextures.alien_textures[ufo_idx]
+				set_animations(my_skin)
 
 
 func _ready():
-	if AliensTextures.alien_textures.size() > 0:
-		var first_alien_skin = AliensTextures.alien_textures[0]
-		set_animations(first_alien_skin)
 	collision_area.area_entered.connect(_on_alien_find_skeptic)
 
-	if input_multiplayer_authority != 0:
-		set_multiplayer_authority(input_multiplayer_authority)
+	if AliensTextures.alien_textures.size() > ufo_idx:
+		set_animations(AliensTextures.alien_textures[ufo_idx])
+
+	if input_multiplayer_authority == 0 and name.is_valid_int():
+		input_multiplayer_authority = name.to_int()
+
 	if has_node("PlayerInputSynchronizer"):
-		$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
+		player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
+		player_input_synchronizer.set_process(is_multiplayer_authority())
+		player_input_synchronizer.set_physics_process(is_multiplayer_authority())
 
 	if is_multiplayer_authority() and has_node("Camera2D"):
-		set_camera(camera)
+		set_camera(camera, 6.0)
 
-	await get_tree().process_frame
-
-	var my_own_hero = null
-	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
+	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("aliens"):
 		if node.is_multiplayer_authority():
-			my_own_hero = node
+			if node.name.begins_with("To_Delete_"):
+				continue
+			var my_own_hero = node
 			break
-
-	if my_own_hero and my_own_hero.is_in_group("ufos"):
-		visible = false
 
 
 func callable_initialize_visibility():
-	var local_player = get_tree().get_first_node_in_group("local_player")
-	if local_player and local_player.is_in_group("ufos"):
-		local_player.player_role_assigned.emit()
-		visible = false
-
 	if is_multiplayer_authority():
-		get_tree().call_group("ufos", "set_visible", false)
+		get_tree().call_group("ufos", "set_visible", true)
+		get_tree().call_group("skeptics", "set_visible", true)
+		get_tree().call_group("aliens", "set_visible", true)
 
 
 func _process(_delta):
@@ -173,4 +178,18 @@ func animate(direction: Vector2):
 		animation_player.play("move right" + animation_sprite_name_suffix)
 		direction_sprite = "right"
 	elif norm_dir == Vector2.ZERO:
-		animation_player.play("idle " + direction_sprite + animation_sprite_name_suffix)
+		animation_player.play("idle down" + animation_sprite_name_suffix)
+
+
+func set_camera(_target_camera: Camera2D, desired_zoom: float = 0.0):
+	# Ignorujemy limity mapy z Player.gd!
+	# Pozwalamy kamerze Aliena na pełną swobodę ruchu:
+	camera.enabled = true
+	camera.make_current()
+	camera.zoom = Vector2(6.0, 6.0)
+
+	camera.limit_top = -1000000
+	camera.limit_bottom = 1000000
+	camera.limit_left = -1000000
+	camera.limit_right = 1000000
+	print("[ALIEN] Funkcja set_camera z klasy bazowej została pomyślnie zablokowana!")

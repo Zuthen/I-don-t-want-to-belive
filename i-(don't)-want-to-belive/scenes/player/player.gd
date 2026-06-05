@@ -11,9 +11,12 @@ signal skeptics_win
 var id: int = 0
 
 
-func set_camera(camera: Camera2D):
-	var camera_limits = MapSettings.get_map_limits()
+func set_camera(camera: Camera2D, desired_zoom: float = 0.0):
 	camera.enabled = true
+	if desired_zoom > 0.0:
+		camera.zoom = Vector2(desired_zoom, desired_zoom)
+
+	var camera_limits = MapSettings.get_map_limits()
 	camera.limit_top = camera_limits.top
 	camera.limit_bottom = camera_limits.bottom
 	camera.limit_left = camera_limits.left

@@ -11,6 +11,7 @@ extends Player
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
+var alien_scene = preload("uid://157ip2c8a5yg")
 var ufo_sprites: UfosTextures.UfoTextures
 var capture_hit_target := false
 var laser_shoot_blocked := false
@@ -81,7 +82,6 @@ func _physics_process(_delta):
 
 
 func _capture():
-	# Blokujemy sterowanie i możliwość ponownego kliknięcia akcji
 	capture_blocked = true
 	capture_hit_target = false
 	capture_processing = true
@@ -116,11 +116,11 @@ func _check_capture_result():
 		return
 	var my_position = game.tile_map_layer.local_to_map(global_position)
 	if game.paths.has(my_position):
-		place_crashed_ufo.rpc(ufo_idx, global_position)
+		_on_capture_failed.rpc(ufo_idx, global_position)
 	else:
 		var nearest_tile = find_nearest_path(global_position)
 		var nearest_pixel_path = game.tile_map_layer.map_to_local(nearest_tile)
-		place_crashed_ufo.rpc(ufo_idx, nearest_pixel_path)
+		_on_capture_failed.rpc(ufo_idx, nearest_pixel_path)
 
 
 func find_nearest_path(pos_pixels: Vector2) -> Vector2i:
@@ -189,20 +189,37 @@ func _on_capture(other):
 
 
 @rpc("any_peer", "call_local", "reliable")
-func place_crashed_ufo(ufo_index: int, target_global_position: Vector2):
+func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 	if not multiplayer.is_server():
 		return
 
 	var sender_id = multiplayer.get_remote_sender_id()
+
 	var crashed_ufo = crashed_ufo_scene.instantiate() as CrashedUfo
 	crashed_ufo.peer_id = sender_id
-
-	crashed_ufo.name = "CrashedUfo_" + str(sender_id) + "_" + str(randi() % 1000)
-
 	var selected_texture = UfosTextures.ufo_textures[ufo_index].ship_crashed
 	crashed_ufo.texture = selected_texture
 	game.add_child(crashed_ufo, true)
 	crashed_ufo.position = target_global_position
+	crashed_ufo.name = "CrashedUfo_" + str(sender_id)
+
+	var ufo_to_remove = game.get_node(str(sender_id))
+
+	if ufo_to_remove:
+		ufo_to_remove.queue_free()
+
+	var tile_map = game.tile_map_layer
+	var grid_position = tile_map.local_to_map(tile_map.to_local(target_global_position))
+
+	var spawn_data = {
+		"type": "alien",
+		"peer_id": sender_id,
+		"spawn_position": grid_position,
+		"ufo_idx": ufo_index,
+	}
+
+	var alien_node = game.multiplayer_spawner.spawn(spawn_data) as Alien
+	alien_node.ufo_idx = ufo_index
 
 
 @rpc("any_peer", "call_local", "reliable")
