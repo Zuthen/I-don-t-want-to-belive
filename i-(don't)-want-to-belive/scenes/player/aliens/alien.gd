@@ -17,14 +17,11 @@ var voice_emitter_active := false
 const speed = 120.0
 var direction_sprite := "down"
 
-# Prosty, czysty setter dla autorytetu sieciowego
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
-		# Flaga 'true' na końcu automatycznie przekazuje to ID w głąb (na Kamerę też!)
 		set_multiplayer_authority(value, true)
 
-# Setter dla skórki kosmity z rozbitego UFO
 var ufo_idx: int = 0:
 	set(value):
 		ufo_idx = value
@@ -55,7 +52,6 @@ func _ready():
 		if node.is_multiplayer_authority():
 			if node.name.begins_with("To_Delete_"):
 				continue
-			var my_own_hero = node
 			break
 
 
@@ -179,17 +175,3 @@ func animate(direction: Vector2):
 		direction_sprite = "right"
 	elif norm_dir == Vector2.ZERO:
 		animation_player.play("idle down" + animation_sprite_name_suffix)
-
-
-func set_camera(_target_camera: Camera2D, desired_zoom: float = 0.0):
-	# Ignorujemy limity mapy z Player.gd!
-	# Pozwalamy kamerze Aliena na pełną swobodę ruchu:
-	camera.enabled = true
-	camera.make_current()
-	camera.zoom = Vector2(6.0, 6.0)
-
-	camera.limit_top = -1000000
-	camera.limit_bottom = 1000000
-	camera.limit_left = -1000000
-	camera.limit_right = 1000000
-	print("[ALIEN] Funkcja set_camera z klasy bazowej została pomyślnie zablokowana!")
