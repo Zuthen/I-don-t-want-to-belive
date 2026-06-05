@@ -26,7 +26,8 @@ func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLaye
 		player_node.name = str(data.peer_id)
 		player_node.id = data.peer_id
 		player_node.input_multiplayer_authority = data.peer_id
-
+		if data.has("ufo_idx") and player_node is Alien:
+			player_node.ufo_idx = data.ufo_idx
 		if data.has("spawn_position"):
 			player_node.position = tile_map.map_to_local(data.spawn_position)
 
@@ -42,11 +43,14 @@ func spawn_player(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLaye
 
 
 func assign_to_group(data, player_node):
-	if data.has("type") and data.type == "ufo":
-		player_node.add_to_group("ufos")
-
-	elif data.has("type") and data.type == "skeptic":
-		player_node.add_to_group("skeptics")
+	if data.has("type"):
+		match data.type:
+			"ufo":
+				player_node.add_to_group("ufos")
+			"skeptic":
+				player_node.add_to_group("skeptics")
+			"alien":
+				player_node.add_to_group("aliens")
 
 
 func get_role() -> Role:

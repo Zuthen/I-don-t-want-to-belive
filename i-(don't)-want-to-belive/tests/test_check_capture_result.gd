@@ -11,7 +11,7 @@ extends Ufo
 
 static var crash_call_count : int = 0
 
-func place_crashed_ufo(ufo_index: int, target_global_position: Vector2):
+func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 	crash_call_count += 1
 "
 	test_script.reload()
@@ -60,7 +60,7 @@ extends Ufo
 
 static var crash_call_count : int = 0
 
-func place_crashed_ufo(ufo_index: int, target_global_position: Vector2):
+func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 	crash_call_count += 1
 "
 	test_script.reload()

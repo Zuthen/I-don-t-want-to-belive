@@ -1678,7 +1678,7 @@ sources/0 = SubResource("TileSetAtlasSource_7h61r")
 script = ExtResource("1_kelw5")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=388352307]
-_spawnable_scenes = PackedStringArray("uid://dnsiqidfpctrc", "uid://bddko8bky1tp7")
+_spawnable_scenes = PackedStringArray("uid://dnsiqidfpctrc", "uid://bddko8bky1tp7", "uid://157ip2c8a5yg")
 spawn_path = NodePath("..")
 
 [node name="Background" type="TileMapLayer" parent="." unique_id=1993590960]
