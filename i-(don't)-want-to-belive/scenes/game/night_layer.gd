@@ -45,6 +45,10 @@ func _process(_delta):
 			setup_ufo_view()
 		return
 
+	if last_player_tile == Vector2i(0, 0) and (local_player.is_in_group("aliens") or local_player.is_in_group("skeptics")):
+		last_player_tile = Vector2i(-999, -999)
+		initialize_fog()
+
 	var current_tile = buildings_layer.local_to_map(local_player.global_position)
 
 	if current_tile != last_player_tile:
@@ -85,7 +89,7 @@ func apply_new_fog(center_tile: Vector2i):
 
 
 func get_local_player() -> Node2D:
-	for group in ["skeptics", "ufos"]:
+	for group in ["skeptics", "aliens", "ufos"]:
 		for node in get_tree().get_nodes_in_group(group):
 			if node.is_multiplayer_authority():
 				return node
