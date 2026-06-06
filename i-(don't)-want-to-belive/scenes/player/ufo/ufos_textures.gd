@@ -4,7 +4,6 @@ const FOLDER_PATH = "res://assets/characters/ufos/"
 
 var dir = DirAccess.open(FOLDER_PATH)
 var sprites: Array[String]
-var textures: Array[UfoTextures]
 var ufo_textures: Array[UfoTextures] = []
 
 
@@ -14,6 +13,7 @@ func _ready():
 
 
 class UfoTextures:
+	var color: String
 	var ship: Texture2D
 	var laser1: Texture2D
 	var laser2: Texture2D
@@ -52,6 +52,7 @@ func map_to_ufo_texture(files_list: Array[String]):
 
 	for color in colors:
 		var ufo_sprites: UfoTextures = UfoTextures.new()
+		ufo_sprites.color = color
 		ufo_sprites.ship = load(FOLDER_PATH + "ship" + color + "_manned.png")
 		ufo_sprites.laser1 = load(FOLDER_PATH + "laser" + color + "1.png")
 		ufo_sprites.laser2 = load(FOLDER_PATH + "laser" + color + "2.png")
@@ -59,5 +60,4 @@ func map_to_ufo_texture(files_list: Array[String]):
 		ufo_sprites.laser_burst = load(FOLDER_PATH + "laser" + color + "_burst.png")
 		ufo_sprites.laser_ground_burst = load(FOLDER_PATH + "laser" + color + "_groundBurst.png")
 		ufo_sprites.ship_crashed = load(FOLDER_PATH + "ship" + color + "_damage2.png")
-
 		ufo_textures.append(ufo_sprites)

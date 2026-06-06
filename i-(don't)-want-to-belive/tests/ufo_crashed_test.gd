@@ -14,7 +14,7 @@ func before_each():
 	_tile_map = _game_instance.tile_map_layer
 	_spawner = _game_instance.multiplayer_spawner
 
-	MultiplayerFeatures.spawn_player(_spawner, _tile_map)
+	MultiplayerFeatures.spawn(_spawner, _tile_map)
 
 
 func test_alien_spawns_at_correct_tilemap_position_after_ufo_crash():

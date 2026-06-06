@@ -2,31 +2,9 @@
 
 [ext_resource type="Script" uid="uid://de6sywk55p8ge" path="res://scenes/player/ufo/ufo.gd" id="1_psnoh"]
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="2_p8ene"]
-[ext_resource type="PackedScene" uid="uid://cba40e72olvj2" path="res://scenes/player/ufo_type_camera.tscn" id="3_vy8hg"]
 [ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/coordinates.tscn" id="4_elve6"]
 [ext_resource type="Texture2D" uid="uid://dbxf7yvrhjp60" path="res://assets/characters/ufos/laserBeige3.png" id="5_grf6f"]
-[ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="7_j8uuj"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="7_psnoh"]
-
-[sub_resource type="GDScript" id="GDScript_psnoh"]
-script/source = "extends MultiplayerSynchronizer
-
-var movement_vector = Vector2.ZERO
-
-
-func _process(_delta):
-	if is_multiplayer_authority():
-		gather_input()
-
-
-func gather_input():
-	movement_vector = Input.get_vector(\"walk_left\", \"walk_right\", \"walk_up\", \"walk_down\")
-"
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_t7s1w"]
-properties/0/path = NodePath(".:global_position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
 
 [sub_resource type="Animation" id="Animation_vy8hg"]
 length = 0.001
@@ -138,8 +116,6 @@ _data = {
 &"capture": SubResource("Animation_psnoh")
 }
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hv1eg"]
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1aexw"]
 size = Vector2(76, 78)
 
@@ -154,19 +130,8 @@ collision_layer = 32
 collision_mask = 16
 script = ExtResource("1_psnoh")
 
-[node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("7_j8uuj")]
-script = SubResource("GDScript_psnoh")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1226729287]
-replication_config = SubResource("SceneReplicationConfig_t7s1w")
-
-[node name="Camera2D" parent="." unique_id=1105090035 instance=ExtResource("3_vy8hg")]
-
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=718705382]
 libraries/ = SubResource("AnimationLibrary_p8ene")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=126880545]
-shape = SubResource("CapsuleShape2D_hv1eg")
 
 [node name="Ship" type="Sprite2D" parent="." unique_id=1311477454]
 scale = Vector2(0.25, 0.25)

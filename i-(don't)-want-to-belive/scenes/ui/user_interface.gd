@@ -42,8 +42,9 @@ func _ready():
 			player.belive_points_changed.connect(_on_belive_points_changed)
 			player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
 		elif role == MultiplayerFeatures.Role.UFO:
-			player.laser_shoot.connect(_on_q_skill_fired)
-			player.captured.connect(_on_e_skill_fired)
+			var ufo = player.get_node_or_null("Ufo")
+			ufo.laser_shoot.connect(_on_q_skill_fired)
+			ufo.captured.connect(_on_e_skill_fired)
 		_setup_ui(role)
 	else:
 		printerr("[UI] Błąd sieciowy: Klient o ID ", multiplayer.get_unique_id(), " nie doczekał się swojej postaci!")

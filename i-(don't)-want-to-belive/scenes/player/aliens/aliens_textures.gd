@@ -14,6 +14,7 @@ func _ready():
 
 
 class AlienTextures:
+	var color: String
 	var climb_a: Texture2D
 	var climb_b: Texture2D
 	var duck: Texture2D
@@ -53,6 +54,7 @@ func map_to_alien_texture(files_list: Array[String]):
 
 	for color in colors:
 		var alien_sprites: AlienTextures = AlienTextures.new()
+		alien_sprites.color = color
 		var name_start = FOLDER_PATH + "character_" + color
 		alien_sprites.climb_a = load(name_start + "_climb_a.png")
 		alien_sprites.climb_b = load(name_start + "_climb_b.png")

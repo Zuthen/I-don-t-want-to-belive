@@ -5,22 +5,33 @@ class_name CrashedUfo
 @onready var sprite_2d = $Sprite2D
 @onready var vision = $Vision
 @onready var collision_shape = $Vision/CollisionShape2D
+@onready var explosion = $Explosion
+@onready var particle = $Particle
 
 var peer_id: int
+var ufo_texture_idx:
+	set(value):
+		ufo_texture_idx = value
+		if is_inside_tree() and sprite_2d and value != null:
+			if UfosTextures.ufo_textures.size() > value:
+				sprite_2d.texture = UfosTextures.ufo_textures[value].ship_crashed
+				print("[WRAK] Tekstura nałożona pomyślnie dla indeksu: ", value)
 
 signal crashed_ufo_seen(peer_id: int)
-
-var texture: Texture2D:
-	set(value):
-		texture = value
-		if sprite_2d:
-			sprite_2d.texture = value
 
 
 func _ready():
 	collision_shape_setup()
-	if texture and sprite_2d:
-		sprite_2d.texture = texture
+	var explosion_time = explosion.get_animation("crash").length
+	var explosion_timer = Timer.new()
+	explosion_timer.one_shot = true
+	explosion_timer.timeout.connect(func(): particle.visible = false)
+	add_child(explosion_timer)
+	explosion_timer.start(explosion_time)
+	explosion.play("crash")
+	if ufo_texture_idx != null and UfosTextures.ufo_textures.size() > ufo_texture_idx:
+		sprite_2d.texture = UfosTextures.ufo_textures[ufo_texture_idx].ship_crashed
+
 	vision.area_entered.connect(_on_crashed_ufo_seen)
 
 
