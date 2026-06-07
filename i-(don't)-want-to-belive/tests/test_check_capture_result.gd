@@ -41,7 +41,7 @@ func before_each():
 extends Node2D
 var paths: Array[Vector2i] = []
 var tile_map_layer: Node2D
-var multiplayer_spawner: Node2D
+var multiplayer_spawner: Node
 
 func local_to_map(local_position: Vector2) -> Vector2i:
 	return Vector2i(10, 10)
@@ -55,6 +55,10 @@ func map_to_local(map_position: Vector2i) -> Vector2:
 
 	fake_game.paths = [Vector2i(10, 10)] as Array[Vector2i]
 	fake_game.tile_map_layer = fake_game
+
+	fake_game.multiplayer_spawner = Node.new()
+	fake_game.multiplayer_spawner.name = "FakeMultiplayerSpawner"
+	fake_game.add_child(fake_game.multiplayer_spawner)
 
 	add_child_autofree(fake_game)
 
@@ -106,3 +110,23 @@ func test_check_capture_result_does_not_crash_ufo_if_target_hit():
 	assert_not_null(mock_ufo)
 	assert_false(mock_ufo.capture_processing)
 	assert_eq(mock_ufo.mock_crash_count, 0)
+
+
+func test_alien_spawns_at_correct_tilemap_position_after_ufo_crash():
+	# Arrange
+	mock_ufo = PureLogicUfoMock.new()
+	mock_ufo.name = "MockUfoForCrash"
+	mock_ufo.game = fake_game
+	mock_ufo.tile_map_layer = fake_game
+	fake_game.add_child(mock_ufo)
+
+	mock_ufo.global_position = Vector2(160, 160)
+	mock_ufo.capture_processing = true
+	mock_ufo.capture_hit_target = false
+
+	# Act
+	mock_ufo._check_capture_result()
+	await wait_frames(2)
+
+	# Assert
+	assert_eq(mock_ufo.mock_crash_count, 1)
