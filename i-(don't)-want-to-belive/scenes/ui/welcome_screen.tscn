@@ -1,0 +1,377 @@
+[gd_scene format=3 uid="uid://8hnv34c0paf"]
+
+[ext_resource type="Texture2D" uid="uid://bvsh4hvd1nfa8" path="res://assets/objects/planets/planet01.png" id="1_suexb"]
+[ext_resource type="Texture2D" uid="uid://bla8l3q5a3a10" path="res://assets/objects/stars/star_01.png" id="1_w47s1"]
+[ext_resource type="Texture2D" uid="uid://50kg0886ox8g" path="res://assets/objects/planets/planet02.png" id="2_ifbom"]
+[ext_resource type="Texture2D" uid="uid://diuojxfyrhoyv" path="res://assets/objects/stars/star_02.png" id="2_nq1tr"]
+[ext_resource type="Texture2D" uid="uid://eb3uu4ibeu4x" path="res://assets/objects/stars/star_03.png" id="3_tk3c2"]
+[ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="3_ujm4a"]
+[ext_resource type="Texture2D" uid="uid://c01cqwjs1e822" path="res://assets/objects/planets/planet04.png" id="4_05yft"]
+[ext_resource type="Texture2D" uid="uid://b3o6lacdx8gpt" path="res://assets/objects/stars/star_05.png" id="4_m7lbu"]
+[ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="9_nq1tr"]
+[ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="10_tk3c2"]
+
+[sub_resource type="Animation" id="Animation_80at6"]
+length = 4.0
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/RichTextLabel:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5666667, 3.5666668),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 1.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/Sprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.09, 2.48, 3.22, 3.87),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(267, 810), Vector2(660, 569), Vector2(403, 422), Vector2(504, 39), Vector2(134, 145)]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CanvasLayer/Sprite2D/GPUParticles2D")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(3.9),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CanvasLayer/Stars/big:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 1.57),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.8, 0.8)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CanvasLayer/Stars/small:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.03, 1.57),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CanvasLayer/Stars/small2:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.03, 1.57),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("CanvasLayer/Stars/small3:scale")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.03, 1.57),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("CanvasLayer/Stars/small4:scale")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.03, 1.57),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("CanvasLayer/Planets/Earth:scale")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.02, 1.57),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.7, 0.7), Vector2(1, 1)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("CanvasLayer/Planets/Sprite2D:scale")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.01, 1.58),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("CanvasLayer/Planets/Sprite2D2:scale")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.03, 1.59),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.04, 0.04)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("CanvasLayer/Planets/Sprite2D4:scale")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0, 1.99),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.15, 0.15), Vector2(0.1, 0.1)]
+}
+
+[sub_resource type="Animation" id="Animation_ejsg3"]
+resource_name = "default"
+length = 4.0
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CanvasLayer/Stars/small4:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CanvasLayer/Stars/small:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CanvasLayer/Stars/small2:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CanvasLayer/Stars/small3:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CanvasLayer/Stars/big:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.8, 0.8), Vector2(0.5, 0.5)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CanvasLayer/Planets/Sprite2D:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.2, 0.2)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("CanvasLayer/Planets/Sprite2D2:scale")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.08, 0.08), Vector2(0.04, 0.04)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("CanvasLayer/Planets/Sprite2D4:scale")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.3, 0.3), Vector2(0.1, 0.1)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("CanvasLayer/RichTextLabel:visible_ratio")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(1, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_4ak4v"]
+_data = {
+&"RESET": SubResource("Animation_80at6"),
+&"default": SubResource("Animation_ejsg3")
+}
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_tk3c2"]
+particle_flag_disable_z = true
+direction = Vector3(-1, 0, 0)
+gravity = Vector3(0, 0, 0)
+scale_min = 0.049999997
+scale_max = 0.089999996
+
+[node name="WelcomeScreen" type="Node2D" unique_id=1082575388]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1421072334]
+libraries/ = SubResource("AnimationLibrary_4ak4v")
+autoplay = &"RESET"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2124612344]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=2066814554]
+offset_left = -28.0
+offset_top = -20.0
+offset_right = 851.0
+offset_bottom = 712.0
+color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
+
+[node name="Stars" type="Node" parent="CanvasLayer" unique_id=723881342]
+
+[node name="big" type="Sprite2D" parent="CanvasLayer/Stars" unique_id=890700622]
+position = Vector2(351, 100)
+texture = ExtResource("1_w47s1")
+
+[node name="small" type="Sprite2D" parent="CanvasLayer/Stars" unique_id=415329357]
+position = Vector2(47.00006, 394.99997)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_nq1tr")
+
+[node name="small2" type="Sprite2D" parent="CanvasLayer/Stars" unique_id=1360618972]
+position = Vector2(758, 123.00001)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("3_tk3c2")
+
+[node name="small3" type="Sprite2D" parent="CanvasLayer/Stars" unique_id=1136280957]
+position = Vector2(53.00006, 53.000008)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("4_m7lbu")
+
+[node name="small4" type="Sprite2D" parent="CanvasLayer/Stars" unique_id=305262438]
+position = Vector2(582.99994, 223.99997)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("4_m7lbu")
+
+[node name="Planets" type="Node" parent="CanvasLayer" unique_id=1693208146]
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer/Planets" unique_id=1294285730]
+position = Vector2(172, 152)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("1_suexb")
+
+[node name="Sprite2D2" type="Sprite2D" parent="CanvasLayer/Planets" unique_id=1470387630]
+position = Vector2(715, 240)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_ifbom")
+
+[node name="Sprite2D4" type="Sprite2D" parent="CanvasLayer/Planets" unique_id=1754767922]
+position = Vector2(484, 28.000004)
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("4_05yft")
+
+[node name="Earth" type="Sprite2D" parent="CanvasLayer/Planets" unique_id=206717781]
+position = Vector2(440, 788)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("3_ujm4a")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer" unique_id=2102253161]
+offset_left = 90.0
+offset_top = 131.0
+offset_right = 819.0
+offset_bottom = 594.0
+theme_override_colors/default_color = Color(0.8932403, 0.34896463, 0.46216196, 1)
+theme_override_colors/font_outline_color = Color(0.8666667, 0.8666667, 0.8666667, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_constants/outline_size = 24
+theme_override_fonts/normal_font = ExtResource("9_nq1tr")
+theme_override_font_sizes/normal_font_size = 55
+text = "Nie chcę uwierzyć"
+fit_content = true
+visible_characters = 0
+visible_ratio = 0.0
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer" unique_id=2031198657]
+position = Vector2(267, 810)
+texture = ExtResource("10_tk3c2")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="CanvasLayer/Sprite2D" unique_id=1082859940]
+position = Vector2(-4, 48)
+texture = ExtResource("4_m7lbu")
+process_material = SubResource("ParticleProcessMaterial_tk3c2")
+metadata/_edit_group_ = true
