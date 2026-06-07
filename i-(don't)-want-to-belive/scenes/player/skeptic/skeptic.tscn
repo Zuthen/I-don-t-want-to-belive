@@ -449,6 +449,7 @@ scale = Vector2(0.45, 0.45)
 
 [node name="WarningLabel" type="Label" parent="." unique_id=690878107]
 visible = false
+z_index = 4
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5

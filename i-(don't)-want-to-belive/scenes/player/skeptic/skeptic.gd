@@ -52,7 +52,6 @@ func _ready():
 	warning_label.visible = false
 	camera_zoom = camera.zoom
 
-	# Łączenie sygnałów wewnętrznych
 	belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
 	alien_seen.connect(_on_alien_seen)
@@ -77,7 +76,6 @@ func _update_visibility_for_local_player():
 			my_local_hero = p
 			break
 
-	# Sceptyk staje się niewidoczny wyłącznie dla gracza, który aktualnie steruje UFO
 	if my_local_hero and my_local_hero.is_in_group("ufos"):
 		visible = false
 		sprite_2d.visible = false
@@ -173,7 +171,7 @@ func _on_laser_seen():
 	var target_position = dialog.global_position + global_position
 	var icon_placeholder = icon_placeholder_scene.instantiate()
 
-	icon_placeholder.accepts_role = [MultiplayerFeatures.Role.UFO, MultiplayerFeatures.Role.SKEPTIC]
+	icon_placeholder.accepts_role = [MultiplayerFeatures.Role.UFO, MultiplayerFeatures.Role.SKEPTIC] as Array[MultiplayerFeatures.Role]
 	icon_placeholder.icon = preload("uid://ddjkfec0jsuw")
 	get_tree().root.add_child(icon_placeholder)
 

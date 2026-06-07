@@ -32,7 +32,6 @@ var ufo_idx: int = 0:
 
 func _ready():
 	collision_area.area_entered.connect(on_skeptic_seen_alien)
-
 	_apply_skin_textures()
 
 	if is_multiplayer_authority():
@@ -54,12 +53,20 @@ func _physics_process(_delta):
 	animate(sync_direction)
 
 
+@rpc("any_peer", "call_local", "reliable")
+func _sync_alien_skin_across_network(assigned_idx: int):
+	ufo_idx = assigned_idx
+	_apply_skin_textures()
+
+
 func _apply_skin_textures():
 	var alien_skins_idx = map_alien_color(ufo_idx)
 	if alien_skins_idx != -1 and alien_skins_idx < AliensTextures.alien_textures.size():
 		current_skin = AliensTextures.alien_textures[alien_skins_idx]
-		if is_inside_tree() and animation_player:
+
+		if is_inside_tree() and animation_player and sprite_2d:
 			set_animations(current_skin)
+			sprite_2d.texture = current_skin.front
 
 
 func callable_initialize_visibility():

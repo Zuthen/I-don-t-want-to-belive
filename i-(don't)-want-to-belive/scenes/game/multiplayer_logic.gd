@@ -43,7 +43,8 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 			if player_node.has_node("Ufo"):
 				player_node.get_node("Ufo").ufo_idx = data.ufo_idx
 			if player_node.has_node("Alien"):
-				player_node.get_node("Alien").ufo_idx = data.ufo_idx
+				var alien_node = player_node.get_node("Alien")
+				alien_node.ufo_idx = data.ufo_idx
 
 		if player_node is Skeptic and data.has("is_male"):
 			player_node.is_male = data.is_male

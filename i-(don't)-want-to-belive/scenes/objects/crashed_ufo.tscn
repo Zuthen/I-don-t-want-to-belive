@@ -36,6 +36,30 @@
 [ext_resource type="Texture2D" uid="uid://r4xdgd46oxwh" path="res://assets/particles/Black smoke/blackSmoke22.png" id="33_u5oub"]
 [ext_resource type="Texture2D" uid="uid://borpk7odbcqlg" path="res://assets/particles/Black smoke/blackSmoke23.png" id="34_2hv8w"]
 [ext_resource type="Texture2D" uid="uid://bgiaiuea82rt8" path="res://assets/particles/Black smoke/blackSmoke24.png" id="35_g3ofq"]
+[ext_resource type="Texture2D" uid="uid://cbchcmkwamnpg" path="res://assets/particles/White puff/whitePuff00.png" id="36_2satv"]
+[ext_resource type="Texture2D" uid="uid://d1i1f3gr1eojb" path="res://assets/particles/White puff/whitePuff01.png" id="37_58ykf"]
+[ext_resource type="Texture2D" uid="uid://cmt76mfejhifh" path="res://assets/particles/White puff/whitePuff02.png" id="38_gaju1"]
+[ext_resource type="Texture2D" uid="uid://cwl06rfw3lx3j" path="res://assets/particles/White puff/whitePuff03.png" id="39_2csdq"]
+[ext_resource type="Texture2D" uid="uid://d4jalmxipjoha" path="res://assets/particles/White puff/whitePuff04.png" id="40_f1gdt"]
+[ext_resource type="Texture2D" uid="uid://dv6ppylsb5i74" path="res://assets/particles/White puff/whitePuff05.png" id="41_isp82"]
+[ext_resource type="Texture2D" uid="uid://m5shprld6oby" path="res://assets/particles/White puff/whitePuff06.png" id="42_u5oub"]
+[ext_resource type="Texture2D" uid="uid://c1sf4qfn7haor" path="res://assets/particles/White puff/whitePuff07.png" id="43_2hv8w"]
+[ext_resource type="Texture2D" uid="uid://d0f8nngd8ayus" path="res://assets/particles/White puff/whitePuff08.png" id="44_g3ofq"]
+[ext_resource type="Texture2D" uid="uid://0q7uh2cm5eh8" path="res://assets/particles/White puff/whitePuff09.png" id="45_nrkhd"]
+[ext_resource type="Texture2D" uid="uid://d1leydhxevo8g" path="res://assets/particles/White puff/whitePuff10.png" id="46_epy81"]
+[ext_resource type="Texture2D" uid="uid://1yd43fac8wue" path="res://assets/particles/White puff/whitePuff11.png" id="47_wwqdu"]
+[ext_resource type="Texture2D" uid="uid://cfwbpptbtd784" path="res://assets/particles/White puff/whitePuff12.png" id="48_r50w0"]
+[ext_resource type="Texture2D" uid="uid://ue16s1h1srix" path="res://assets/particles/White puff/whitePuff13.png" id="49_5wqkc"]
+[ext_resource type="Texture2D" uid="uid://c7rliine045kq" path="res://assets/particles/White puff/whitePuff14.png" id="50_8ijo4"]
+[ext_resource type="Texture2D" uid="uid://cg0v1jycild02" path="res://assets/particles/White puff/whitePuff15.png" id="51_1c1ce"]
+[ext_resource type="Texture2D" uid="uid://dtpsb6dvhqar8" path="res://assets/particles/White puff/whitePuff16.png" id="52_8gpmc"]
+[ext_resource type="Texture2D" uid="uid://bsvtk4ypl6b78" path="res://assets/particles/White puff/whitePuff17.png" id="53_ajuaj"]
+[ext_resource type="Texture2D" uid="uid://c1f6fuy32ompx" path="res://assets/particles/White puff/whitePuff18.png" id="54_a2j8f"]
+[ext_resource type="Texture2D" uid="uid://b8mi16hx8ewyt" path="res://assets/particles/White puff/whitePuff19.png" id="55_bq5kk"]
+[ext_resource type="Texture2D" uid="uid://cdujhc323udah" path="res://assets/particles/White puff/whitePuff20.png" id="56_2lmo5"]
+[ext_resource type="Texture2D" uid="uid://dfa5nwc03etc1" path="res://assets/particles/White puff/whitePuff21.png" id="57_oqhft"]
+[ext_resource type="Texture2D" uid="uid://c4d8hcxu4pmu7" path="res://assets/particles/White puff/whitePuff22.png" id="58_rjxjh"]
+[ext_resource type="Texture2D" uid="uid://bcttka8brswaw" path="res://assets/particles/White puff/whitePuff23.png" id="59_m1lvr"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_2sb7k"]
 properties/0/path = NodePath(".:global_position")
@@ -68,6 +92,30 @@ tracks/1/keys = {
 "update": 1,
 "values": [true]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Particle:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.1, 0.1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Particle:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -6.9999995)]
+}
 
 [sub_resource type="Animation" id="Animation_j01sh"]
 resource_name = "crash"
@@ -92,22 +140,91 @@ tracks/1/path = NodePath("Particle:visible")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(5.15),
+"times": PackedFloat32Array(0.05, 5.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Particle:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 4.95),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.1, 0.1), Vector2(0.01, 0.01)]
+}
+
+[sub_resource type="Animation" id="Animation_wey35"]
+resource_name = "idle"
+length = 6.0
+loop_mode = 1
+step = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Particle:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(-0.125, 0.1875, 0.4375, 0.6875, 0.9375, 1.1875, 1.4375, 1.6875, 1.9375, 2.1875, 2.4375, 2.6875, 2.9375, 3.1875, 3.4375, 3.6875, 3.9375, 4.1875, 4.4375, 4.6875, 4.9375, 5.1875, 5.4375, 5.625),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [ExtResource("36_2satv"), ExtResource("37_58ykf"), ExtResource("38_gaju1"), ExtResource("39_2csdq"), ExtResource("40_f1gdt"), ExtResource("41_isp82"), ExtResource("42_u5oub"), ExtResource("43_2hv8w"), ExtResource("44_g3ofq"), ExtResource("45_nrkhd"), ExtResource("46_epy81"), ExtResource("47_wwqdu"), ExtResource("48_r50w0"), ExtResource("49_5wqkc"), ExtResource("50_8ijo4"), ExtResource("51_1c1ce"), ExtResource("52_8gpmc"), ExtResource("53_ajuaj"), ExtResource("54_a2j8f"), ExtResource("55_bq5kk"), ExtResource("56_2lmo5"), ExtResource("57_oqhft"), ExtResource("58_rjxjh"), ExtResource("59_m1lvr")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Particle:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [false]
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Particle:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.05, 0.05)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Particle:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -6.9999995)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_4b8n1"]
 _data = {
 &"RESET": SubResource("Animation_nrkhd"),
-&"crash": SubResource("Animation_j01sh")
+&"crash": SubResource("Animation_j01sh"),
+&"idle": SubResource("Animation_wey35")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2sb7k"]
 size = Vector2(61, 38)
 
 [node name="CrashedUfo" type="Node2D" unique_id=1610113169]
+z_index = 1
+y_sort_enabled = true
 script = ExtResource("1_2sb7k")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1891228912]
@@ -123,6 +240,8 @@ scale = Vector2(0.25, -0.25)
 texture = ExtResource("1_8ffh5")
 
 [node name="Particle" type="Sprite2D" parent="." unique_id=1070497749]
+z_index = 1
+position = Vector2(0, -6.9999995)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("3_r4ww1")
 

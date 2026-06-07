@@ -19,14 +19,13 @@ const alien_camera_zoom = 6.0
 var current_state = State.UFO
 var game: Node2D
 
+# Główne źródło prawdy o indeksie statku/obcego dla tej instancji gracza
 @export var ufo_index_sync: int = 0:
 	set(value):
 		ufo_index_sync = value
-		if is_inside_tree() and alien:
-			alien.process_mode = PROCESS_MODE_INHERIT
+		# Dbamy o to, aby Alien otrzymał wartość niezależnie od momentu przypisania
+		if alien:
 			alien.ufo_idx = value
-			if current_state == State.UFO:
-				alien.process_mode = PROCESS_MODE_DISABLED
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -45,6 +44,7 @@ func _ready():
 	ufo.process_mode = PROCESS_MODE_INHERIT
 	ufo_collider.disabled = false
 
+	# Na starcie obcy jest całkowicie uśpiony
 	alien.visible = false
 	alien.process_mode = PROCESS_MODE_DISABLED
 	alien_collider.disabled = true
@@ -52,8 +52,8 @@ func _ready():
 	if alien.has_node("Coordinates"):
 		alien.get_node("Coordinates").visible = false
 
-	if ufo_index_sync != 0:
-		alien.ufo_idx = ufo_index_sync
+	# Przekazujemy zainicjalizowaną wartość (np. ze spawnera) do Aliena
+	alien.ufo_idx = ufo_index_sync
 
 	if is_multiplayer_authority():
 		set_camera(camera, ufo_camera_zoom)
@@ -92,14 +92,12 @@ func _physics_process(_delta):
 
 	if current_state == State.UFO:
 		var is_blocked = ufo.movement_blocked if "movement_blocked" in ufo else false
-
 		if not is_blocked:
 			velocity = sync_direction * UFO_SPEED
 			move_and_slide()
 
 	elif current_state == State.ALIEN:
 		var is_blocked = alien.movement_blocked if "movement_blocked" in alien else false
-
 		if not is_blocked and is_multiplayer_authority():
 			velocity = sync_direction * ALIEN_SPEED
 			move_and_slide()
@@ -111,12 +109,14 @@ func _physics_process(_delta):
 @rpc("any_peer", "call_local", "reliable")
 func change_state(new_state: State, ufo_index: int):
 	current_state = new_state
+	ufo_index_sync = ufo_index # Aktualizujemy główne źródło prawdy
 
 	if new_state == State.UFO:
 		ufo.visible = true
 		ufo.set_process(true)
 
 		alien.visible = false
+		alien.process_mode = PROCESS_MODE_DISABLED
 		alien.set_process(false)
 		alien.coordinates.visible = false
 
@@ -125,11 +125,16 @@ func change_state(new_state: State, ufo_index: int):
 		set_collision_mask_value(1, false)
 
 	elif new_state == State.ALIEN:
-		# --- KLUCZOWA POPRAWKA KOLEJNOŚCI ---
-		# 1. NAJPIERW wybudzamy Aliena w drzewie scen i włączamy jego procesy
+		# Najpierw wybudzamy procesowanie Aliena, aby jego wewnętrzne skrypty zaczęły działać
 		alien.process_mode = PROCESS_MODE_INHERIT
 		alien.visible = true
 		alien.set_process(true)
+
+		# Przekazujemy ostateczną wartość indeksu i wymuszamy aktualizację wizualną
+		alien.ufo_idx = ufo_index
+		if alien.has_method("_apply_skin_textures"):
+			alien._apply_skin_textures()
+
 		alien.coordinates.visible = true
 
 		ufo.visible = false
@@ -138,11 +143,6 @@ func change_state(new_state: State, ufo_index: int):
 		ufo_collider.set_deferred("disabled", true)
 		alien_collider.set_deferred("disabled", false)
 		set_collision_mask_value(1, true)
-
-		# 2. DOPIERO TERAZ, gdy Alien jest w pełni aktywny w drzewie, wstrzykujemy ufo_idx!
-		# Dzięki temu wewnętrzne is_inside_tree() w Alien.gd przejdzie bezbłędnie
-		# i podmieni utwory w AnimationPlayer na różowe tekstury u każdego klienta.
-		alien.ufo_idx = ufo_index
 
 		var tile_map = game.tile_map_layer
 		var current_grid_pos: Vector2i = tile_map.local_to_map(global_position)
@@ -158,5 +158,11 @@ func change_state(new_state: State, ufo_index: int):
 		if not is_in_group("aliens"):
 			add_to_group("aliens")
 
-		if is_multiplayer_authority() and has_node("Camera2D"):
-			set_camera(camera, alien_camera_zoom)
+		if is_multiplayer_authority() and is_instance_valid(camera):
+			var camera_tween = create_tween()
+			camera_tween.tween_property(
+				camera,
+				"zoom",
+				Vector2(alien_camera_zoom, alien_camera_zoom),
+				0.8,
+			).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)

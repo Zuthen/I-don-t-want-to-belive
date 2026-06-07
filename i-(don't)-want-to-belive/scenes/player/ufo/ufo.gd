@@ -36,7 +36,7 @@ var input_multiplayer_authority: int:
 func _ready():
 	var parent_core = get_parent()
 	if parent_core:
-		game = parent_core.get_parent()
+		game = parent_core.get_parent() as Node2D
 
 	capture_area_collision.disabled = true
 	capture_area.area_entered.connect(_on_capture)
@@ -48,9 +48,11 @@ func _ready():
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 	await get_tree().process_frame
-	if UfosTextures.ufo_textures.size() > ufo_idx:
+
+	if UfosTextures.ufo_textures.size() > ufo_idx and ufo_idx >= 0:
 		ufo_sprites = UfosTextures.ufo_textures[ufo_idx]
-		ship.texture = ufo_sprites.ship
+		if ship and ufo_sprites and "ship" in ufo_sprites:
+			ship.texture = ufo_sprites.ship
 
 
 # Czyste przechwytywanie klawiszy akcji – bez fizyki ruchu
@@ -183,15 +185,6 @@ func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 	var sender_id = multiplayer.get_remote_sender_id()
 	var player_core = game.get_node(str(sender_id)) as UfoWithAlien
 
-	if player_core:
-		var tile_map = game.tile_map_layer
-		var grid_position = tile_map.local_to_map(target_global_position)
-		var exact_pixel_position = tile_map.map_to_local(grid_position)
-
-		player_core.global_position = exact_pixel_position
-		player_core.ufo_index_sync = ufo_index
-		player_core.change_state.rpc(UfoWithAlien.State.ALIEN, ufo_idx)
-
 	var crashed_ufo_spawn_data = {
 		"type": "wreck",
 		"ufo_idx": ufo_index,
@@ -199,6 +192,15 @@ func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 		"peer_id": sender_id,
 	}
 	game.multiplayer_spawner.spawn(crashed_ufo_spawn_data)
+
+	if player_core:
+		var tile_map = game.tile_map_layer
+		var grid_position = tile_map.local_to_map(target_global_position)
+		var exact_pixel_position = tile_map.map_to_local(grid_position)
+
+		player_core.global_position = exact_pixel_position
+		player_core.ufo_index_sync = ufo_index
+		player_core.change_state.rpc(UfoWithAlien.State.ALIEN, ufo_index)
 
 
 @rpc("any_peer", "call_local", "reliable")
