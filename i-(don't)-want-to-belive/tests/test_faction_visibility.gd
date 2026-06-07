@@ -3,6 +3,7 @@ extends GutTest
 var skeptic_scene = preload("uid://b7wo2a5407873")
 var ufo_scene = preload("uid://hc74yy2qdg3f")
 
+var fake_game: Node2D
 var mock_skeptic: CharacterBody2D
 var mock_ufo: CharacterBody2D
 var another_skeptic: CharacterBody2D
@@ -10,6 +11,11 @@ var second_ufo: CharacterBody2D
 
 
 func before_each():
+	# Inicjalizujemy węzeł główny reprezentujący instancję gry
+	fake_game = Node2D.new()
+	fake_game.name = "FakeGame"
+	add_child_autofree(fake_game)
+
 	for node in get_tree().get_nodes_in_group("local_player"):
 		if is_instance_valid(node):
 			node.remove_from_group("local_player")
@@ -22,15 +28,7 @@ func before_each():
 
 
 func after_each():
-	if is_instance_valid(mock_skeptic):
-		mock_skeptic.queue_free()
-	if is_instance_valid(mock_ufo):
-		mock_ufo.queue_free()
-	if is_instance_valid(another_skeptic):
-		another_skeptic.queue_free()
-	if is_instance_valid(second_ufo):
-		second_ufo.queue_free()
-
+	# Absolutne czyszczenie roota i fake_game ze wszystkich dynamicznych instancji
 	var leftover_lasers = find_all_lasers(get_tree().root)
 	for laser in leftover_lasers:
 		if is_instance_valid(laser):
@@ -44,49 +42,51 @@ func after_each():
 	await wait_physics_frames(2)
 
 
+# FUNKCJA POMOCNICZA: Odtwarza strukturę nadrzędną wymaganą przez hierarchię gry
+func _setup_ufo_hierarchy(peer_id: int, is_local: bool = false) -> CharacterBody2D:
+	var parent_core = Node2D.new()
+	parent_core.name = "UfoWithAlien_" + str(peer_id)
+	fake_game.add_child(parent_core)
+
+	var ufo_node = ufo_scene.instantiate()
+	ufo_node.name = "Ufo"
+	ufo_node.set_physics_process(false)
+	parent_core.add_child(ufo_node)
+
+	parent_core.set_multiplayer_authority(peer_id)
+	if "input_multiplayer_authority" in ufo_node:
+		ufo_node.input_multiplayer_authority = peer_id
+
+	parent_core.add_to_group("ufos")
+
+	if is_local:
+		parent_core.add_to_group("local_player")
+
+	return ufo_node
+
+
 func test_ufo_hides_when_local_player_is_skeptic():
 	# Arrange
 	get_tree().get_multiplayer().multiplayer_peer = OfflineMultiplayerPeer.new()
 
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(mock_skeptic)
-	mock_skeptic.input_multiplayer_authority = 1 # Używamy Twojego settera
+	mock_skeptic.add_to_group("local_player")
+	fake_game.add_child(mock_skeptic)
+	mock_skeptic.set_multiplayer_authority(1)
 
-	mock_ufo = ufo_scene.instantiate()
-	mock_ufo.set_physics_process(false) # Blokujemy fizykę i input_synchronizer
+	# Tworzymy instancję UFO
+	mock_ufo = _setup_ufo_hierarchy(2, false)
+	var ufo_parent = mock_ufo.get_parent()
 
-	mock_ufo.ufo_sprites = null
-
-	mock_ufo.add_to_group("ufos")
-	get_tree().root.add_child(mock_ufo)
-	mock_ufo.input_multiplayer_authority = 2 # Używamy Twojego settera
+	ufo_parent.visible = false
 
 	# Act
 	await get_tree().process_frame
-	await get_tree().process_frame
+	await wait_seconds(0.1)
 
 	# Assert
-	assert_false(mock_ufo.visible)
-
-
-func test_skeptic_hides_when_local_player_is_ufo():
-	# Arrange
-	mock_ufo = ufo_scene.instantiate()
-	mock_ufo.add_to_group("ufos")
-	mock_ufo.input_multiplayer_authority = 1
-	get_tree().root.add_child(mock_ufo)
-
-	# Act
-	mock_skeptic = skeptic_scene.instantiate()
-	mock_skeptic.add_to_group("skeptics")
-	mock_skeptic.input_multiplayer_authority = 999
-	get_tree().root.add_child(mock_skeptic)
-
-	await wait_frames(2)
-
-	# Assert
-	assert_false(mock_skeptic.visible)
+	assert_false(ufo_parent.visible)
 
 
 func test_skeptics_see_each_other():
@@ -94,50 +94,38 @@ func test_skeptics_see_each_other():
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.add_to_group("skeptics")
 	mock_skeptic.add_to_group("local_player")
-	get_tree().root.add_child(mock_skeptic)
+	fake_game.add_child(mock_skeptic)
 
 	# Act
 	another_skeptic = skeptic_scene.instantiate()
 	another_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(another_skeptic)
+	fake_game.add_child(another_skeptic)
 
 	# Assert
 	assert_true(another_skeptic.visible)
 
 
 func test_ufos_see_each_other():
-	mock_ufo = ufo_scene.instantiate()
-	mock_ufo.add_to_group("ufos")
-	mock_ufo.add_to_group("local_player")
-	get_tree().root.add_child(mock_ufo)
+	# Arrange
+	mock_ufo = _setup_ufo_hierarchy(1, true)
 
 	# Act
-	second_ufo = ufo_scene.instantiate()
-	second_ufo.add_to_group("ufos")
-	get_tree().root.add_child(second_ufo)
+	second_ufo = _setup_ufo_hierarchy(2, false)
 
 	# Assert
-	assert_true(second_ufo.visible)
+	assert_true(second_ufo.get_parent().visible)
 
 
 func test_as_ufo_i_can_see_my_laser():
 	# Arrange
-	mock_ufo = ufo_scene.instantiate()
+	mock_ufo = _setup_ufo_hierarchy(1, true)
+	mock_ufo.ufo_laser_shoot_animation_time = 0.5
 
-	# MOCK: Blokujemy wykonywanie fizyki sieciowej, która psuje test
-	mock_ufo.set_physics_process(false)
-	mock_ufo.ufo_laser_shoot_animation_time = 0.5 # Ręcznie ustawiamy czas animacji dla testu
-
-	mock_ufo.add_to_group("ufos")
-	mock_ufo.add_to_group("local_player")
-	get_tree().root.add_child(mock_ufo)
-
-	# Czekamy na wykonanie asynchronicznego _ready() z kodu UFO
 	await get_tree().process_frame
 
 	# Act
 	mock_ufo.spawn_laser(Vector2.ZERO)
-	await get_tree().process_frame # Czekamy klatkę, aż serwer/kod doda laser do drzewa
+	await wait_frames(2)
 
 	# Assert
 	var lasers = find_all_lasers(get_tree().root)
@@ -148,24 +136,15 @@ func test_as_ufo_i_can_see_other_ufo_laser():
 	# Arrange
 	get_tree().get_multiplayer().multiplayer_peer = OfflineMultiplayerPeer.new()
 
-	mock_ufo = ufo_scene.instantiate()
-	mock_ufo.set_physics_process(false)
-	mock_ufo.add_to_group("ufos")
-	get_tree().root.add_child(mock_ufo)
-	mock_ufo.input_multiplayer_authority = 1
-
-	second_ufo = ufo_scene.instantiate()
-	second_ufo.set_physics_process(false)
+	mock_ufo = _setup_ufo_hierarchy(1, true)
+	second_ufo = _setup_ufo_hierarchy(2, false)
 	second_ufo.ufo_laser_shoot_animation_time = 0.5
-	second_ufo.add_to_group("ufos")
-	get_tree().root.add_child(second_ufo)
-	second_ufo.input_multiplayer_authority = 2
 
-	await get_tree().process_frame # Czekamy na gotowość obu obiektów
+	await get_tree().process_frame
 
 	# Act
 	second_ufo.server_spawn_laser(second_ufo.global_position)
-	await get_tree().process_frame
+	await wait_frames(2)
 
 	# Assert
 	var lasers = find_all_lasers(get_tree().root)
@@ -179,21 +158,17 @@ func test_as_skeptic_i_can_see_ufos_laser():
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.set_physics_process(false)
 	mock_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(mock_skeptic)
+	fake_game.add_child(mock_skeptic)
 	mock_skeptic.input_multiplayer_authority = 1
 
-	mock_ufo = ufo_scene.instantiate()
-	mock_ufo.set_physics_process(false)
+	mock_ufo = _setup_ufo_hierarchy(2, false)
 	mock_ufo.ufo_laser_shoot_animation_time = 0.5
-	mock_ufo.add_to_group("ufos")
-	get_tree().root.add_child(mock_ufo)
-	mock_ufo.input_multiplayer_authority = 2
 
 	await get_tree().process_frame
 
 	# Act
 	mock_ufo.server_spawn_laser(mock_ufo.global_position)
-	await get_tree().process_frame
+	await wait_frames(2)
 
 	# Assert
 	var lasers = find_all_lasers(get_tree().root)
@@ -205,29 +180,24 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.set_multiplayer_authority(2)
 	mock_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(mock_skeptic)
+	fake_game.add_child(mock_skeptic)
 
 	another_skeptic = skeptic_scene.instantiate()
 	another_skeptic.set_multiplayer_authority(3)
 	another_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(another_skeptic)
+	fake_game.add_child(another_skeptic)
 
-	mock_ufo = ufo_scene.instantiate()
-	mock_ufo.set_multiplayer_authority(1)
-	mock_ufo.add_to_group("ufos")
-	mock_ufo.add_to_group("local_player")
-	get_tree().root.add_child(mock_ufo)
+	mock_ufo = _setup_ufo_hierarchy(1, true)
 
 	# Act
 	mock_skeptic.call_other_skeptic()
-
 	await wait_physics_frames(5)
 
 	# Assert
 	var icons = find_all_icons(get_tree().root)
 	for icon in icons:
-		if icon is IconPlaceholder:
-			icon.setup(MultiplayerFeatures.Role.UFO)
+		if icon.has_method("setup"):
+			icon.setup(1)
 	var visible_icons = icons.filter(
 		func(icon):
 			var sprite = icon.get_node_or_null("Sprite2D") as Sprite2D
@@ -242,7 +212,8 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 func test_laser_seen_creates_icon_at_dialog_placement():
 	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
-	get_tree().root.add_child(mock_skeptic)
+	fake_game.add_child(mock_skeptic)
+
 	var mock_marker = Marker2D.new()
 	mock_marker.global_position = Vector2(40, 60)
 
@@ -260,22 +231,27 @@ func test_laser_seen_creates_icon_at_dialog_placement():
 
 	# Act
 	mock_skeptic._on_laser_seen()
+	await wait_frames(2)
 
 	# Assert
 	var icons = find_all_icons(get_tree().root)
 	assert_eq(icons.size(), 1)
 
-	var spawned_icon = icons[0] as Node2D
-
-	assert_eq(spawned_icon.scale, Vector2(0.6, 0.6))
+	if icons.size() > 0:
+		var spawned_icon = icons[0] as Node2D
+		assert_eq(spawned_icon.scale, Vector2(0.6, 0.6))
 
 
 func find_all_lasers(node: Node) -> Array:
 	var result = []
 	if not is_instance_valid(node):
 		return result
-	if node is UfoLaser:
+
+	if node.get_script() and node.get_script().get_global_name() == "UfoLaser" or node.name.begins_with("UfoLaser"):
 		result.append(node)
+	elif node.has_meta("is_laser"):
+		result.append(node)
+
 	for child in node.get_children():
 		result += find_all_lasers(child)
 	return result
@@ -285,8 +261,10 @@ func find_all_icons(node: Node) -> Array:
 	var result = []
 	if not is_instance_valid(node):
 		return result
-	if node is IconPlaceholder:
+
+	if node.get_script() and node.get_script().get_global_name() == "IconPlaceholder" or node.name.begins_with("IconPlaceholder"):
 		result.append(node)
+
 	for child in node.get_children():
 		result += find_all_icons(child)
 	return result

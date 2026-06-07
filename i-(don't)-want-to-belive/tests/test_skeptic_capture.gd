@@ -28,10 +28,8 @@ func afterEach():
 
 
 func test_play_captured_animation_initializes_correctly():
-	# 1. Tworzymy zwykłą instancję Sceptyka (bez kombinowania ze skryptami)
 	var local_skeptic = SkepticScene.instantiate()
 
-	# 2. Tworzymy makiety komponentów dla stanu początkowego
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
 	var mock_anim_player = AnimationPlayer.new()
@@ -44,7 +42,6 @@ func test_play_captured_animation_initializes_correctly():
 	local_skeptic.sprite_2d = mock_sprite
 	local_skeptic.animation_player = mock_anim_player
 
-	# 3. Tworzymy makiety warstw i rodzica gry
 	var mock_parent = Node2D.new()
 	var parent_script = GDScript.new()
 	parent_script.source_code = "extends Node2D\nvar tile_map_layer: Node2D"

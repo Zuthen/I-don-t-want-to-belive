@@ -14,7 +14,7 @@ var random: RandomNumberGenerator
 
 
 func _ready():
-	MultiplayerFeatures.spawn_player(multiplayer_spawner, tile_map_layer)
+	MultiplayerFeatures.spawn(multiplayer_spawner, tile_map_layer)
 
 	if multiplayer.is_server():
 		var game_map_seed = randi()
@@ -223,7 +223,7 @@ func find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberG
 	if paths_array.is_empty():
 		return []
 	var dynamic_min_distance: float = sqrt(MapSettings.paths_tiles) * 0.85
-	for i in range(MapSettings.paths_tiles / 2):
+	for i in range(MapSettings.paths_tiles / 2.0):
 		var random_index_a = random.randi() % paths_array.size()
 		var random_index_b = random.randi() % paths_array.size()
 
@@ -241,7 +241,7 @@ func find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberG
 
 func find_new_skeptic_position(paths_array: Array[Vector2i], current_position) -> Vector2i:
 	var dynamic_min_distance: float = sqrt(MapSettings.paths_tiles) * 0.85
-	for i in range(MapSettings.paths_tiles / 2):
+	for i in range(MapSettings.paths_tiles / 2.0):
 		var random_index = random.randi() % paths_array.size()
 
 		if current_position == paths_array[random_index]:

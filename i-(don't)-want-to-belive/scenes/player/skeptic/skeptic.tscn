@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="2_30q0i"]
 [ext_resource type="Texture2D" uid="uid://dhsp46crp15wo" path="res://assets/characters/female/tile_0105.png" id="2_gsmgp"]
 [ext_resource type="Texture2D" uid="uid://ccticw3cic5gl" path="res://assets/characters/female/tile_0104.png" id="3_30q0i"]
+[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="4_i5h2m"]
 [ext_resource type="Texture2D" uid="uid://difqg4xp0cai7" path="res://assets/characters/male/tile_0429.png" id="4_nm2l5"]
 [ext_resource type="Texture2D" uid="uid://r2yvyb1d7fvn" path="res://assets/characters/female/tile_0107.png" id="4_xv4aa"]
 [ext_resource type="Texture2D" uid="uid://16no27bb04e0" path="res://assets/characters/female/tile_0106.png" id="5_330qm"]
@@ -360,6 +361,12 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4b4"]
 size = Vector2(7.3333335, 11.444445)
 
+[sub_resource type="LabelSettings" id="LabelSettings_i5h2m"]
+line_spacing = 0.2
+font = ExtResource("4_i5h2m")
+font_size = 10
+font_color = Color(0.9490196, 0.23137255, 0.32941177, 1)
+
 [node name="Skeptic" type="CharacterBody2D" unique_id=402508521]
 scale = Vector2(0.45, 0.45)
 collision_layer = 0
@@ -439,3 +446,20 @@ position = Vector2(0, 12)
 scale = Vector2(0.45, 0.45)
 
 [node name="Coordinates" parent="." unique_id=1593133795 instance=ExtResource("28_y0kdb")]
+
+[node name="WarningLabel" type="Label" parent="." unique_id=690878107]
+visible = false
+z_index = 4
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.88889
+offset_top = -53.333332
+offset_right = 47.61111
+offset_bottom = -3.333332
+grow_horizontal = 2
+text = "Ufo cię porwało!"
+label_settings = SubResource("LabelSettings_i5h2m")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2

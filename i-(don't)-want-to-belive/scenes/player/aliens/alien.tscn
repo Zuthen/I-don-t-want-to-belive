@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://157ip2c8a5yg"]
 
 [ext_resource type="Script" uid="uid://w3x4h125dksp" path="res://scenes/player/aliens/alien.gd" id="1_patnu"]
-[ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="2_x5kx4"]
 [ext_resource type="Texture2D" uid="uid://cxm5spva2vcoh" path="res://assets/characters/aliens/character_beige_front.png" id="3_u533k"]
 [ext_resource type="PackedScene" uid="uid://bddac54674vhl" path="res://scenes/player/skeptic/voice_receiver.tscn" id="4_srrot"]
 [ext_resource type="Texture2D" uid="uid://c3i0c5yn8ys7w" path="res://assets/characters/aliens/character_beige_jump.png" id="4_u533k"]
@@ -12,26 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://b7st2ep8qp6uc" path="res://assets/characters/aliens/character_beige_climb_b.png" id="7_l3473"]
 [ext_resource type="Texture2D" uid="uid://drlhe6wm2g1b2" path="res://assets/characters/aliens/character_beige_idle.png" id="7_ysgd6"]
 [ext_resource type="Texture2D" uid="uid://btqefcbfju63x" path="res://assets/characters/aliens/character_beige_walk_b.png" id="8_bwueq"]
-
-[sub_resource type="GDScript" id="GDScript_nm2l5"]
-script/source = "extends MultiplayerSynchronizer
-
-var movement_vector = Vector2.ZERO
-
-
-func _process(_delta):
-	if is_multiplayer_authority():
-		gather_input()
-
-
-func gather_input():
-	movement_vector = Input.get_vector(\"walk_left\", \"walk_right\", \"walk_up\", \"walk_down\")
-"
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_gsmgp"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 2
 
 [sub_resource type="Animation" id="Animation_wcstr"]
 length = 0.001
@@ -208,20 +187,14 @@ _data = {
 &"move up": SubResource("Animation_ehrl8")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4b4"]
-size = Vector2(7.3333335, 7.666667)
+[sub_resource type="CircleShape2D" id="CircleShape2D_ib4rs"]
 
 [node name="Alien" type="CharacterBody2D" unique_id=402508521]
+z_index = 2
 scale = Vector2(0.45, 0.45)
 collision_layer = 0
 collision_mask = 17
 script = ExtResource("1_patnu")
-
-[node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("2_x5kx4")]
-script = SubResource("GDScript_nm2l5")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1283327137]
-replication_config = SubResource("SceneReplicationConfig_gsmgp")
 
 [node name="DialogTimer" type="Timer" parent="." unique_id=1790077063]
 wait_time = 1.5
@@ -243,18 +216,13 @@ enabled = false
 zoom = Vector2(6, 6)
 
 [node name="CollisionArea" type="Area2D" parent="." unique_id=1507387659]
-collision_layer = 4
+collision_layer = 0
 collision_mask = 4
 
 [node name="HitBoxCollision" type="CollisionShape2D" parent="CollisionArea" unique_id=1651569879]
 position = Vector2(0, 3.2222228)
-scale = Vector2(2, 2)
-shape = SubResource("RectangleShape2D_3j4b4")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1318819708]
-position = Vector2(0.6666665, 4.4444447)
-scale = Vector2(2, 2)
-shape = SubResource("RectangleShape2D_3j4b4")
+scale = Vector2(6.9309387, 6.7379847)
+shape = SubResource("CircleShape2D_ib4rs")
 
 [node name="DialogPlacements" type="Node" parent="." unique_id=1855466288]
 

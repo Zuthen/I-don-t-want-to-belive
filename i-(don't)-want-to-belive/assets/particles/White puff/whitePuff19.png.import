@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cqi7ktew1ijco"
-path="res://.godot/imported/treeGreen_small.png-cf36ffb42ea21668c69f320259d1f8b2.ctex"
+uid="uid://b8mi16hx8ewyt"
+path="res://.godot/imported/whitePuff19.png-1cd89bd0d6c9bce8cb1f10f5d973b3fa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/objects/treeGreen_small.png"
-dest_files=["res://.godot/imported/treeGreen_small.png-cf36ffb42ea21668c69f320259d1f8b2.ctex"]
+source_file="res://assets/particles/White puff/whitePuff19.png"
+dest_files=["res://.godot/imported/whitePuff19.png-1cd89bd0d6c9bce8cb1f10f5d973b3fa.ctex"]
 
 [params]
 

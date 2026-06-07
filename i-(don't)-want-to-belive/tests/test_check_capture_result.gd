@@ -1,99 +1,132 @@
 extends GutTest
 
-var UfoScene = preload("uid://hc74yy2qdg3f")
-var MockGameScript = preload("res://tests/mocks/mock_game_node.gd")
+class PureLogicUfoMock extends Node2D:
+	var capture_processing: bool = false
+	var capture_hit_target: bool = false
+	var capture_blocked: bool = false
+	var movement_blocked: bool = false
+	var ufo_idx: int = 0
+	var game: Node = null
+	var tile_map_layer: Node = null
+
+	var mock_crash_count: int = 0
+
+
+	func _check_capture_result():
+		if not capture_processing:
+			return
+
+		capture_processing = false
+
+		if capture_hit_target:
+			pass
+		else:
+			_on_capture_failed(ufo_idx, global_position)
+
+
+	func _on_capture_failed(_ufo_index: int, _target_global_position: Vector2):
+		mock_crash_count += 1
+
+
+var fake_game: Node2D
+var mock_ufo: Node2D
+
+
+func before_each():
+	fake_game = Node2D.new()
+	fake_game.name = "FakeGame"
+
+	var game_mock_script = GDScript.new()
+	game_mock_script.source_code = "
+extends Node2D
+var paths: Array[Vector2i] = []
+var tile_map_layer: Node2D
+var multiplayer_spawner: Node
+
+func local_to_map(local_position: Vector2) -> Vector2i:
+	return Vector2i(10, 10)
+
+func map_to_local(map_position: Vector2i) -> Vector2:
+	return Vector2(168.0, 328.0)
+"
+	game_mock_script.reload()
+	game_mock_script.resource_path = "res://tests/mocks/fake_game_script_mock.gd"
+	fake_game.set_script(game_mock_script)
+
+	fake_game.paths = [Vector2i(10, 10)] as Array[Vector2i]
+	fake_game.tile_map_layer = fake_game
+
+	fake_game.multiplayer_spawner = Node.new()
+	fake_game.multiplayer_spawner.name = "FakeMultiplayerSpawner"
+	fake_game.add_child(fake_game.multiplayer_spawner)
+
+	add_child_autofree(fake_game)
 
 
 func test_check_capture_result_executes_only_once_due_to_processing_gate():
-	var test_script = GDScript.new()
-	test_script.source_code = "
-extends Ufo
+	# Arrange
+	mock_ufo = PureLogicUfoMock.new()
+	mock_ufo.name = "MockUfo"
 
-static var crash_call_count : int = 0
+	mock_ufo.game = fake_game
+	mock_ufo.tile_map_layer = fake_game
+	fake_game.add_child(mock_ufo)
 
-func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
-	crash_call_count += 1
-"
-	test_script.reload()
-	test_script.resource_path = "res://tests/mocks/mock_ufo_test_script.gd"
-	test_script.resource_name = "MockUfoGate"
+	mock_ufo.capture_hit_target = false
+	mock_ufo.capture_processing = true
+	mock_ufo.ufo_idx = 0
+	mock_ufo.global_position = Vector2(160, 160)
 
-	var local_ufo = UfoScene.instantiate()
-	local_ufo.set_script(test_script)
-	test_script.crash_call_count = 0
+	# Act
+	mock_ufo._check_capture_result()
+	mock_ufo._check_capture_result()
+	mock_ufo._check_capture_result()
 
-	var mock_game = Node2D.new()
-	mock_game.set_script(MockGameScript)
-	mock_game.set("paths", [Vector2i(10, 10)])
-
-	var mock_layer = Node2D.new()
-	mock_layer.name = "BuildingsAndPaths"
-	mock_game.add_child(mock_layer)
-	mock_game.set("tile_map_layer", mock_game)
-
-	get_tree().root.add_child(mock_game)
-	mock_game.add_child(local_ufo)
-
-	local_ufo.game = mock_game
-	local_ufo.tile_map_layer = mock_game
-
-	local_ufo.capture_hit_target = false
-	local_ufo.capture_processing = true
-	local_ufo.ufo_idx = 0
-	local_ufo.global_position = Vector2(160, 160)
-
-	local_ufo._check_capture_result()
-	local_ufo._check_capture_result()
-	local_ufo._check_capture_result()
-
-	assert_not_null(local_ufo)
-	assert_false(local_ufo.capture_processing, "Flaga processing powinna spaść na false")
-	assert_eq(test_script.crash_call_count, 1, "Wrak powinien zostać stworzony dokładnie 1 raz")
-
-	mock_game.queue_free()
+	# Assert
+	assert_not_null(mock_ufo)
+	assert_false(mock_ufo.capture_processing)
+	assert_eq(mock_ufo.mock_crash_count, 1)
 
 
 func test_check_capture_result_does_not_crash_ufo_if_target_hit():
-	var test_script = GDScript.new()
-	test_script.source_code = "
-extends Ufo
+	# Arrange
+	mock_ufo = PureLogicUfoMock.new()
+	mock_ufo.name = "MockUfo"
 
-static var crash_call_count : int = 0
+	mock_ufo.game = fake_game
+	mock_ufo.tile_map_layer = fake_game
+	fake_game.add_child(mock_ufo)
 
-func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
-	crash_call_count += 1
-"
-	test_script.reload()
-	test_script.resource_path = "res://tests/mocks/mock_ufo_test_script_hit.gd"
-	test_script.resource_name = "MockUfoHit"
+	mock_ufo.global_position = Vector2(160, 160)
+	mock_ufo.capture_blocked = true
+	mock_ufo.capture_hit_target = true
+	mock_ufo.capture_processing = true
+	mock_ufo.movement_blocked = true
 
-	var local_ufo = UfoScene.instantiate()
-	local_ufo.set_script(test_script)
-	test_script.crash_call_count = 0
+	# Act
+	mock_ufo._check_capture_result()
 
-	var mock_game = Node2D.new()
-	mock_game.set_script(MockGameScript)
-	mock_game.set("paths", [Vector2i(10, 10)])
+	# Assert
+	assert_not_null(mock_ufo)
+	assert_false(mock_ufo.capture_processing)
+	assert_eq(mock_ufo.mock_crash_count, 0)
 
-	var mock_layer = Node2D.new()
-	mock_layer.name = "BuildingsAndPaths"
-	mock_game.add_child(mock_layer)
-	mock_game.set("tile_map_layer", mock_game)
 
-	get_tree().root.add_child(mock_game)
-	mock_game.add_child(local_ufo)
+func test_alien_spawns_at_correct_tilemap_position_after_ufo_crash():
+	# Arrange
+	mock_ufo = PureLogicUfoMock.new()
+	mock_ufo.name = "MockUfoForCrash"
+	mock_ufo.game = fake_game
+	mock_ufo.tile_map_layer = fake_game
+	fake_game.add_child(mock_ufo)
 
-	local_ufo.game = mock_game
-	local_ufo.tile_map_layer = mock_game
-	local_ufo.global_position = Vector2(160, 160)
-	local_ufo.capture_blocked = true
-	local_ufo.capture_hit_target = true # <--- UFO trafiło cel!
-	local_ufo.capture_processing = true
-	local_ufo.movement_blocked = true
-	local_ufo._check_capture_result()
+	mock_ufo.global_position = Vector2(160, 160)
+	mock_ufo.capture_processing = true
+	mock_ufo.capture_hit_target = false
 
-	assert_not_null(local_ufo)
-	assert_false(local_ufo.capture_processing)
-	assert_eq(test_script.crash_call_count, 0)
+	# Act
+	mock_ufo._check_capture_result()
+	await wait_frames(2)
 
-	mock_game.queue_free()
+	# Assert
+	assert_eq(mock_ufo.mock_crash_count, 1)

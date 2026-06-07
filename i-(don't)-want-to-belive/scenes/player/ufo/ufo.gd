@@ -1,17 +1,14 @@
 class_name Ufo
 extends Player
 
-@onready var camera = $Camera2D
 @onready var ship = $Ship
-@onready var player_input_synchronizer = $PlayerInputSynchronizer
 @onready var capture_area = $CaptureArea
 @onready var animation_player = $AnimationPlayer
 @onready var capture_area_collision = $CaptureArea/CaptureArea
 @onready var captured_label = $CapturedLabel
+@onready var coordinates = $Coordinates
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
-var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
-var alien_scene = preload("uid://157ip2c8a5yg")
 var ufo_sprites: UfosTextures.UfoTextures
 var capture_hit_target := false
 var laser_shoot_blocked := false
@@ -19,66 +16,55 @@ var movement_blocked := false
 var capture_blocked := false
 var capture_processing := false
 var game: Node2D
-var ufo_idx: int = 0
+var ufo_idx: int = 3
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
 const capture_timeout_seconds: float = 1.0
 const capture_label_time: float = 1.5
+
 signal laser_shoot(time: float)
 signal captured(time: float)
 
 var ufo_laser_shoot_animation_time: float
+
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
 		set_multiplayer_authority(value)
-		if has_node("PlayerInputSynchronizer"):
-			$PlayerInputSynchronizer.set_multiplayer_authority(value)
 
 
 func _ready():
-	game = get_parent() as Node2D
+	var parent_core = get_parent()
+	if parent_core:
+		game = parent_core.get_parent() as Node2D
+
 	capture_area_collision.disabled = true
 	capture_area.area_entered.connect(_on_capture)
+
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
-		if has_node("PlayerInputSynchronizer"):
-			$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
 
-	if is_multiplayer_authority() and has_node("Camera2D"):
-		set_camera(camera)
+	if is_multiplayer_authority():
+		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 	await get_tree().process_frame
-	ufo_sprites = UfosTextures.ufo_textures[ufo_idx]
-	ship.texture = ufo_sprites.ship
 
-	var my_own_hero = null
-	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
-		if node.is_multiplayer_authority():
-			my_own_hero = node
-			my_own_hero.player_role_assigned.emit()
-			break
-
-	if my_own_hero and my_own_hero.is_in_group("skeptics"):
-		visible = false
+	if UfosTextures.ufo_textures.size() > ufo_idx and ufo_idx >= 0:
+		ufo_sprites = UfosTextures.ufo_textures[ufo_idx]
+		if ship and ufo_sprites and "ship" in ufo_sprites:
+			ship.texture = ufo_sprites.ship
 
 
+# Czyste przechwytywanie klawiszy akcji – bez fizyki ruchu
 func _process(_delta):
 	if not is_multiplayer_authority():
 		return
 
+	if Input.is_action_just_pressed("laser_point") and not laser_shoot_blocked:
+		fire_laser()
 
-func _physics_process(_delta):
-	var sync_direction: Vector2 = player_input_synchronizer.movement_vector
-
-	if is_multiplayer_authority():
-		if !movement_blocked:
-			velocity = speed * sync_direction
-			move_and_slide()
-		if Input.is_action_just_pressed("laser_point") && !laser_shoot_blocked:
-			fire_laser()
-		if Input.is_action_just_pressed("capture") && !capture_blocked:
-			_capture()
+	if Input.is_action_just_pressed("capture") and not capture_blocked:
+		_capture()
 
 
 func _capture():
@@ -91,10 +77,9 @@ func _capture():
 	animation_player.play("capture")
 	captured.emit(capture_timeout_seconds)
 	capture_area_collision.disabled = false
+
 	var capture_tween = create_tween()
-
 	capture_tween.tween_interval(animation_time)
-
 	capture_tween.tween_callback(
 		func():
 			capture_area_collision.disabled = true
@@ -114,12 +99,16 @@ func _check_capture_result():
 
 	if capture_hit_target:
 		return
-	var my_position = game.tile_map_layer.local_to_map(global_position)
+
+	var tile_map = game.tile_map_layer
+	var my_position = tile_map.local_to_map(global_position)
+
 	if game.paths.has(my_position):
-		_on_capture_failed.rpc(ufo_idx, global_position)
+		var pixel_position = tile_map.map_to_local(my_position)
+		_on_capture_failed.rpc(ufo_idx, pixel_position)
 	else:
 		var nearest_tile = find_nearest_path(global_position)
-		var nearest_pixel_path = game.tile_map_layer.map_to_local(nearest_tile)
+		var nearest_pixel_path = tile_map.map_to_local(nearest_tile)
 		_on_capture_failed.rpc(ufo_idx, nearest_pixel_path)
 
 
@@ -194,32 +183,24 @@ func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 		return
 
 	var sender_id = multiplayer.get_remote_sender_id()
+	var player_core = game.get_node(str(sender_id)) as UfoWithAlien
 
-	var crashed_ufo = crashed_ufo_scene.instantiate() as CrashedUfo
-	crashed_ufo.peer_id = sender_id
-	var selected_texture = UfosTextures.ufo_textures[ufo_index].ship_crashed
-	crashed_ufo.texture = selected_texture
-	game.add_child(crashed_ufo, true)
-	crashed_ufo.position = target_global_position
-	crashed_ufo.name = "CrashedUfo_" + str(sender_id)
-
-	var ufo_to_remove = game.get_node(str(sender_id))
-
-	if ufo_to_remove:
-		ufo_to_remove.queue_free()
-
-	var tile_map = game.tile_map_layer
-	var grid_position = tile_map.local_to_map(tile_map.to_local(target_global_position))
-
-	var spawn_data = {
-		"type": "alien",
-		"peer_id": sender_id,
-		"spawn_position": grid_position,
+	var crashed_ufo_spawn_data = {
+		"type": "wreck",
 		"ufo_idx": ufo_index,
+		"spawn_position": game.tile_map_layer.local_to_map(target_global_position),
+		"peer_id": sender_id,
 	}
+	game.multiplayer_spawner.spawn(crashed_ufo_spawn_data)
 
-	var alien_node = game.multiplayer_spawner.spawn(spawn_data) as Alien
-	alien_node.ufo_idx = ufo_index
+	if player_core:
+		var tile_map = game.tile_map_layer
+		var grid_position = tile_map.local_to_map(target_global_position)
+		var exact_pixel_position = tile_map.map_to_local(grid_position)
+
+		player_core.global_position = exact_pixel_position
+		player_core.ufo_index_sync = ufo_index
+		player_core.change_state.rpc(UfoWithAlien.State.ALIEN, ufo_index)
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -228,15 +209,14 @@ func server_request_capture(node_path: NodePath, position: Vector2i):
 		return
 	var player = get_node_or_null(node_path)
 	if player and player is Skeptic:
-		var ufo_index: int = 0
-		player.trigger_captured_effects_network.rpc(ufo_index, position)
+		player.trigger_captured_effects_network.rpc(ufo_idx, position)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func server_spawn_laser(position: Vector2):
 	if multiplayer.is_server():
 		var laser = laser_scene.instantiate()
-		get_parent().add_child(laser)
+		game.add_child(laser)
 		laser.global_position = position
 	if ufo_laser_shoot_animation_time == 0.0:
 		_get_animation_time()

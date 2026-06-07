@@ -1,21 +1,23 @@
 class_name Alien
 extends Player
 
-@onready var camera = $Camera2D
 @onready var animation_player = $AnimationPlayer
-@onready var player_input_synchronizer = $PlayerInputSynchronizer
 @onready var dialog_timer = $DialogTimer
 @onready var dialog_placements = $DialogPlacements
-@onready var collision_area = $CollisionArea
 @onready var sprite_2d = $Sprite2D
-@onready var collision_shape = $CollisionShape2D
+@onready var coordinates = $Coordinates
+@onready var collision_area = $CollisionArea
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var movement_blocked := false
 var voice_emitter_active := false
-const speed = 120.0
+const speed = 105.0
 var direction_sprite := "down"
+var peer_id: int
+var textures: AliensTextures
+
+var current_skin: AliensTextures.AlienTextures = null
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -25,34 +27,46 @@ var input_multiplayer_authority: int:
 var ufo_idx: int = 0:
 	set(value):
 		ufo_idx = value
-		if is_inside_tree() and animation_player:
-			if AliensTextures.alien_textures.size() > ufo_idx:
-				var my_skin = AliensTextures.alien_textures[ufo_idx]
-				set_animations(my_skin)
+		_apply_skin_textures()
 
 
 func _ready():
-	collision_area.area_entered.connect(_on_alien_find_skeptic)
+	collision_area.area_entered.connect(on_skeptic_seen_alien)
+	_apply_skin_textures()
 
-	if AliensTextures.alien_textures.size() > ufo_idx:
-		set_animations(AliensTextures.alien_textures[ufo_idx])
+	if is_multiplayer_authority():
+		peer_id = get_multiplayer_authority()
+		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
-	if input_multiplayer_authority == 0 and name.is_valid_int():
-		input_multiplayer_authority = name.to_int()
 
-	if has_node("PlayerInputSynchronizer"):
-		player_input_synchronizer.set_multiplayer_authority(input_multiplayer_authority)
-		player_input_synchronizer.set_process(is_multiplayer_authority())
-		player_input_synchronizer.set_physics_process(is_multiplayer_authority())
+func _physics_process(_delta):
+	var sync_direction: Vector2 = Vector2.ZERO
+	var parent_node = get_parent()
 
-	if is_multiplayer_authority() and has_node("Camera2D"):
-		set_camera(camera, 6.0)
+	if parent_node and parent_node.has_node("PlayerInputSynchronizer"):
+		sync_direction = parent_node.get_node("PlayerInputSynchronizer").movement_vector
 
-	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("aliens"):
-		if node.is_multiplayer_authority():
-			if node.name.begins_with("To_Delete_"):
-				continue
-			break
+	if is_multiplayer_authority() && !movement_blocked and parent_node:
+		parent_node.velocity = speed * sync_direction
+		parent_node.move_and_slide()
+
+	animate(sync_direction)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _sync_alien_skin_across_network(assigned_idx: int):
+	ufo_idx = assigned_idx
+	_apply_skin_textures()
+
+
+func _apply_skin_textures():
+	var alien_skins_idx = map_alien_color(ufo_idx)
+	if alien_skins_idx != -1 and alien_skins_idx < AliensTextures.alien_textures.size():
+		current_skin = AliensTextures.alien_textures[alien_skins_idx]
+
+		if is_inside_tree() and animation_player and sprite_2d:
+			set_animations(current_skin)
+			sprite_2d.texture = current_skin.front
 
 
 func callable_initialize_visibility():
@@ -68,18 +82,6 @@ func _process(_delta):
 
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
 		call_other_skeptic_network.rpc()
-
-
-func _physics_process(_delta):
-	var sync_direction: Vector2 = Vector2.ZERO
-
-	if has_node("PlayerInputSynchronizer"):
-		sync_direction = $PlayerInputSynchronizer.movement_vector
-
-	if is_multiplayer_authority() && !movement_blocked:
-		velocity = speed * sync_direction
-		move_and_slide()
-	animate(sync_direction)
 
 
 @rpc("call_local", "any_peer", "reliable")
@@ -103,53 +105,54 @@ func _on_dialog_timer_timeout(node: Node2D):
 		node.queue_free()
 
 
-func _on_alien_find_skeptic(area: Area2D):
+func on_skeptic_seen_alien(area: Area2D):
 	var object = area.get_parent()
 	if object is Skeptic:
-		object.belive_points_changed.emit(1)
+		object.alien_seen.emit(peer_id)
 
 
 func set_animations(animations_sprites: AliensTextures.AlienTextures):
-	var animation_down: Animation = animation_player.get_animation("move down")
-	var animation_down_track_idx = animation_down.find_track("Sprite2D:texture", Animation.TYPE_VALUE)
+	var track_path = "Sprite2D:texture"
 
-	var tex_idle = animations_sprites.front
-	var tex_jump = animations_sprites.jump
-	var tex_duck = animations_sprites.duck
+	var anim_down = animation_player.get_animation("move down")
+	var track_down = anim_down.find_track(track_path, Animation.TYPE_VALUE)
+	if track_down != -1:
+		anim_down.track_set_key_value(track_down, 0, animations_sprites.front)
+		anim_down.track_set_key_value(track_down, 1, animations_sprites.jump)
+		anim_down.track_set_key_value(track_down, 2, animations_sprites.duck)
+		anim_down.track_set_key_value(track_down, 3, animations_sprites.front)
+		anim_down.track_set_key_value(track_down, 4, animations_sprites.jump)
+		anim_down.track_set_key_value(track_down, 5, animations_sprites.duck)
 
-	animation_down.track_set_key_value(animation_down_track_idx, 0, tex_idle)
-	animation_down.track_set_key_value(animation_down_track_idx, 1, tex_jump)
-	animation_down.track_set_key_value(animation_down_track_idx, 2, tex_duck)
-	animation_down.track_set_key_value(animation_down_track_idx, 3, tex_idle)
-	animation_down.track_set_key_value(animation_down_track_idx, 4, tex_jump)
-	animation_down.track_set_key_value(animation_down_track_idx, 5, tex_duck)
+	var anim_up = animation_player.get_animation("move up")
+	var track_up = anim_up.find_track(track_path, Animation.TYPE_VALUE)
+	if track_up != -1:
+		anim_up.track_set_key_value(track_up, 0, animations_sprites.climb_a)
+		anim_up.track_set_key_value(track_up, 1, animations_sprites.climb_b)
 
-	var animation_up: Animation = animation_player.get_animation("move up")
-	var animation_up_track_idx = animation_up.find_track("Sprite2D:texture", Animation.TYPE_VALUE)
+	var anim_left = animation_player.get_animation("move left")
+	var track_left = anim_left.find_track(track_path, Animation.TYPE_VALUE)
+	if track_left != -1:
+		anim_left.track_set_key_value(track_left, 0, animations_sprites.walk_a)
+		anim_left.track_set_key_value(track_left, 1, animations_sprites.front)
+		anim_left.track_set_key_value(track_left, 2, animations_sprites.walk_b)
+		anim_left.track_set_key_value(track_left, 3, animations_sprites.front)
 
-	animation_up.track_set_key_value(animation_up_track_idx, 0, animations_sprites.climb_a)
-	animation_up.track_set_key_value(animation_up_track_idx, 1, animations_sprites.climb_b)
+	var anim_right = animation_player.get_animation("move right")
+	var track_right = anim_right.find_track(track_path, Animation.TYPE_VALUE)
+	if track_right != -1:
+		anim_right.track_set_key_value(track_right, 0, animations_sprites.walk_a)
+		anim_right.track_set_key_value(track_right, 1, animations_sprites.front)
+		anim_right.track_set_key_value(track_right, 2, animations_sprites.walk_b)
+		anim_right.track_set_key_value(track_right, 3, animations_sprites.front)
 
-	var animation_left: Animation = animation_player.get_animation("move left")
-	var animation_left_track_idx = animation_left.find_track("Sprite2D:texture", Animation.TYPE_VALUE)
-
-	animation_left.track_set_key_value(animation_left_track_idx, 0, animations_sprites.walk_a)
-	animation_left.track_set_key_value(animation_left_track_idx, 1, tex_idle)
-	animation_left.track_set_key_value(animation_left_track_idx, 2, animations_sprites.walk_b)
-	animation_left.track_set_key_value(animation_left_track_idx, 3, tex_idle)
-
-	var animation_right: Animation = animation_player.get_animation("move right")
-	var animation_right_track_idx = animation_right.find_track("Sprite2D:texture", Animation.TYPE_VALUE)
-
-	animation_right.track_set_key_value(animation_right_track_idx, 0, animations_sprites.walk_a)
-	animation_right.track_set_key_value(animation_right_track_idx, 1, tex_idle)
-	animation_right.track_set_key_value(animation_right_track_idx, 2, animations_sprites.walk_b)
-	animation_right.track_set_key_value(animation_right_track_idx, 3, tex_idle)
-
-	var animation_idle: Animation = animation_player.get_animation("idle down")
-	var animation_idle_track_idx = animation_idle.find_track("Sprite2D:texture", Animation.TYPE_VALUE)
-
-	animation_idle.track_set_key_value(animation_idle_track_idx, 0, tex_idle)
+	var anim_idle = animation_player.get_animation("idle down")
+	var track_idle = anim_idle.find_track(track_path, Animation.TYPE_VALUE)
+	if track_idle != -1:
+		anim_idle.track_set_key_value(track_idle, 0, animations_sprites.idle)
+		anim_idle.track_set_key_value(track_idle, 1, animations_sprites.front)
+		anim_idle.track_set_key_value(track_idle, 2, animations_sprites.idle)
+		anim_idle.track_set_key_value(track_idle, 3, animations_sprites.front)
 
 
 func animate(direction: Vector2):
@@ -160,18 +163,26 @@ func animate(direction: Vector2):
 		"right": Vector2.RIGHT,
 	}
 	var norm_dir = direction.normalized()
-	var animation_sprite_name_suffix = ""
+
 	if norm_dir.is_equal_approx(directions["down"]):
-		animation_player.play("move down" + animation_sprite_name_suffix)
+		animation_player.play("move down")
 		direction_sprite = "down"
 	elif norm_dir.is_equal_approx(directions["up"]):
-		animation_player.play("move up" + animation_sprite_name_suffix)
+		animation_player.play("move up")
 		direction_sprite = "up"
 	elif norm_dir.is_equal_approx(directions["left"]):
-		animation_player.play("move left" + animation_sprite_name_suffix)
+		animation_player.play("move left")
 		direction_sprite = "left"
 	elif norm_dir.is_equal_approx(directions["right"]):
-		animation_player.play("move right" + animation_sprite_name_suffix)
+		animation_player.play("move right")
 		direction_sprite = "right"
 	elif norm_dir == Vector2.ZERO:
-		animation_player.play("idle down" + animation_sprite_name_suffix)
+		animation_player.play("idle down")
+
+
+func map_alien_color(idx: int) -> int:
+	if idx < 0 or idx >= UfosTextures.ufo_textures.size():
+		return 0
+	if UfosTextures.ufo_textures[idx].color == "Blue":
+		return AliensTextures.alien_textures.find_custom(func(texture): return texture.color == "purple")
+	return AliensTextures.alien_textures.find_custom(func(texture): return texture.color == UfosTextures.ufo_textures[idx].color.to_lower())

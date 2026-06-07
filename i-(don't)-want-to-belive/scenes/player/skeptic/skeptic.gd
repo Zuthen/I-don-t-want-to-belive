@@ -9,26 +9,36 @@ extends Player
 @onready var collision_area = $CollisionArea
 @onready var sprite_2d = $Sprite2D
 @onready var collision_shape = $CollisionShape2D
+@onready var warning_label = $WarningLabel
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var walkie_talkie_message_scene: PackedScene = preload("uid://tgygvek1j0wa")
 var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
 var ufo_type_camera_scene: PackedScene = preload("uid://cba40e72olvj2")
+
 var is_male
 var movement_blocked := false
 var can_send_coordinates = true
 var voice_emitter_active := false
-const walkie_talkie_timeout_seconds: float = 60 * 2
+
+var seen_ufos: Array[int] = []
+var seen_aliens: Array[int] = []
+
+const walkie_talkie_timeout_seconds: float = 120.0
 const speed = 100.0
-var direction_sprite := "down"
 const max_belive_points := 5
-var belive_points: int = 0
 const capture_animation_time: float = 4.0
+
+var direction_sprite := "down"
+var belive_points: int = 0
+var camera_zoom: Vector2
+var warning_time: float = 1.5
+
 signal belive_points_changed(amount: int)
 signal laser_seen
 signal walkie_talkie_message_sent(time: float)
-var camera_zoom: Vector2
+signal alien_seen(peer_id: int)
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -39,37 +49,43 @@ var input_multiplayer_authority: int:
 
 
 func _ready():
+	warning_label.visible = false
 	camera_zoom = camera.zoom
+
 	belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
+	alien_seen.connect(_on_alien_seen)
 	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
 
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
-	if has_node("PlayerInputSynchronizer"):
-		$PlayerInputSynchronizer.set_multiplayer_authority(input_multiplayer_authority)
 
 	if is_multiplayer_authority() and has_node("Camera2D"):
 		set_camera(camera)
 
 	await get_tree().process_frame
+	_update_visibility_for_local_player()
 
-	var my_own_hero = null
-	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
-		if node.is_multiplayer_authority():
-			my_own_hero = node
+
+func _update_visibility_for_local_player():
+	var my_local_hero: Node = null
+	var all_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
+
+	for p in all_players:
+		if p.is_multiplayer_authority():
+			my_local_hero = p
 			break
 
-	if my_own_hero and my_own_hero.is_in_group("ufos"):
+	if my_local_hero and my_local_hero.is_in_group("ufos"):
 		visible = false
+		sprite_2d.visible = false
+	else:
+		visible = true
+		sprite_2d.visible = true
 
 
 func callable_initialize_visibility():
-	var local_player = get_tree().get_first_node_in_group("local_player")
-	if local_player and local_player.is_in_group("ufos"):
-		local_player.player_role_assigned.emit()
-		visible = false
-
+	_update_visibility_for_local_player()
 	if is_multiplayer_authority():
 		get_tree().call_group("ufos", "set_visible", false)
 
@@ -88,13 +104,13 @@ func _process(_delta):
 
 func _physics_process(_delta):
 	var sync_direction: Vector2 = Vector2.ZERO
+	if is_instance_valid(player_input_synchronizer):
+		sync_direction = player_input_synchronizer.movement_vector
 
-	if has_node("PlayerInputSynchronizer"):
-		sync_direction = $PlayerInputSynchronizer.movement_vector
-
-	if is_multiplayer_authority() && !movement_blocked:
+	if is_multiplayer_authority() and not movement_blocked:
 		velocity = speed * sync_direction
 		move_and_slide()
+
 	animate(sync_direction)
 
 
@@ -107,17 +123,14 @@ func call_other_skeptic_network():
 
 
 func walkie_talkie_message():
-	var message: String
 	var coordinates = get_coordinates(global_position)
-	var is_letter_send = randi() % 100 < 40
-	if !is_letter_send:
+	var message: String = ""
+
+	if randi() % 100 >= 40:
 		message = str(coordinates.number)
 	else:
-		var is_number_send = randi() % 100 < 40
-		if is_number_send:
-			message = coordinates.letter + str(coordinates.number)
-		else:
-			message = coordinates.letter
+		message = coordinates.letter + str(coordinates.number) if randi() % 100 < 40 else coordinates.letter
+
 	walkie_talkie_message_sent.emit(walkie_talkie_timeout_seconds)
 	send_walkie_talkie_message.rpc(message)
 
@@ -127,6 +140,7 @@ func send_walkie_talkie_message(message: String):
 	var ui = get_tree().current_scene.get_node_or_null("CanvasLayer")
 	if not ui:
 		ui = get_tree().root.find_child("CanvasLayer", true, false)
+
 	var walkie_talkie_message = walkie_talkie_message_scene.instantiate()
 	if is_multiplayer_authority():
 		walkie_talkie_message.message = "Nadana wiadomość:"
@@ -150,31 +164,32 @@ func _on_belive_points_changed(hit_points: int):
 
 func _on_laser_seen():
 	var dialogs = dialog_placements.get_children()
+	if dialogs.is_empty():
+		return
+
 	var dialog = dialogs.pick_random() as Marker2D
 	var target_position = dialog.global_position + global_position
 	var icon_placeholder = icon_placeholder_scene.instantiate()
 
 	icon_placeholder.accepts_role = [MultiplayerFeatures.Role.UFO, MultiplayerFeatures.Role.SKEPTIC] as Array[MultiplayerFeatures.Role]
 	icon_placeholder.icon = preload("uid://ddjkfec0jsuw")
-
 	get_tree().root.add_child(icon_placeholder)
 
 	icon_placeholder.global_position = target_position
 	icon_placeholder.scale = Vector2(0.6, 0.6)
-	var role = MultiplayerFeatures.get_role()
-	icon_placeholder.setup(role, icon_placeholder.icon)
-	dialog_timer.timeout.connect(func(): _on_dialog_timer_timeout(icon_placeholder))
+	icon_placeholder.setup(MultiplayerFeatures.get_role(), icon_placeholder.icon)
+
+	dialog_timer.timeout.connect(func(): _on_dialog_timer_timeout(icon_placeholder), CONNECT_ONE_SHOT)
 	dialog_timer.start()
 
 
 func _on_dialog_timer_timeout(node: Node2D):
-	if node != null:
+	if is_instance_valid(node):
 		node.queue_free()
 
 
 func _on_skeptic_find_other_skeptic(area: Area2D):
-	var object = area.get_parent()
-	if object is Skeptic:
+	if area.get_parent() is Skeptic:
 		skeptics_win.emit()
 
 
@@ -183,9 +198,11 @@ func _play_captured_animation(texture: Texture2D, target_position):
 	collision_area.set_deferred("monitoring", false)
 	collision_area.set_deferred("monitorable", false)
 	collision_shape.set_deferred("disabled", true)
+
 	var pixel_position = get_parent().tile_map_layer.map_to_local(target_position)
 	var relative_offset = pixel_position - global_position
 	var animation = captured_animation_scene.instantiate()
+
 	movement_blocked = true
 	animation.texture = texture
 	animation.target_position = pixel_position
@@ -217,12 +234,15 @@ func _capture_animation_cleanup(pixel_position: Vector2):
 
 @rpc("authority", "call_local", "reliable")
 func _teleport_network_rpc(pixel_position: Vector2):
-	player_input_synchronizer.set_process(false)
-	player_input_synchronizer.set_physics_process(false)
+	if is_instance_valid(player_input_synchronizer):
+		player_input_synchronizer.set_process(false)
+		player_input_synchronizer.set_physics_process(false)
+
 	global_position = pixel_position
 
 	var local_player = null
-	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos"):
+	# UWAGA: Szukamy we wszystkich trzech grupach, uwzględniając "aliens"!
+	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("aliens"):
 		if node.is_multiplayer_authority():
 			local_player = node
 			break
@@ -235,7 +255,7 @@ func _teleport_network_rpc(pixel_position: Vector2):
 		sprite_2d.visible = false
 
 	var dynamic_smoothing = false
-	if is_multiplayer_authority():
+	if is_multiplayer_authority() and is_instance_valid(camera):
 		dynamic_smoothing = camera.position_smoothing_enabled
 		camera.position_smoothing_enabled = false
 
@@ -243,13 +263,17 @@ func _teleport_network_rpc(pixel_position: Vector2):
 	collision_area.set_deferred("monitorable", true)
 	collision_shape.set_deferred("disabled", false)
 
-	if is_multiplayer_authority():
+	if is_multiplayer_authority() and is_instance_valid(camera):
 		camera.global_position = pixel_position
 		camera.offset = Vector2.ZERO
 		camera.zoom = camera_zoom
 		camera.position_smoothing_enabled = dynamic_smoothing
+
+	# --- POPRAWKA SIECIOWA ---
+	# Po zakończeniu teleportacji bezwzględnie przywracamy synchronizator do życia (procesy na true!)
+	if is_instance_valid(player_input_synchronizer):
 		player_input_synchronizer.set_process(true)
-		player_input_synchronizer.set_physics_process(false)
+		player_input_synchronizer.set_physics_process(true)
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -258,8 +282,22 @@ func trigger_captured_effects_network(ufo_index: int, target_pos: Vector2i):
 		var ufo_texture = UfosTextures.ufo_textures[ufo_index].ship
 		belive_points_changed.emit(3)
 		_play_captured_animation(ufo_texture, target_pos)
-	else:
-		pass
+
+
+func _on_crashed_ufo_discovered(ufo_peer_id: int):
+	if not seen_ufos.has(ufo_peer_id):
+		seen_ufos.append(ufo_peer_id)
+		belive_points_changed.emit(1)
+		warning_label.text = "Widzisz wrak ufo!"
+		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
+
+
+func _on_alien_seen(alien_peer_id: int):
+	if not seen_aliens.has(alien_peer_id):
+		seen_aliens.append(alien_peer_id)
+		belive_points_changed.emit(1)
+		warning_label.text = "Widzisz kosmitę!"
+		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
 
 
 func animate(direction: Vector2):
@@ -271,6 +309,7 @@ func animate(direction: Vector2):
 	}
 	var norm_dir = direction.normalized()
 	var animation_sprite_name_suffix = "_boy" if is_male else ""
+
 	if norm_dir.is_equal_approx(directions["down"]):
 		animation_player.play("move down" + animation_sprite_name_suffix)
 		direction_sprite = "down"

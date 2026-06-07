@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d1ouav7tgho31"
-path="res://.godot/imported/onlyObjects_retina.png-3040f09972a424465ddcbe9113027e4b.ctex"
+uid="uid://dnxcinpl4j5pu"
+path="res://.godot/imported/blackSmoke14.png-effdba05946907ad17cace4a550a82f2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/objects/onlyObjects_retina.png"
-dest_files=["res://.godot/imported/onlyObjects_retina.png-3040f09972a424465ddcbe9113027e4b.ctex"]
+source_file="res://assets/particles/Black smoke/blackSmoke14.png"
+dest_files=["res://.godot/imported/blackSmoke14.png-effdba05946907ad17cace4a550a82f2.ctex"]
 
 [params]
 
