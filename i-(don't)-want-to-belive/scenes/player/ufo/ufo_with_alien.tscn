@@ -37,6 +37,8 @@ replication_config = SubResource("SceneReplicationConfig_dgwal")
 visible = false
 
 [node name="AlienCollider" type="CollisionShape2D" parent="." unique_id=1651091023]
+light_mask = 0
+visibility_layer = 0
 position = Vector2(0, 3.0000002)
 scale = Vector2(6.930939, 9.337986)
 shape = SubResource("CircleShape2D_wdfhs")
