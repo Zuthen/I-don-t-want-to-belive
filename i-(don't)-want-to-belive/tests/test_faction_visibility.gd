@@ -152,7 +152,7 @@ func test_as_ufo_i_can_see_my_laser():
 
 	# Act
 	mock_ufo.spawn_laser(Vector2.ZERO)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert
 	var lasers = find_all_lasers(get_tree().root)
@@ -171,7 +171,7 @@ func test_as_ufo_i_can_see_other_ufo_laser():
 
 	# Act
 	second_ufo.server_spawn_laser(second_ufo.global_position)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert
 	var lasers = find_all_lasers(get_tree().root)
@@ -195,7 +195,7 @@ func test_as_skeptic_i_can_see_ufos_laser():
 
 	# Act
 	mock_ufo.server_spawn_laser(mock_ufo.global_position)
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert
 	var lasers = find_all_lasers(get_tree().root)
@@ -258,7 +258,7 @@ func test_laser_seen_creates_icon_at_dialog_placement():
 
 	# Act
 	mock_skeptic._on_laser_seen()
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert
 	var icons = find_all_icons(get_tree().root)

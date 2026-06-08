@@ -125,7 +125,7 @@ func test_alien_spawns_at_correct_tilemap_position_after_ufo_crash():
 
 	# Act
 	mock_ufo._check_capture_result()
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	# Assert
 	assert_eq(mock_ufo.mock_crash_count, 1)

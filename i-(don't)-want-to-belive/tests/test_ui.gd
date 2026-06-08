@@ -63,7 +63,7 @@ func test_show_ufo_wins_when_skeptic_belives():
 	mock_skeptic._on_belive_points_changed(1)
 	ui_instance.show_ufo_victory_screen()
 
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	assert_true(ui_instance.win_label.visible)
 	assert_eq(ui_instance.win_label.text, UserInterface.UFO_WINS)
@@ -80,7 +80,7 @@ func test_show_skeptic_wins_when_skeptics_find_other():
 	mock_skeptic._on_skeptic_find_other_skeptic(mock_other_area)
 	ui_instance.show_skeptics_victory_screen()
 
-	await wait_frames(2)
+	await wait_physics_frames(2)
 
 	assert_true(ui_instance.win_label.visible)
 	assert_eq(ui_instance.win_label.text, UserInterface.SKEPTICS_WIN)
