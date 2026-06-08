@@ -1,5 +1,7 @@
 extends MultiplayerSynchronizer
 
+class_name PlayerInputSynchronizer
+
 var movement_vector = Vector2.ZERO
 
 

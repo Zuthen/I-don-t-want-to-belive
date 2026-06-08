@@ -9,6 +9,17 @@ signal player_role_assigned
 signal ufo_wins
 signal skeptics_win
 var id: int = 0
+var movement_blocked: = false
+
+
+func move(speed: float, player_input_synchronizer: PlayerInputSynchronizer) -> Vector2:
+	var sync_direction: Vector2 = Vector2.ZERO
+	if is_instance_valid(player_input_synchronizer):
+		sync_direction = player_input_synchronizer.movement_vector
+	if is_multiplayer_authority() and not movement_blocked:
+		velocity = speed * sync_direction
+		move_and_slide()
+	return sync_direction
 
 
 func set_camera(camera: Camera2D, desired_zoom: float = 0.0):

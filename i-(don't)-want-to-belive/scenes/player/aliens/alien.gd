@@ -10,7 +10,6 @@ extends Player
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
-var movement_blocked := false
 var voice_emitter_active := false
 const speed = 105.0
 var direction_sprite := "down"
@@ -37,20 +36,6 @@ func _ready():
 	if is_multiplayer_authority():
 		peer_id = get_multiplayer_authority()
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
-
-
-func _physics_process(_delta):
-	var sync_direction: Vector2 = Vector2.ZERO
-	var parent_node = get_parent()
-
-	if parent_node and parent_node.has_node("PlayerInputSynchronizer"):
-		sync_direction = parent_node.get_node("PlayerInputSynchronizer").movement_vector
-
-	if is_multiplayer_authority() && !movement_blocked and parent_node:
-		parent_node.velocity = speed * sync_direction
-		parent_node.move_and_slide()
-
-	animate(sync_direction)
 
 
 @rpc("any_peer", "call_local", "reliable")

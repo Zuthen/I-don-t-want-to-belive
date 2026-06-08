@@ -50,7 +50,6 @@ func map_to_local(map_position: Vector2i) -> Vector2:
 	return Vector2(168.0, 328.0)
 "
 	game_mock_script.reload()
-	game_mock_script.resource_path = "res://tests/mocks/fake_game_script_mock.gd"
 	fake_game.set_script(game_mock_script)
 
 	fake_game.paths = [Vector2i(10, 10)] as Array[Vector2i]

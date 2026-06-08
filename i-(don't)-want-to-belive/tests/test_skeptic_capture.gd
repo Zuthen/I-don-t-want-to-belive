@@ -2,10 +2,15 @@ extends GutTest
 
 var SkepticScene = preload("uid://b7wo2a5407873")
 var _skeptic: Skeptic
+var test_placeholder_texture: PlaceholderTexture2D
 
 
-func beforeEach():
+func before_each():
+	test_placeholder_texture = PlaceholderTexture2D.new()
+	test_placeholder_texture.size = Vector2(32, 32)
+
 	_skeptic = SkepticScene.instantiate()
+	_disable_network_synchronizers(_skeptic)
 
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
@@ -22,13 +27,23 @@ func beforeEach():
 	get_tree().root.add_child(_skeptic)
 
 
-func afterEach():
+func after_each():
 	if _skeptic and is_instance_valid(_skeptic):
 		_skeptic.queue_free()
+	await wait_physics_frames(2)
+
+
+func _disable_network_synchronizers(node: Node):
+	for child in node.get_children():
+		if child is MultiplayerSynchronizer:
+			child.replication_config = null
+		else:
+			_disable_network_synchronizers(child)
 
 
 func test_play_captured_animation_initializes_correctly():
 	var local_skeptic = SkepticScene.instantiate()
+	_disable_network_synchronizers(local_skeptic)
 
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
@@ -64,7 +79,8 @@ func test_play_captured_animation_initializes_correctly():
 	mock_multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	get_tree().set_multiplayer(mock_multiplayer, local_skeptic.get_path())
 
-	var mock_texture = Texture2D.new()
+	var mock_texture = PlaceholderTexture2D.new()
+	mock_texture.size = Vector2(32, 32)
 
 	local_skeptic._play_captured_animation(mock_texture, Vector2i(0, 0))
 
@@ -72,11 +88,20 @@ func test_play_captured_animation_initializes_correctly():
 	assert_true(local_skeptic.movement_blocked)
 	assert_eq(local_skeptic.camera.zoom, Vector2(1.5, 1.5))
 
+	get_tree().set_multiplayer(null, local_skeptic.get_path())
+
+	if is_instance_valid(mock_parent) and is_instance_valid(local_skeptic):
+		mock_parent.remove_child(local_skeptic)
+
+	local_skeptic.queue_free()
 	mock_parent.queue_free()
+
+	await wait_physics_frames(2)
 
 
 func test_capture_animation_cleanup_restores_state():
 	var local_skeptic = SkepticScene.instantiate()
+	_disable_network_synchronizers(local_skeptic)
 
 	var mock_camera = Camera2D.new()
 	var mock_sprite = Sprite2D.new()
@@ -101,11 +126,14 @@ func test_capture_animation_cleanup_restores_state():
 	assert_not_null(local_skeptic)
 	assert_false(local_skeptic.movement_blocked, "Blokada ruchu powinna zostać zdjęta w funkcji cleanup")
 
+	get_tree().set_multiplayer(null, local_skeptic.get_path())
 	local_skeptic.queue_free()
+	await wait_physics_frames(2)
 
 
 func test_teleport_network_rpc_applies_changes_to_all():
 	var local_skeptic = SkepticScene.instantiate()
+	_disable_network_synchronizers(local_skeptic)
 
 	var mock_sprite = Sprite2D.new()
 	var mock_camera = Camera2D.new()
@@ -129,3 +157,4 @@ func test_teleport_network_rpc_applies_changes_to_all():
 	assert_true(local_skeptic.sprite_2d.visible)
 
 	local_skeptic.queue_free()
+	await wait_physics_frames(2)

@@ -19,11 +19,9 @@ const alien_camera_zoom = 6.0
 var current_state = State.UFO
 var game: Node2D
 
-# Główne źródło prawdy o indeksie statku/obcego dla tej instancji gracza
 @export var ufo_index_sync: int = 0:
 	set(value):
 		ufo_index_sync = value
-		# Dbamy o to, aby Alien otrzymał wartość niezależnie od momentu przypisania
 		if alien:
 			alien.ufo_idx = value
 
@@ -86,30 +84,23 @@ func _physics_process(_delta):
 	if not is_multiplayer_authority():
 		return
 
-	var sync_direction: Vector2 = Vector2.ZERO
-	if is_instance_valid(player_input_synchronizer):
-		sync_direction = player_input_synchronizer.movement_vector
-
 	if current_state == State.UFO:
 		var is_blocked = ufo.movement_blocked if "movement_blocked" in ufo else false
 		if not is_blocked:
-			velocity = sync_direction * UFO_SPEED
-			move_and_slide()
+			move(UFO_SPEED, player_input_synchronizer)
 
 	elif current_state == State.ALIEN:
 		var is_blocked = alien.movement_blocked if "movement_blocked" in alien else false
 		if not is_blocked and is_multiplayer_authority():
-			velocity = sync_direction * ALIEN_SPEED
+			var sync_direction = move(ALIEN_SPEED, player_input_synchronizer)
 			move_and_slide()
-
-		if alien.has_method("animate"):
 			alien.animate(sync_direction)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func change_state(new_state: State, ufo_index: int):
 	current_state = new_state
-	ufo_index_sync = ufo_index # Aktualizujemy główne źródło prawdy
+	ufo_index_sync = ufo_index
 
 	if new_state == State.UFO:
 		ufo.visible = true
@@ -125,12 +116,10 @@ func change_state(new_state: State, ufo_index: int):
 		set_collision_mask_value(1, false)
 
 	elif new_state == State.ALIEN:
-		# Najpierw wybudzamy procesowanie Aliena, aby jego wewnętrzne skrypty zaczęły działać
 		alien.process_mode = PROCESS_MODE_INHERIT
 		alien.visible = true
 		alien.set_process(true)
 
-		# Przekazujemy ostateczną wartość indeksu i wymuszamy aktualizację wizualną
 		alien.ufo_idx = ufo_index
 		if alien.has_method("_apply_skin_textures"):
 			alien._apply_skin_textures()

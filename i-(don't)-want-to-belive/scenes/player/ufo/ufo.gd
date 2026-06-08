@@ -12,7 +12,6 @@ var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
 var capture_hit_target := false
 var laser_shoot_blocked := false
-var movement_blocked := false
 var capture_blocked := false
 var capture_processing := false
 var game: Node2D
@@ -55,7 +54,6 @@ func _ready():
 			ship.texture = ufo_sprites.ship
 
 
-# Czyste przechwytywanie klawiszy akcji – bez fizyki ruchu
 func _process(_delta):
 	if not is_multiplayer_authority():
 		return
@@ -212,25 +210,26 @@ func server_request_capture(node_path: NodePath, position: Vector2i):
 		player.trigger_captured_effects_network.rpc(ufo_idx, position)
 
 
-@rpc("any_peer", "call_local", "reliable")
-func server_spawn_laser(position: Vector2):
-	if multiplayer.is_server():
-		var laser = laser_scene.instantiate()
-		game.add_child(laser)
-		laser.global_position = position
-	if ufo_laser_shoot_animation_time == 0.0:
-		_get_animation_time()
-
-
-func spawn_laser(position: Vector2):
-	server_spawn_laser(position)
-
-
 func fire_laser():
 	laser_shoot.emit(laser_shoot_timeout_seconds)
 	server_spawn_laser.rpc(global_position)
 	start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = !laser_shoot_blocked)
 	start_cooldown_timer(ufo_laser_shoot_animation_time, func(): movement_blocked = !movement_blocked)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func server_spawn_laser(position: Vector2):
+	if multiplayer.is_server():
+		var laser_data = {
+			"type": "laser",
+			"global_position": position,
+			"color_idx": ufo_idx,
+		}
+		game.multiplayer_spawner.spawn(laser_data)
+
+
+func spawn_laser(position: Vector2):
+	server_spawn_laser(position)
 
 
 func _get_animation_time():

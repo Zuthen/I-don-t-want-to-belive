@@ -3,7 +3,7 @@ extends Player
 
 @onready var camera = $Camera2D
 @onready var animation_player = $AnimationPlayer
-@onready var player_input_synchronizer = $PlayerInputSynchronizer
+@onready var player_input_synchronizer: PlayerInputSynchronizer = $PlayerInputSynchronizer
 @onready var dialog_timer = $DialogTimer
 @onready var dialog_placements = $DialogPlacements
 @onready var collision_area = $CollisionArea
@@ -18,7 +18,6 @@ var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
 var ufo_type_camera_scene: PackedScene = preload("uid://cba40e72olvj2")
 
 var is_male
-var movement_blocked := false
 var can_send_coordinates = true
 var voice_emitter_active := false
 
@@ -103,14 +102,7 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
-	var sync_direction: Vector2 = Vector2.ZERO
-	if is_instance_valid(player_input_synchronizer):
-		sync_direction = player_input_synchronizer.movement_vector
-
-	if is_multiplayer_authority() and not movement_blocked:
-		velocity = speed * sync_direction
-		move_and_slide()
-
+	var sync_direction = move(speed, player_input_synchronizer)
 	animate(sync_direction)
 
 

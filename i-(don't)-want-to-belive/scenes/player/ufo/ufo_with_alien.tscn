@@ -6,21 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="4_yytsy"]
 [ext_resource type="PackedScene" uid="uid://157ip2c8a5yg" path="res://scenes/player/aliens/alien.tscn" id="5_wdfhs"]
 
-[sub_resource type="GDScript" id="GDScript_joxb2"]
-script/source = "extends MultiplayerSynchronizer
-
-var movement_vector = Vector2.ZERO
-
-
-func _process(_delta):
-	if is_multiplayer_authority():
-		gather_input()
-
-
-func gather_input():
-	movement_vector = Input.get_vector(\"walk_left\", \"walk_right\", \"walk_up\", \"walk_down\")
-"
-
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_dgwal"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
@@ -40,7 +25,6 @@ collision_mask = 16
 script = ExtResource("1_wdfhs")
 
 [node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("4_yytsy")]
-script = SubResource("GDScript_joxb2")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1422856021]
 replication_config = SubResource("SceneReplicationConfig_dgwal")

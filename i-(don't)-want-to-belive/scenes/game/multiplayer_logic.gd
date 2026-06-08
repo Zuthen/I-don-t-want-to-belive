@@ -6,71 +6,94 @@ enum Role { NONE, UFO, SKEPTIC, ALIEN }
 var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://m52fuwcrlo2k")
 var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
+var laser_scene = preload("uid://dnsiqidfpctrc")
 var player_role = Role.NONE
 
 
 func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 	multiplayer_spawner.spawn_function = func(data):
-		var player_node = null
+		var node = null
 		var role_name = Role.NONE
 
 		if data.has("type") and data.type == "ufo":
-			player_node = ufo_scene.instantiate()
+			node = ufo_scene.instantiate()
 			role_name = Role.UFO
-		elif data.has("type") and data.type == "wreck":
-			player_node = crashed_ufo_scene.instantiate() as CrashedUfo
-		else:
-			player_node = skeptic_scene.instantiate() as Skeptic
-			role_name = Role.SKEPTIC
+			node.name = str(data.peer_id)
+			node.id = data.peer_id
+			node.input_multiplayer_authority = data.peer_id
 
-		if data.has("spawn_position") and player_node:
-			player_node.position = tile_map.map_to_local(data.spawn_position)
+		elif data.has("type") and data.type == "wreck":
+			node = crashed_ufo_scene.instantiate() as CrashedUfo
+
+		elif data.has("type") and data.type == "laser":
+			node = laser_scene.instantiate() as UfoLaser
+			node.name = "Laser"
+
+		else:
+			node = skeptic_scene.instantiate() as Skeptic
+			role_name = Role.SKEPTIC
+			node.name = str(data.peer_id)
+			node.id = data.peer_id
+			node.input_multiplayer_authority = data.peer_id
+
+		if data.has("spawn_position") and node and data.type != "laser":
+			node.position = tile_map.map_to_local(data.spawn_position)
 
 		if data.has("type") and data.type == "wreck":
-			player_node.name = "CrashedUfo_" + str(data.peer_id)
-			player_node.peer_id = data.peer_id
+			node.name = "CrashedUfo_" + str(data.peer_id)
+			node.peer_id = data.peer_id
 			if data.has("ufo_idx"):
-				player_node.ufo_texture_idx = data.ufo_idx
-			return player_node
+				node.ufo_texture_idx = data.ufo_idx
+			return node
 
-		player_node.name = str(data.peer_id)
-		player_node.id = data.peer_id
-		player_node.input_multiplayer_authority = data.peer_id
+		if data.has("type") and data.type == "laser":
+			if data.has("color_idx"):
+				node.color_idx = data.color_idx
+
+			if data.has("global_position"):
+				var target_pos: Vector2 = data.global_position
+
+				node.tree_entered.connect(
+					func():
+						node.position = Vector2.ZERO
+						node.global_position = target_pos
+				)
+			return node
 
 		if data.has("ufo_idx"):
-			if "ufo_index_sync" in player_node:
-				player_node.ufo_index_sync = data.ufo_idx
-			if player_node.has_node("Ufo"):
-				player_node.get_node("Ufo").ufo_idx = data.ufo_idx
-			if player_node.has_node("Alien"):
-				var alien_node = player_node.get_node("Alien")
+			if "ufo_index_sync" in node:
+				node.ufo_index_sync = data.ufo_idx
+			if node.has_node("Ufo"):
+				node.get_node("Ufo").ufo_idx = data.ufo_idx
+			if node.has_node("Alien"):
+				var alien_node = node.get_node("Alien")
 				alien_node.ufo_idx = data.ufo_idx
 
-		if player_node is Skeptic and data.has("is_male"):
-			player_node.is_male = data.is_male
+		if node is Skeptic and data.has("is_male"):
+			node.is_male = data.is_male
 
-		if player_node.has_node("PlayerInput"):
-			player_node.get_node("PlayerInput").set_multiplayer_authority(data.peer_id)
-		elif player_node.has_node("PlayerInputSynchronizer"):
-			player_node.get_node("PlayerInputSynchronizer").set_multiplayer_authority(data.peer_id)
+		if node.has_node("PlayerInput"):
+			node.get_node("PlayerInput").set_multiplayer_authority(data.peer_id)
+		elif node.has_node("PlayerInputSynchronizer"):
+			node.get_node("PlayerInputSynchronizer").set_multiplayer_authority(data.peer_id)
 
-		if player_node.get_multiplayer_authority() == multiplayer.get_unique_id():
+		if node.get_multiplayer_authority() == multiplayer.get_unique_id():
 			for old_local in get_tree().get_nodes_in_group("local_player"):
 				old_local.remove_from_group("local_player")
-			player_node.add_to_group("local_player")
+			node.add_to_group("local_player")
 			player_role = role_name
 
-		assign_to_group(data, player_node)
-		return player_node
+		assign_to_group(data, node)
+		return node
 
 
-func assign_to_group(data, player_node):
+func assign_to_group(data, node):
 	if data.has("type"):
 		match data.type:
 			"ufo":
-				player_node.add_to_group("ufos")
+				node.add_to_group("ufos")
 			"skeptic":
-				player_node.add_to_group("skeptics")
+				node.add_to_group("skeptics")
 
 
 func get_role() -> Role:

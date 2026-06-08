@@ -27,16 +27,16 @@ func get_all_ufos_sprites() -> Array[String]:
 	var result_paths: Array[String] = []
 
 	if dir:
-		for file_name in dir.get_files():
-			if file_name.ends_with(".import"):
-				continue
-			var clean_file_name = file_name
-			if clean_file_name.ends_with(".remap"):
-				clean_file_name = clean_file_name.replace(".remap", "")
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
 
-			var full_path = FOLDER_PATH + clean_file_name
-			result_paths.append(full_path)
+		while file_name != "":
+			if file_name.ends_with(".png.import"):
+				var clean_png_path = FOLDER_PATH + file_name.replace(".import", "")
+				result_paths.append(clean_png_path)
 
+			file_name = dir.get_next()
+		dir.list_dir_end()
 	return result_paths
 
 
@@ -60,4 +60,5 @@ func map_to_ufo_texture(files_list: Array[String]):
 		ufo_sprites.laser_burst = load(FOLDER_PATH + "laser" + color + "_burst.png")
 		ufo_sprites.laser_ground_burst = load(FOLDER_PATH + "laser" + color + "_groundBurst.png")
 		ufo_sprites.ship_crashed = load(FOLDER_PATH + "ship" + color + "_damage2.png")
+
 		ufo_textures.append(ufo_sprites)

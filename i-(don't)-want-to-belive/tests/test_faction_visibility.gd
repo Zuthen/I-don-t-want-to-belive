@@ -11,10 +11,40 @@ var second_ufo: CharacterBody2D
 
 
 func before_each():
-	# Inicjalizujemy węzeł główny reprezentujący instancję gry
 	fake_game = Node2D.new()
 	fake_game.name = "FakeGame"
+
+	var game_mock_script = GDScript.new()
+	game_mock_script.source_code = "
+extends Node2D
+var multiplayer_spawner: MultiplayerSpawner
+"
+	game_mock_script.reload()
+	fake_game.set_script(game_mock_script)
+
+	var fake_spawner = MultiplayerSpawner.new()
+	fake_spawner.name = "FakeMultiplayerSpawner"
+	fake_game.add_child(fake_spawner)
+	fake_game.multiplayer_spawner = fake_spawner
 	add_child_autofree(fake_game)
+	fake_spawner.spawn_path = fake_game.get_path()
+	fake_spawner.spawn_function = func(data):
+		var spawned_node = null
+
+		if data.has("type") and data.type == "laser":
+			spawned_node = Node2D.new()
+			spawned_node.name = "Laser"
+			spawned_node.set_meta("is_laser", true)
+			if data.has("global_position"):
+				spawned_node.global_position = data.global_position
+
+		elif data.has("type") and data.type == "ufo":
+			spawned_node = ufo_scene.instantiate()
+
+		elif data.has("type") and data.type == "skeptic":
+			spawned_node = skeptic_scene.instantiate()
+
+		return spawned_node
 
 	for node in get_tree().get_nodes_in_group("local_player"):
 		if is_instance_valid(node):
@@ -28,7 +58,6 @@ func before_each():
 
 
 func after_each():
-	# Absolutne czyszczenie roota i fake_game ze wszystkich dynamicznych instancji
 	var leftover_lasers = find_all_lasers(get_tree().root)
 	for laser in leftover_lasers:
 		if is_instance_valid(laser):
@@ -42,7 +71,6 @@ func after_each():
 	await wait_physics_frames(2)
 
 
-# FUNKCJA POMOCNICZA: Odtwarza strukturę nadrzędną wymaganą przez hierarchię gry
 func _setup_ufo_hierarchy(peer_id: int, is_local: bool = false) -> CharacterBody2D:
 	var parent_core = Node2D.new()
 	parent_core.name = "UfoWithAlien_" + str(peer_id)
@@ -75,7 +103,6 @@ func test_ufo_hides_when_local_player_is_skeptic():
 	fake_game.add_child(mock_skeptic)
 	mock_skeptic.set_multiplayer_authority(1)
 
-	# Tworzymy instancję UFO
 	mock_ufo = _setup_ufo_hierarchy(2, false)
 	var ufo_parent = mock_ufo.get_parent()
 
