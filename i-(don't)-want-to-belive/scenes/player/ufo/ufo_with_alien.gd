@@ -42,7 +42,6 @@ func _ready():
 	ufo.process_mode = PROCESS_MODE_INHERIT
 	ufo_collider.disabled = false
 
-	# Na starcie obcy jest całkowicie uśpiony
 	alien.visible = false
 	alien.process_mode = PROCESS_MODE_DISABLED
 	alien_collider.disabled = true
@@ -50,13 +49,14 @@ func _ready():
 	if alien.has_node("Coordinates"):
 		alien.get_node("Coordinates").visible = false
 
-	# Przekazujemy zainicjalizowaną wartość (np. ze spawnera) do Aliena
 	alien.ufo_idx = ufo_index_sync
 
 	if is_multiplayer_authority():
 		set_camera(camera, ufo_camera_zoom)
 
 	_update_visibility_for_start()
+	collision_layer = 0
+	collision_mask = 16
 
 
 func _update_visibility_for_start():
@@ -113,7 +113,8 @@ func change_state(new_state: State, ufo_index: int):
 
 		ufo_collider.set_deferred("disabled", false)
 		alien_collider.set_deferred("disabled", true)
-		set_collision_mask_value(1, false)
+		collision_layer = 0
+		collision_mask = 16
 
 	elif new_state == State.ALIEN:
 		alien.process_mode = PROCESS_MODE_INHERIT
@@ -131,8 +132,8 @@ func change_state(new_state: State, ufo_index: int):
 
 		ufo_collider.set_deferred("disabled", true)
 		alien_collider.set_deferred("disabled", false)
-		set_collision_mask_value(1, true)
-
+		collision_layer = 1
+		collision_mask = 3
 		var tile_map = game.tile_map_layer
 		var current_grid_pos: Vector2i = tile_map.local_to_map(global_position)
 
