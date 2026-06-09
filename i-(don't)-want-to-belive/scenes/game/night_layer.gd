@@ -15,6 +15,8 @@ var last_player_tile := Vector2i(-999, -999)
 
 
 func _ready():
+	z_index = 10
+	y_sort_enabled = false
 	if not buildings_layer:
 		push_error("Set buildings layer")
 		return
@@ -68,40 +70,42 @@ func _process(_delta):
 
 func update_players_visibility(local_player: Node2D):
 	var my_network_id = multiplayer.get_unique_id()
-
-	# A. Reguła dla ekranu UFO: widzi tylko inne UFO, ukrywa ludzi i obcych na ziemi
 	if local_player.is_in_group("ufos") and not local_player.is_in_group("aliens"):
-		var ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
-		for player in ground_players:
-			player.visible = false
+		var ground_entities = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens") + get_tree().get_nodes_in_group("wrecks")
+		for entity in ground_entities:
+			entity.visible = false
 
 		var ufo_players = get_tree().get_nodes_in_group("ufos")
 		for ufo in ufo_players:
 			ufo.visible = true
 		return
 
-	# B. Reguła dla ekranu naziemnego (Skeptic / Alien): wzajemna widoczność tylko w polu widzenia
 	var all_ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 	var local_tile = buildings_layer.local_to_map(local_player.global_position)
 
 	for player in all_ground_players:
-		# Pancerne sprawdzenie autorytetu: Siebie samego na swoim ekranie zawsze muszę widzieć
 		if player.get_multiplayer_authority() == my_network_id:
 			player.visible = true
 			continue
 
-		# Pobieramy pozycję kafelka przeciwnika i liczymy czysty dystans kafelkowy
 		var player_tile = buildings_layer.local_to_map(player.global_position)
 		var distance_in_tiles = local_tile.distance_to(player_tile)
-
-		# Dodatkowo sprawdzamy stan kafelka bezpośrednio pod przeciwnikiem na naszym lokalnym ekranie
 		var fog_tile_alternative = get_cell_alternative_tile(player_tile)
 
-		# REGUŁA: Jeśli wróg nie stoi w głębokim mroku ORAZ jest matematycznie w promieniu wzroku -> ujawnij go
 		if fog_tile_alternative != TILE_DEEP_NIGHT and distance_in_tiles <= vision_radius:
 			player.visible = true
 		else:
 			player.visible = false
+	var all_wrecks = get_tree().get_nodes_in_group("wrecks")
+	for wreck in all_wrecks:
+		var wreck_tile = buildings_layer.local_to_map(wreck.global_position)
+		var distance_to_wreck = local_tile.distance_to(wreck_tile)
+		var fog_at_wreck = get_cell_alternative_tile(wreck_tile)
+
+		if fog_at_wreck != TILE_DEEP_NIGHT and distance_to_wreck <= vision_radius:
+			wreck.visible = true
+		else:
+			wreck.visible = false
 
 
 func setup_ufo_view():
@@ -134,11 +138,13 @@ func apply_new_fog(center_tile: Vector2i):
 
 
 func get_local_player() -> Node2D:
+	if not multiplayer or not multiplayer.has_multiplayer_peer():
+		return null
+
 	var my_id = multiplayer.get_unique_id()
 	var all_nodes = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("aliens")
 
 	for node in all_nodes:
-		# Szukamy po ID autorytetu sieciowego maszyny, radzi sobie z kontenerami rodzic-dziecko
 		if node.get_multiplayer_authority() == my_id:
 			return node
 		if node.get_parent() and node.get_parent().get_multiplayer_authority() == my_id:

@@ -20,6 +20,10 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 
 		elif data.has("type") and data.type == "wreck":
 			node = crashed_ufo_scene.instantiate() as CrashedUfo
+			node.name = "CrashedUfo_" + str(data.peer_id)
+			node.peer_id = data.peer_id
+			if data.has("ufo_idx"):
+				node.ufo_texture_idx = data.ufo_idx
 
 		elif data.has("type") and data.type == "laser":
 			node = laser_scene.instantiate() as UfoLaser
@@ -89,6 +93,8 @@ func assign_to_group(data, node):
 				node.add_to_group("ufos")
 			"skeptic":
 				node.add_to_group("skeptics")
+			"wreck":
+				node.add_to_group("wrecks")
 
 
 func get_local_player() -> Player:

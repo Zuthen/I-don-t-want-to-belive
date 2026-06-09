@@ -26,7 +26,8 @@ var input_multiplayer_authority: int:
 var ufo_idx: int = 0:
 	set(value):
 		ufo_idx = value
-		_apply_skin_textures()
+		if is_node_ready():
+			_apply_skin_textures()
 
 
 func _ready():
@@ -42,9 +43,8 @@ func _ready():
 @rpc("any_peer", "call_local", "reliable")
 func _sync_alien_skin_across_network(assigned_idx: int):
 	ufo_idx = assigned_idx
-	if not is_node_ready():
-		await ready
-	_apply_skin_textures()
+	if is_node_ready():
+		_apply_skin_textures()
 
 
 func _apply_skin_textures():
