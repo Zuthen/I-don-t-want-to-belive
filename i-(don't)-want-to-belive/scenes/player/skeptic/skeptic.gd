@@ -134,9 +134,9 @@ func walkie_talkie_message():
 
 @rpc("any_peer", "call_local", "reliable")
 func send_walkie_talkie_message(message: String):
-	var ui = get_tree().current_scene.get_node_or_null("CanvasLayer")
+	var ui = get_tree().current_scene.get_node_or_null("Coordinates")
 	if not ui:
-		ui = get_tree().root.find_child("CanvasLayer", true, false)
+		ui = get_tree().root.find_child("Coordinates", true, false)
 
 	var walkie_talkie_message = walkie_talkie_message_scene.instantiate()
 	if is_multiplayer_authority():
