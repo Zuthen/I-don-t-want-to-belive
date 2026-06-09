@@ -66,11 +66,11 @@ func _process(_delta):
 		return
 
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
-		call_other_skeptic_network.rpc()
+		call_skeptic_network.rpc()
 
 
 @rpc("call_local", "any_peer", "reliable")
-func call_other_skeptic_network():
+func call_skeptic_network():
 	voice_emitter_active = true
 	var voice_emitter = voice_emitter_scene.instantiate()
 	add_child(voice_emitter)
@@ -81,8 +81,8 @@ func _reset_voice_emmitter():
 	voice_emitter_active = false
 
 
-func call_other_skeptic():
-	call_other_skeptic_network()
+func call_skeptic():
+	call_skeptic_network()
 
 
 func _on_dialog_timer_timeout(node: Node2D):
