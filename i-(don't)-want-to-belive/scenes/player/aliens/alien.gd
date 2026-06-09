@@ -21,7 +21,7 @@ var current_skin: AliensTextures.AlienTextures = null
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
-		set_multiplayer_authority(value, true)
+		set_multiplayer_authority(value)
 
 var ufo_idx: int = 0:
 	set(value):
@@ -31,16 +31,19 @@ var ufo_idx: int = 0:
 
 func _ready():
 	collision_area.area_entered.connect(on_skeptic_seen_alien)
+	await get_tree().process_frame
 	_apply_skin_textures()
 
+	peer_id = get_multiplayer_authority()
 	if is_multiplayer_authority():
-		peer_id = get_multiplayer_authority()
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 
 @rpc("any_peer", "call_local", "reliable")
 func _sync_alien_skin_across_network(assigned_idx: int):
 	ufo_idx = assigned_idx
+	if not is_node_ready():
+		await ready
 	_apply_skin_textures()
 
 
@@ -49,7 +52,7 @@ func _apply_skin_textures():
 	if alien_skins_idx != -1 and alien_skins_idx < AliensTextures.alien_textures.size():
 		current_skin = AliensTextures.alien_textures[alien_skins_idx]
 
-		if is_inside_tree() and animation_player and sprite_2d:
+		if animation_player and sprite_2d:
 			set_animations(current_skin)
 			sprite_2d.texture = current_skin.front
 
@@ -98,7 +101,6 @@ func on_skeptic_seen_alien(area: Area2D):
 
 func set_animations(animations_sprites: AliensTextures.AlienTextures):
 	var track_path = "Sprite2D:texture"
-
 	var anim_down = animation_player.get_animation("move down")
 	var track_down = anim_down.find_track(track_path, Animation.TYPE_VALUE)
 	if track_down != -1:

@@ -75,6 +75,11 @@ func _update_visibility_for_local_player():
 			my_local_hero = p
 			break
 
+	if is_multiplayer_authority():
+		visible = true
+		sprite_2d.visible = true
+		return
+
 	if my_local_hero and my_local_hero.is_in_group("ufos"):
 		visible = false
 		sprite_2d.visible = false
