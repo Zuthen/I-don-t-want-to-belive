@@ -150,7 +150,7 @@ func change_state(new_state: State, ufo_index: int):
 			remove_from_group("ufos")
 		if not is_in_group("aliens"):
 			add_to_group("aliens")
-
+		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 		if is_multiplayer_authority() and is_instance_valid(camera):
 			var camera_tween = create_tween()
 			camera_tween.tween_property(

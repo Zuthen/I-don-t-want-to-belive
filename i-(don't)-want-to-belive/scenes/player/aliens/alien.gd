@@ -21,7 +21,7 @@ var current_skin: AliensTextures.AlienTextures = null
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
-		set_multiplayer_authority(value, true)
+		set_multiplayer_authority(value)
 
 var ufo_idx: int = 0:
 	set(value):
@@ -33,8 +33,8 @@ func _ready():
 	collision_area.area_entered.connect(on_skeptic_seen_alien)
 	_apply_skin_textures()
 
+	peer_id = get_multiplayer_authority()
 	if is_multiplayer_authority():
-		peer_id = get_multiplayer_authority()
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 
