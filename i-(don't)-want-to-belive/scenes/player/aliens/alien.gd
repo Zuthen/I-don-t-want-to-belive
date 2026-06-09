@@ -101,7 +101,6 @@ func on_skeptic_seen_alien(area: Area2D):
 
 func set_animations(animations_sprites: AliensTextures.AlienTextures):
 	var track_path = "Sprite2D:texture"
-
 	var anim_down = animation_player.get_animation("move down")
 	var track_down = anim_down.find_track(track_path, Animation.TYPE_VALUE)
 	if track_down != -1:
