@@ -204,11 +204,11 @@ one_shot = true
 libraries/ = SubResource("AnimationLibrary_ehrl8")
 autoplay = &"move down"
 
+[node name="VoiceReceiver" parent="." unique_id=789243774 instance=ExtResource("4_srrot")]
+
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=312119236]
 scale = Vector2(-0.25, 0.25)
 texture = ExtResource("3_u533k")
-
-[node name="VoiceReceiver" parent="." unique_id=789243774 instance=ExtResource("4_srrot")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1681121901]
 ignore_rotation = false

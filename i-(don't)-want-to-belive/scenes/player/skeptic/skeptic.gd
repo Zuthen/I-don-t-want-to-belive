@@ -163,13 +163,12 @@ func _on_laser_seen():
 	var target_position = dialog.global_position + global_position
 	var icon_placeholder = icon_placeholder_scene.instantiate()
 
-	icon_placeholder.accepts_role = [MultiplayerFeatures.Role.UFO, MultiplayerFeatures.Role.SKEPTIC] as Array[MultiplayerFeatures.Role]
+	icon_placeholder.accepts_role = [Player.Role.UFO, Player.Role.SKEPTIC] as Array[Player.Role]
 	icon_placeholder.icon = preload("uid://ddjkfec0jsuw")
 	get_tree().root.add_child(icon_placeholder)
 
 	icon_placeholder.global_position = target_position
-	icon_placeholder.scale = Vector2(0.6, 0.6)
-	icon_placeholder.setup(MultiplayerFeatures.get_role(), icon_placeholder.icon)
+	icon_placeholder.setup(Player.Role.SKEPTIC, icon_placeholder.accepts_role)
 
 	dialog_timer.timeout.connect(func(): _on_dialog_timer_timeout(icon_placeholder), CONNECT_ONE_SHOT)
 	dialog_timer.start()
@@ -233,7 +232,6 @@ func _teleport_network_rpc(pixel_position: Vector2):
 	global_position = pixel_position
 
 	var local_player = null
-	# UWAGA: Szukamy we wszystkich trzech grupach, uwzględniając "aliens"!
 	for node in get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("aliens"):
 		if node.is_multiplayer_authority():
 			local_player = node
@@ -261,8 +259,6 @@ func _teleport_network_rpc(pixel_position: Vector2):
 		camera.zoom = camera_zoom
 		camera.position_smoothing_enabled = dynamic_smoothing
 
-	# --- POPRAWKA SIECIOWA ---
-	# Po zakończeniu teleportacji bezwzględnie przywracamy synchronizator do życia (procesy na true!)
 	if is_instance_valid(player_input_synchronizer):
 		player_input_synchronizer.set_process(true)
 		player_input_synchronizer.set_physics_process(true)

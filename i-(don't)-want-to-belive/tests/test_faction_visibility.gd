@@ -2,6 +2,7 @@ extends GutTest
 
 var skeptic_scene = preload("uid://b7wo2a5407873")
 var ufo_scene = preload("uid://hc74yy2qdg3f")
+var ufo_with_alien_scene = preload("uid://m52fuwcrlo2k")
 
 var fake_game: Node2D
 var mock_skeptic: CharacterBody2D
@@ -9,24 +10,38 @@ var mock_ufo: CharacterBody2D
 var another_skeptic: CharacterBody2D
 var second_ufo: CharacterBody2D
 
+var original_current_scene: Node
+
 
 func before_each():
 	fake_game = Node2D.new()
 	fake_game.name = "FakeGame"
 
+	var fake_tilemap = TileMapLayer.new()
+	fake_tilemap.name = "FakeTilemap"
+	fake_tilemap.tile_set = TileSet.new()
+
+	fake_game.add_child(fake_tilemap)
+
 	var game_mock_script = GDScript.new()
 	game_mock_script.source_code = "
 extends Node2D
 var multiplayer_spawner: MultiplayerSpawner
+var tile_map_layer = null
+var paths = {}
 "
 	game_mock_script.reload()
 	fake_game.set_script(game_mock_script)
+	fake_game.tile_map_layer = fake_tilemap
+	get_tree().root.add_child(fake_game)
+
+	original_current_scene = get_tree().current_scene
+	get_tree().current_scene = fake_game
 
 	var fake_spawner = MultiplayerSpawner.new()
 	fake_spawner.name = "FakeMultiplayerSpawner"
 	fake_game.add_child(fake_spawner)
 	fake_game.multiplayer_spawner = fake_spawner
-	add_child_autofree(fake_game)
 	fake_spawner.spawn_path = fake_game.get_path()
 	fake_spawner.spawn_function = func(data):
 		var spawned_node = null
@@ -58,6 +73,12 @@ var multiplayer_spawner: MultiplayerSpawner
 
 
 func after_each():
+	if is_instance_valid(original_current_scene):
+		get_tree().current_scene = original_current_scene
+
+	if is_instance_valid(fake_game):
+		fake_game.queue_free()
+
 	var leftover_lasers = find_all_lasers(get_tree().root)
 	for laser in leftover_lasers:
 		if is_instance_valid(laser):
@@ -94,7 +115,6 @@ func _setup_ufo_hierarchy(peer_id: int, is_local: bool = false) -> CharacterBody
 
 
 func test_ufo_hides_when_local_player_is_skeptic():
-	# Arrange
 	get_tree().get_multiplayer().multiplayer_peer = OfflineMultiplayerPeer.new()
 
 	mock_skeptic = skeptic_scene.instantiate()
@@ -108,59 +128,46 @@ func test_ufo_hides_when_local_player_is_skeptic():
 
 	ufo_parent.visible = false
 
-	# Act
 	await get_tree().process_frame
 	await wait_seconds(0.1)
 
-	# Assert
 	assert_false(ufo_parent.visible)
 
 
 func test_skeptics_see_each_other():
-	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.add_to_group("skeptics")
 	mock_skeptic.add_to_group("local_player")
 	fake_game.add_child(mock_skeptic)
 
-	# Act
 	another_skeptic = skeptic_scene.instantiate()
 	another_skeptic.add_to_group("skeptics")
 	fake_game.add_child(another_skeptic)
 
-	# Assert
 	assert_true(another_skeptic.visible)
 
 
 func test_ufos_see_each_other():
-	# Arrange
 	mock_ufo = _setup_ufo_hierarchy(1, true)
-
-	# Act
 	second_ufo = _setup_ufo_hierarchy(2, false)
 
-	# Assert
 	assert_true(second_ufo.get_parent().visible)
 
 
 func test_as_ufo_i_can_see_my_laser():
-	# Arrange
 	mock_ufo = _setup_ufo_hierarchy(1, true)
 	mock_ufo.ufo_laser_shoot_animation_time = 0.5
 
 	await get_tree().process_frame
 
-	# Act
 	mock_ufo.spawn_laser(Vector2.ZERO)
 	await wait_physics_frames(2)
 
-	# Assert
 	var lasers = find_all_lasers(get_tree().root)
 	assert_eq(lasers.size(), 1)
 
 
 func test_as_ufo_i_can_see_other_ufo_laser():
-	# Arrange
 	get_tree().get_multiplayer().multiplayer_peer = OfflineMultiplayerPeer.new()
 
 	mock_ufo = _setup_ufo_hierarchy(1, true)
@@ -169,17 +176,14 @@ func test_as_ufo_i_can_see_other_ufo_laser():
 
 	await get_tree().process_frame
 
-	# Act
 	second_ufo.server_spawn_laser(second_ufo.global_position)
 	await wait_physics_frames(2)
 
-	# Assert
 	var lasers = find_all_lasers(get_tree().root)
 	assert_eq(lasers.size(), 1)
 
 
 func test_as_skeptic_i_can_see_ufos_laser():
-	# Arrange
 	get_tree().get_multiplayer().multiplayer_peer = OfflineMultiplayerPeer.new()
 
 	mock_skeptic = skeptic_scene.instantiate()
@@ -193,11 +197,9 @@ func test_as_skeptic_i_can_see_ufos_laser():
 
 	await get_tree().process_frame
 
-	# Act
 	mock_ufo.server_spawn_laser(mock_ufo.global_position)
 	await wait_physics_frames(2)
 
-	# Assert
 	var lasers = find_all_lasers(get_tree().root)
 	assert_eq(lasers.size(), 1)
 
@@ -224,7 +226,9 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 	var icons = find_all_icons(get_tree().root)
 	for icon in icons:
 		if icon.has_method("setup"):
-			icon.setup(1)
+			var allowed_roles = [2, 3] as Array[int]
+			icon.setup(2, allowed_roles)
+
 	var visible_icons = icons.filter(
 		func(icon):
 			var sprite = icon.get_node_or_null("Sprite2D") as Sprite2D
@@ -237,7 +241,6 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 
 
 func test_laser_seen_creates_icon_at_dialog_placement():
-	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	fake_game.add_child(mock_skeptic)
 
@@ -256,17 +259,89 @@ func test_laser_seen_creates_icon_at_dialog_placement():
 
 	mock_skeptic.global_position = Vector2(100, 200)
 
-	# Act
 	mock_skeptic._on_laser_seen()
 	await wait_physics_frames(2)
 
-	# Assert
 	var icons = find_all_icons(get_tree().root)
 	assert_eq(icons.size(), 1)
 
 	if icons.size() > 0:
 		var spawned_icon = icons[0] as Node2D
-		assert_eq(spawned_icon.scale, Vector2(0.6, 0.6))
+		assert_eq(spawned_icon.scale, Vector2(1.0, 1.0))
+
+
+func test_skeptic_receives_alien_voice_call():
+	# Arrange
+	mock_skeptic = skeptic_scene.instantiate()
+	mock_skeptic.set_multiplayer_authority(1)
+	mock_skeptic.add_to_group("skeptics")
+	fake_game.add_child(mock_skeptic)
+	mock_skeptic.global_position = Vector2(100, 100)
+	mock_skeptic.role = Player.Role.SKEPTIC
+
+	var ufo_combo = ufo_with_alien_scene.instantiate()
+	ufo_combo.name = "UfoWithAlien_2"
+	fake_game.add_child(ufo_combo)
+	ufo_combo.input_multiplayer_authority = 2
+	ufo_combo.add_to_group("ufos")
+
+	if ufo_combo.has_method("change_state"):
+		ufo_combo.change_state(1, 0)
+	else:
+		ufo_combo.change_state(ufo_combo.State.ALIEN, 0)
+
+	ufo_combo.global_position = Vector2(120, 100)
+	var mock_alien = ufo_combo.get_node("Alien")
+
+	await wait_physics_frames(2)
+
+	# Act
+	mock_alien.call_skeptic()
+	await wait_physics_frames(3)
+
+	# Assert
+	var icons = find_all_icons(get_tree().root)
+	assert_gt(icons.size(), 0)
+
+	if icons.size() > 0:
+		var spawned_icon = icons[0] as Node2D
+		assert_eq(spawned_icon.global_position.x, 110.0)
+
+
+func test_alien_receives_skeptic_voice_call():
+	# Arrange
+	var ufo_combo = ufo_with_alien_scene.instantiate()
+	ufo_combo.name = "UfoWithAlien_1"
+	fake_game.add_child(ufo_combo)
+	ufo_combo.input_multiplayer_authority = 1
+	ufo_combo.add_to_group("ufos")
+
+	if ufo_combo.has_method("change_state"):
+		ufo_combo.change_state(1, 0)
+	else:
+		ufo_combo.change_state(ufo_combo.State.ALIEN, 0)
+
+	ufo_combo.global_position = Vector2(200, 200)
+	another_skeptic = skeptic_scene.instantiate()
+	another_skeptic.set_multiplayer_authority(2)
+	another_skeptic.add_to_group("skeptics")
+	fake_game.add_child(another_skeptic)
+	another_skeptic.global_position = Vector2(240, 200) # W zasięgu słuchu Aliena
+	another_skeptic.role = Player.Role.SKEPTIC
+
+	await wait_physics_frames(2)
+
+	# Act
+	another_skeptic.call_other_skeptic()
+	await wait_physics_frames(3)
+
+	# Assert
+	var icons = find_all_icons(get_tree().root)
+	assert_gt(icons.size(), 0)
+
+	if icons.size() > 0:
+		var spawned_icon = icons[0] as Node2D
+		assert_eq(spawned_icon.global_position.x, 220.0)
 
 
 func find_all_lasers(node: Node) -> Array:

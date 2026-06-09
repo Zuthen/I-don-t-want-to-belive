@@ -3,6 +3,7 @@ extends CharacterBody2D
 class_name Player
 @onready var tile_map_layer = get_node_or_null("/root/Game/BuildingsAndPaths")
 var tile: Vector2
+enum Role { NONE, UFO, SKEPTIC, ALIEN }
 
 @warning_ignore_start("unused_signal")
 signal player_role_assigned
@@ -10,6 +11,7 @@ signal ufo_wins
 signal skeptics_win
 var id: int = 0
 var movement_blocked: = false
+var role: Role
 
 
 func move(speed: float, player_input_synchronizer: PlayerInputSynchronizer) -> Vector2:

@@ -36,40 +36,42 @@ func _ready():
 		player.player_role_assigned.connect(_on_player_role_assigned)
 		player.ufo_wins.connect(_on_ufo_wins)
 		player.skeptics_win.connect(_on_skeptic_win)
-
-		var role = MultiplayerFeatures.get_role()
-		if role == MultiplayerFeatures.Role.SKEPTIC:
+		if player.role == Player.Role.SKEPTIC:
 			player.belive_points_changed.connect(_on_belive_points_changed)
 			player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
-		elif role == MultiplayerFeatures.Role.UFO:
+		elif player.role == Player.Role.UFO:
 			var ufo = player.get_node_or_null("Ufo")
 			ufo.laser_shoot.connect(_on_q_skill_fired)
 			ufo.captured.connect(_on_e_skill_fired)
-		_setup_ui(role)
+			var ufo_with_alien = ufo.get_parent() as UfoWithAlien
+			ufo_with_alien.ufo_crashed.connect(func(): setup_ui(Player.Role.ALIEN))
+		setup_ui(player.role)
 	else:
 		printerr("[UI] Błąd sieciowy: Klient o ID ", multiplayer.get_unique_id(), " nie doczekał się swojej postaci!")
 
 
 func _on_player_role_assigned():
-	var role = MultiplayerFeatures.get_role()
-	_setup_ui(role)
+	var player = get_parent() as Player
+	setup_ui(player.role)
 
 
-func _setup_ui(role: MultiplayerFeatures.Role):
+func setup_ui(role: Player.Role):
 	for ufo in ufos_sprites:
 		ufo.visible = false
 	match role:
-		MultiplayerFeatures.Role.UFO:
+		Player.Role.UFO:
 			q.set_icon_text("Wystrzel laser")
 			e.set_icon_text("Pochwyć")
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
-		MultiplayerFeatures.Role.SKEPTIC:
+		Player.Role.SKEPTIC:
 			e.set_icon_text("Wyślij swoją pozycję")
 			q.set_icon_text("Zawołaj")
-		MultiplayerFeatures.Role.ALIEN:
+		Player.Role.ALIEN:
 			q.set_icon_text("Zawołaj")
 			e.visible = false
+			belive_points_counter_background.visible = false
+			belive_points_counter.visible = false
 
 
 func _on_ufo_wins():
