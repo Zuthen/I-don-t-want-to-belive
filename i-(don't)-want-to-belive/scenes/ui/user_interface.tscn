@@ -135,7 +135,6 @@ offset_left = 704.0
 offset_top = 21.0
 offset_right = 816.0
 offset_bottom = 201.0
-alignment = 1
 
 [node name="Q" parent="SkillsPanel" unique_id=688888508 instance=ExtResource("7_xg44s")]
 layout_mode = 2
