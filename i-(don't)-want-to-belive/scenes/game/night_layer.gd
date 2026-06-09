@@ -63,8 +63,6 @@ func _process(_delta):
 
 		last_player_tile = current_tile
 		apply_new_fog(current_tile)
-
-	# Uruchamiamy filtrowanie widoczności graczy w każdej klatce
 	update_players_visibility(local_player)
 
 

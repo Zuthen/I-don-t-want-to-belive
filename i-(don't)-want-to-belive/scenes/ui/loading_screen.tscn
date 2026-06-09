@@ -1,0 +1,188 @@
+[gd_scene format=3 uid="uid://c7m7gjtuwjrst"]
+
+[ext_resource type="Script" uid="uid://diox2ccruvoy4" path="res://scenes/ui/loading_screen.gd" id="1_q4fso"]
+[ext_resource type="Texture2D" uid="uid://bsck3e0jfp5fu" path="res://assets/characters/ufos/shipBlue_manned.png" id="1_rqdcv"]
+[ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="2_s41fs"]
+[ext_resource type="Texture2D" uid="uid://ccmuqvey761ql" path="res://assets/objects/stars/star_09.png" id="3_y06jl"]
+[ext_resource type="Texture2D" uid="uid://buidbtnxfuv1y" path="res://assets/objects/stars/star_04.png" id="4_g5iak"]
+[ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="6_y06jl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s41fs"]
+
+[sub_resource type="Animation" id="Animation_y06jl"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Dots:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_g5iak"]
+resource_name = "loading"
+loop_mode = 1
+step = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Dots:visible_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_2hmxs"]
+_data = {
+&"RESET": SubResource("Animation_y06jl"),
+&"loading": SubResource("Animation_g5iak")
+}
+
+[node name="LoadingScreen" type="Control" unique_id=1102471004]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q4fso")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1555336950]
+layout_mode = 0
+offset_left = -28.0
+offset_top = -20.0
+offset_right = 851.0
+offset_bottom = 712.0
+color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
+
+[node name="Background" type="Control" parent="." unique_id=869608653]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="Background" unique_id=13620235]
+layout_mode = 0
+offset_left = 231.0
+offset_top = 96.0
+offset_right = 1511.0
+offset_bottom = 1376.0
+texture = ExtResource("2_s41fs")
+flip_h = true
+flip_v = true
+
+[node name="TextureRect2" type="TextureRect" parent="Background" unique_id=1894897033]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("3_y06jl")
+
+[node name="TextureRect3" type="TextureRect" parent="Background" unique_id=2097443859]
+layout_mode = 0
+offset_left = 255.00003
+offset_top = 115.0
+offset_right = 767.0
+offset_bottom = 627.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_g5iak")
+
+[node name="TextureRect4" type="TextureRect" parent="Background" unique_id=27314809]
+layout_mode = 0
+offset_left = -24.999939
+offset_top = 599.99994
+offset_right = 487.00006
+offset_bottom = 1112.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_g5iak")
+
+[node name="TextureRect5" type="TextureRect" parent="Background" unique_id=1347607165]
+layout_mode = 0
+offset_left = 167.00003
+offset_top = 566.99994
+offset_right = 679.0
+offset_bottom = 1079.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_g5iak")
+
+[node name="TextureRect6" type="TextureRect" parent="Background" unique_id=1278671155]
+layout_mode = 0
+offset_left = 590.0
+offset_top = 65.00001
+offset_right = 1102.0
+offset_bottom = 577.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_g5iak")
+
+[node name="TextureRect7" type="TextureRect" parent="Background" unique_id=1459504145]
+layout_mode = 0
+offset_left = 68.000046
+offset_top = 373.99997
+offset_right = 580.00006
+offset_bottom = 886.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_g5iak")
+
+[node name="HSlider" type="HSlider" parent="." unique_id=1315614769]
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -386.0
+offset_top = -72.0
+offset_right = 300.0
+offset_bottom = 73.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_icons/grabber = ExtResource("1_rqdcv")
+theme_override_styles/slider = SubResource("StyleBoxEmpty_s41fs")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=658351357]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 41.0
+offset_top = -171.0
+offset_right = -412.0
+offset_bottom = -58.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/normal_font = ExtResource("6_y06jl")
+theme_override_font_sizes/normal_font_size = 40
+text = "Ładowanie"
+
+[node name="Dots" type="RichTextLabel" parent="." unique_id=141159545]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 287.0
+offset_top = -171.0
+offset_right = -166.0
+offset_bottom = -58.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/normal_font = ExtResource("6_y06jl")
+theme_override_font_sizes/normal_font_size = 40
+text = "...
+"
+visible_characters = 0
+visible_ratio = 0.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=478977685]
+libraries/ = SubResource("AnimationLibrary_2hmxs")
+autoplay = &"loading"
