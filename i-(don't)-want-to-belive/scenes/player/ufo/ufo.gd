@@ -70,8 +70,9 @@ func _capture():
 	capture_hit_target = false
 	capture_processing = true
 	movement_blocked = true
-
-	var animation_time = animation_player.get_animation("capture").length
+	var animation = animation_player.get_animation("capture")
+	var animation_time = animation.length
+	animation.track_set_key_value(0, 0, UfosTextures.ufo_textures[ufo_idx].laser_pointing)
 	animation_player.play("capture")
 	captured.emit(capture_timeout_seconds)
 	capture_area_collision.disabled = false
