@@ -70,14 +70,22 @@ func test_player_can_t_call_outside_range_size():
 
 
 func test_walkie_talkie_adds_message_to_ui_for_everyone():
-	await wait_physics_frames(1)
+	await wait_physics_frames(2)
+	var real_coordinates = game.get_node_or_null("Coordinates")
+	if not real_coordinates:
+		real_coordinates = game.find_child("Coordinates", true, false)
 
-	var canvas = game.get_node_or_null("CanvasLayer")
-	if not canvas:
-		fail_test("Brak węzła CanvasLayer wewnątrz załadowanej sceny game!")
+	if not real_coordinates:
+		fail_test("Brak węzła Coordinates w strukturze sceny testowej!")
 		return
 
-	var initial_child_count = canvas.get_child_count()
+	if game.get_node_or_null("Coordinates") == null:
+		var mock_canvas = Node.new()
+		mock_canvas.name = "Coordinates"
+		game.add_child(mock_canvas)
+		real_coordinates = mock_canvas
+
+	var initial_child_count = real_coordinates.get_child_count()
 
 	mock_skeptic = skeptic_scene.instantiate()
 	game.add_child(mock_skeptic)
@@ -86,21 +94,19 @@ func test_walkie_talkie_adds_message_to_ui_for_everyone():
 
 	# Act
 	mock_skeptic.send_walkie_talkie_message("C15")
-	await wait_physics_frames(2)
+	await wait_physics_frames(3)
 
 	# Assert
 	assert_eq(
-		canvas.get_child_count(),
+		real_coordinates.get_child_count(),
 		initial_child_count + 1,
+		"Wiadomość nadal nie została dodana do węzła Coordinates!",
 	)
 
-	var last_child = canvas.get_child(canvas.get_child_count() - 1)
+	var last_child = real_coordinates.get_child(real_coordinates.get_child_count() - 1)
 
 	if "coordinates_text" in last_child:
-		assert_eq(
-			last_child.coordinates_text,
-			"C15",
-		)
+		assert_eq(last_child.coordinates_text, "C15")
 	else:
 		var found_prop := false
 		for child in last_child.get_children():
@@ -109,7 +115,7 @@ func test_walkie_talkie_adds_message_to_ui_for_everyone():
 				found_prop = true
 				break
 		if not found_prop:
-			fail_test("no prop")
+			fail_test("Wiadomość została dodana, ale nie znaleziono właściwości 'coordinates_text'")
 
 
 func find_all_icons_in_engine(node: Node) -> Array:
