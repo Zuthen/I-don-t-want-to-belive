@@ -41,7 +41,6 @@ func _process(_delta):
 	if not local_player:
 		return
 
-	# 1. LOGIKA DLA UFO
 	if local_player.is_in_group("ufos") and not local_player.is_in_group("aliens"):
 		if last_player_tile == Vector2i(-999, -999):
 			last_player_tile = Vector2i(0, 0)
@@ -49,7 +48,6 @@ func _process(_delta):
 		update_players_visibility(local_player)
 		return
 
-	# 2. LOGIKA DLA RAS NAZIEMNYCH (Skeptic / Alien)
 	if last_player_tile == Vector2i(0, 0) or (last_player_tile == Vector2i(-999, -999) and (local_player.is_in_group("aliens") or local_player.is_in_group("skeptics"))):
 		last_player_tile = buildings_layer.local_to_map(local_player.global_position)
 		initialize_fog()
