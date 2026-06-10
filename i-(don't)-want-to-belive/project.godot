@@ -25,6 +25,17 @@ UfosTextures="*uid://u00ubso3s74i"
 MapSettings="*uid://dnlb54fq5vx38"
 Coordinates="*uid://bjpy7cdpqncfv"
 AliensTextures="*uid://dw5cy02j5kj37"
+EOSGRuntime="*uid://7saywdx0ipep"
+HPlatform="*uid://yl2muvqrdiud"
+HAuth="*uid://786t1jiowvvg"
+HAchievements="*uid://bis404dty5u5c"
+HFriends="*uid://uumqbey8ji5t"
+HStats="*uid://dbckdip83oone"
+HLeaderboards="*uid://b06khhf20mplm"
+HLobbies="*uid://6iqvm33q0tb1"
+HP2P="*uid://u6ae5fpm6l8q"
+HSessions="*uid://bieh2rxxahuu2"
+EosManager="*uid://c5g235uo1o485"
 
 [debug]
 
@@ -39,7 +50,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/script_splitter/plugin.cfg")
+enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/epic-online-services-godot/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/script_splitter/plugin.cfg")
 
 [input]
 

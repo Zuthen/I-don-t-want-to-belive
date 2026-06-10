@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://b3o6lacdx8gpt" path="res://assets/objects/stars/star_05.png" id="4_m7lbu"]
 [ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="9_nq1tr"]
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="10_tk3c2"]
+[ext_resource type="Texture2D" uid="uid://b0b803uoec4md" path="res://assets/ui/button_rectangle_depth.png" id="11_80at6"]
+[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="12_ejsg3"]
 
 [sub_resource type="Animation" id="Animation_80at6"]
 length = 4.0
@@ -287,6 +289,14 @@ gravity = Vector3(0, 0, 0)
 scale_min = 0.049999997
 scale_max = 0.089999996
 
+[sub_resource type="LabelSettings" id="LabelSettings_4ak4v"]
+font = ExtResource("12_ejsg3")
+font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_xktrh"]
+font = ExtResource("12_ejsg3")
+font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
+
 [node name="WelcomeScreen" type="Node2D" unique_id=1082575388]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1421072334]
@@ -375,3 +385,53 @@ position = Vector2(-4, 48)
 texture = ExtResource("4_m7lbu")
 process_material = SubResource("ParticleProcessMaterial_tk3c2")
 metadata/_edit_group_ = true
+
+[node name="Buttons" type="HBoxContainer" parent="CanvasLayer" unique_id=727915669]
+custom_minimum_size = Vector2(575, 64)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -303.5
+offset_top = 126.0
+offset_right = 271.5
+offset_bottom = 190.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 100
+
+[node name="TextureButton" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=10049442]
+custom_minimum_size = Vector2(192, 64)
+layout_mode = 2
+texture_normal = ExtResource("11_80at6")
+
+[node name="Label" type="Label" parent="CanvasLayer/Buttons/TextureButton" unique_id=1506075115]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Utwórz nową grę"
+label_settings = SubResource("LabelSettings_4ak4v")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="TextureButton2" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=1283684816]
+custom_minimum_size = Vector2(192, 64)
+layout_mode = 2
+texture_normal = ExtResource("11_80at6")
+
+[node name="Label" type="Label" parent="CanvasLayer/Buttons/TextureButton2" unique_id=1950270238]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Dołącz do gry"
+label_settings = SubResource("LabelSettings_xktrh")
+horizontal_alignment = 1
+vertical_alignment = 1
