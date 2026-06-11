@@ -133,6 +133,14 @@ size_flags_horizontal = 3
 bbcode_enabled = true
 fit_content = true
 
+[node name="Players" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=1734239862]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 0.81960785, 0.101960786, 1)
+text = "/4 graczy"
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="MatchId" type="Label" parent="MarginContainer" unique_id=1180636423]
 layout_mode = 2
 size_flags_vertical = 8

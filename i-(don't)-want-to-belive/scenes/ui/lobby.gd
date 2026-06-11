@@ -9,13 +9,16 @@ extends Control
 @onready var about_role = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/AboutRole
 @onready var match_id_label = $MarginContainer/MatchId
 @onready var room_name_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/RoomName
+@onready var players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/Players
 
 var current_skin_index: int = 0
 var skins_count: int
 var role_idx = 1
+var players: = 0
 
 
 func _ready():
+	_update_players_counter()
 	if NakamaNetworkManager.multiplayer_bridge:
 		var net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
 		match_id_label.text = "ID meczu: " + str(net_match_id)
@@ -24,7 +27,8 @@ func _ready():
 		room_name_label.text = "Nazwa pokoju: " + str(room_name)
 
 		print("[Lobby] Moje ID meczu to: ", net_match_id)
-
+	multiplayer.peer_connected.connect(_on_player_count_changed)
+	multiplayer.peer_disconnected.connect(_on_player_count_changed)
 	await get_tree().process_frame
 	skins_count = UfosTextures.ufo_textures.size()
 	about_role.add_theme_constant_override("line_separation", 10)
@@ -72,6 +76,14 @@ func _adjust_ufo_skins_visibility(value):
 		ufo_skin_slider.set_deferred("visible", true)
 	else:
 		ufo_skin_slider.set_deferred("visible", false)
+
+
+func _on_player_count_changed(_id: int):
+	_update_players_counter()
+
+
+func _update_players_counter():
+	players_label.text = str(multiplayer.get_peers().size() + 1) + "/4 graczy"
 
 
 func _set_role_info():
