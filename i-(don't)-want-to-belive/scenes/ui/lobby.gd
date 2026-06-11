@@ -10,14 +10,29 @@ extends Control
 @onready var match_id_label = $MarginContainer/MatchId
 @onready var room_name_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/RoomName
 @onready var players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/Players
+@onready var confirm_button = $MarginContainer/HBoxContainer/VBoxContainer/Confirm
+@onready var ready_players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/ReadyPlayers
+@onready var confirm_button_label = $MarginContainer/HBoxContainer/VBoxContainer/Confirm/Label
+@onready var host_label = $MarginContainer/HBoxContainer/VBoxContainer/HostLabel
 
 var current_skin_index: int = 0
 var skins_count: int
 var role_idx = 1
 var players: = 0
+var players_requests: Array[Preferences] = []
+var ready_players_counter: int = 0
+
+signal all_players_ready
 
 
 func _ready():
+	if is_multiplayer_authority():
+		host_label.text = "Jesteś hostem"
+	else:
+		host_label.set_deferred("visible", false)
+	all_players_ready.connect(_on_all_players_ready)
+	set_players_ready(ready_players_counter)
+	confirm_button.pressed.connect(_on_preferences_set)
 	_update_players_counter()
 	if NakamaNetworkManager.multiplayer_bridge:
 		var net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
@@ -29,6 +44,8 @@ func _ready():
 		print("[Lobby] Moje ID meczu to: ", net_match_id)
 	multiplayer.peer_connected.connect(_on_player_count_changed)
 	multiplayer.peer_disconnected.connect(_on_player_count_changed)
+	if not is_multiplayer_authority():
+		_request_current_ready_count.rpc_id(1)
 	await get_tree().process_frame
 	skins_count = UfosTextures.ufo_textures.size()
 	about_role.add_theme_constant_override("line_separation", 10)
@@ -84,6 +101,58 @@ func _on_player_count_changed(_id: int):
 
 func _update_players_counter():
 	players_label.text = str(multiplayer.get_peers().size() + 1) + "/4 graczy"
+
+
+class Preferences:
+	var type: String
+	var _skin_idx: int
+	var peer_id: int
+
+
+func _on_preferences_set():
+	confirm_button.set_deferred("visible", false)
+	var sender_id = multiplayer.get_unique_id()
+	var type: String = ""
+
+	if role_idx == 0:
+		type = "skeptic"
+		_server_request_preferences.rpc_id(1, sender_id, type, current_skin_index)
+	elif role_idx == 1:
+		type = "ufo"
+		_server_request_preferences.rpc_id(1, sender_id, type, current_skin_index)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _server_request_preferences(sender_id: int, type: String, _skin_idx: int = 0):
+	var preferences = Preferences.new()
+	preferences.peer_id = sender_id
+	preferences.type = type
+	if _skin_idx:
+		preferences._skin_idx = _skin_idx
+	players_requests.append(preferences)
+
+	ready_players_counter += 1
+	if ready_players_counter == 4:
+		all_players_ready.emit()
+	set_players_ready.rpc(ready_players_counter)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func set_players_ready(count: int):
+	ready_players_counter = count
+	ready_players_label.text = "gotowi gracze: " + str(count) + "/4"
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _request_current_ready_count():
+	var sender_id = multiplayer.get_remote_sender_id()
+	set_players_ready.rpc_id(sender_id, ready_players_counter)
+
+
+func _on_all_players_ready():
+	if is_multiplayer_authority():
+		confirm_button_label.text = "Rozpocznij grę"
+		confirm_button.set_deferred("visible", true)
 
 
 func _set_role_info():
