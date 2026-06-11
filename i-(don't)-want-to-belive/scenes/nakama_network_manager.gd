@@ -3,12 +3,10 @@ extends Node
 var client: NakamaClient
 var session: NakamaSession
 var socket: NakamaSocket
-signal match_joined(match_id: String)
-signal match_presence_updated(joins: Array, leaves: Array)
-signal network_data_received(op_code: int, data: Dictionary)
+var multiplayer_bridge: NakamaMultiplayerBridge
+var match_name: String
 
-var current_match: NakamaRTAPI.Match = null
-var my_session_id: String = ""
+signal match_joined(match_id: String)
 
 
 func _ready():
@@ -26,7 +24,6 @@ func connect_to_nakama_server():
 	var unique_id = OS.get_unique_id() + str(randi() % 10000)
 
 	print("[Nakama] Próba autentykacji urządzenia...")
-
 	session = await client.authenticate_device_async(unique_id)
 
 	if session.is_exception():
@@ -34,8 +31,32 @@ func connect_to_nakama_server():
 		return
 
 	print("[Nakama] Zalogowano! ID użytkownika na serwerze: ", session.user_id)
-	print("[Nakama] Token sesji: ", session.token)
 
 	socket = Nakama.create_socket_from(client)
 	await socket.connect_async(session)
 	print("[Nakama] Połączenie Socket otwarte i gotowe do gry!")
+
+	multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
+
+	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
+
+
+func connect_to_named_room(room_name: String):
+	if not socket or not multiplayer_bridge:
+		print("[Nakama] Błąd: Brak otwartego mostu sieciowego!")
+		return
+
+	match_name = room_name
+
+	print("[Nakama] Łączenie z nazwanym pokojem: ", room_name)
+
+	if not multiplayer_bridge.match_joined.is_connected(_on_bridge_match_joined):
+		multiplayer_bridge.match_joined.connect(_on_bridge_match_joined)
+
+	multiplayer_bridge.join_named_match(room_name)
+
+
+func _on_bridge_match_joined():
+	var match_id = multiplayer_bridge.match_id
+	print("[Nakama] Sukces! Połączono z pokojem. ID meczu: ", match_id)
+	match_joined.emit(match_id)

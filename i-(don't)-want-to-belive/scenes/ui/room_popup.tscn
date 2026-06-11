@@ -101,14 +101,14 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_xueft")
 theme_override_styles/focus = SubResource("StyleBoxTexture_xueft")
 text_direction = 1
 
-[node name="Button" type="TextureButton" parent="VBoxContainer" unique_id=40986050]
+[node name="ConnectButton" type="TextureButton" parent="VBoxContainer" unique_id=40986050]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 texture_normal = ExtResource("5_qleo6")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="VBoxContainer/Button" unique_id=457743708]
+[node name="Label" type="Label" parent="VBoxContainer/ConnectButton" unique_id=457743708]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5

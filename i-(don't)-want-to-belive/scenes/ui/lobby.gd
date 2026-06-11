@@ -6,7 +6,9 @@ extends Control
 @onready var ufo_preview = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider/UfoPreview
 @onready var right_button = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider/RightButton
 @onready var ufo_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider
-@onready var about_role = $MarginContainer/HBoxContainer/MarginContainer/AboutRole
+@onready var about_role = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/AboutRole
+@onready var match_id_label = $MarginContainer/MatchId
+@onready var room_name_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/RoomName
 
 var current_skin_index: int = 0
 var skins_count: int
@@ -14,6 +16,15 @@ var role_idx = 1
 
 
 func _ready():
+	if NakamaNetworkManager.multiplayer_bridge:
+		var net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
+		match_id_label.text = "ID meczu: " + str(net_match_id)
+
+		var room_name = NakamaNetworkManager.match_name
+		room_name_label.text = "Nazwa pokoju: " + str(room_name)
+
+		print("[Lobby] Moje ID meczu to: ", net_match_id)
+
 	await get_tree().process_frame
 	skins_count = UfosTextures.ufo_textures.size()
 	about_role.add_theme_constant_override("line_separation", 10)
@@ -74,7 +85,7 @@ func _set_role_info():
 	elif role_idx == 0:
 		about_role.text = "[b]Cel:[/b] Znaleźć drugiego sceptyka i współnie utwierdzić się w przekonaniu, że UFO nie istnieje.
 [b]Zdolności: [/b]
-	[b] Zawołanie: [/b] Jeśli drugi sceptyk jest w zasięgu twojego głosu, będziesz wiedzieć, w którą stronę iść.
+	[b] Zawołanie: [/b] Jeśli drugi sceptyk is w zasięgu twojego głosu, będziesz wiedzieć, w którą stronę iść.
 		[b] Uwaga! [/b] Kosmici po rozbiciu statku mogą podszywać się pod sceptyków.
 	[b] Walkie-Talkie: [/b] Wysyłasz swoją lokalizację drugiemu sceptykowi. Będzie to litera i/lub liczba (losowo).
 		[b]Uwaga! [/b] Statki UFO (ale nie kosmici) zawsze przechwytują tę informację."
