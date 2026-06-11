@@ -2,12 +2,13 @@ extends Node
 
 const FOLDER_PATH = "res://assets/characters/ufos/"
 
-var dir = DirAccess.open(FOLDER_PATH)
+var dir: DirAccess
 var sprites: Array[String]
 var ufo_textures: Array[UfoTextures] = []
 
 
 func _ready():
+	dir = DirAccess.open(FOLDER_PATH)
 	sprites = get_all_ufos_sprites()
 	map_to_ufo_texture(sprites)
 

@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://8hnv34c0paf"]
 
+[ext_resource type="Script" uid="uid://cx2glryjp6hoc" path="res://scenes/ui/welcome_screen.gd" id="1_ejsg3"]
 [ext_resource type="Texture2D" uid="uid://bvsh4hvd1nfa8" path="res://assets/objects/planets/planet01.png" id="1_suexb"]
 [ext_resource type="Texture2D" uid="uid://bla8l3q5a3a10" path="res://assets/objects/stars/star_01.png" id="1_w47s1"]
 [ext_resource type="Texture2D" uid="uid://50kg0886ox8g" path="res://assets/objects/planets/planet02.png" id="2_ifbom"]
@@ -12,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="10_tk3c2"]
 [ext_resource type="Texture2D" uid="uid://b0b803uoec4md" path="res://assets/ui/button_rectangle_depth.png" id="11_80at6"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="12_ejsg3"]
+[ext_resource type="PackedScene" uid="uid://7tume85w3b7a" path="res://scenes/ui/room_popup.tscn" id="14_4ak4v"]
 
 [sub_resource type="Animation" id="Animation_80at6"]
 length = 4.0
@@ -298,6 +300,7 @@ font = ExtResource("12_ejsg3")
 font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
 
 [node name="WelcomeScreen" type="Node2D" unique_id=1082575388]
+script = ExtResource("1_ejsg3")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1421072334]
 libraries/ = SubResource("AnimationLibrary_4ak4v")
@@ -401,12 +404,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 100
 
-[node name="TextureButton" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=10049442]
+[node name="CreateGame" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=10049442]
 custom_minimum_size = Vector2(192, 64)
 layout_mode = 2
 texture_normal = ExtResource("11_80at6")
 
-[node name="Label" type="Label" parent="CanvasLayer/Buttons/TextureButton" unique_id=1506075115]
+[node name="Label" type="Label" parent="CanvasLayer/Buttons/CreateGame" unique_id=1506075115]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -419,12 +422,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="TextureButton2" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=1283684816]
+[node name="Join" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=1283684816]
 custom_minimum_size = Vector2(192, 64)
 layout_mode = 2
 texture_normal = ExtResource("11_80at6")
 
-[node name="Label" type="Label" parent="CanvasLayer/Buttons/TextureButton2" unique_id=1950270238]
+[node name="Label" type="Label" parent="CanvasLayer/Buttons/Join" unique_id=1950270238]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -435,3 +438,6 @@ text = "Dołącz do gry"
 label_settings = SubResource("LabelSettings_xktrh")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="RoomPopup" parent="CanvasLayer" unique_id=321821047 instance=ExtResource("14_4ak4v")]
+visible = false
