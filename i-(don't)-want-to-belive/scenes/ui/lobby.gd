@@ -8,12 +8,14 @@ extends Control
 @onready var ufo_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider
 @onready var about_role = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/AboutRole
 @onready var match_id_label = $MarginContainer/MatchId
-@onready var room_name_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/RoomName
+@onready var room_name_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/RoomName
 @onready var players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/Players
 @onready var confirm_button = $MarginContainer/HBoxContainer/VBoxContainer/Confirm
 @onready var ready_players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/ReadyPlayers
 @onready var confirm_button_label = $MarginContainer/HBoxContainer/VBoxContainer/Confirm/Label
 @onready var host_label = $MarginContainer/HBoxContainer/VBoxContainer/HostLabel
+@onready var copy_button = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton
+@onready var tooltip = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton/Tooltip
 
 var current_skin_index: int = 0
 var skins_count: int
@@ -26,6 +28,7 @@ signal all_players_ready
 
 
 func _ready():
+	tooltip.set_deferred("visible", false)
 	if is_multiplayer_authority():
 		host_label.text = "Jesteś hostem"
 	else:
@@ -33,7 +36,11 @@ func _ready():
 	all_players_ready.connect(_on_all_players_ready)
 	set_players_ready(ready_players_counter)
 	confirm_button.pressed.connect(_on_preferences_set)
+	copy_button.pressed.connect(_copy_room_name_to_clipboard)
 	_update_players_counter()
+
+	await get_tree().process_frame
+
 	if NakamaNetworkManager.multiplayer_bridge:
 		var net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
 		match_id_label.text = "ID meczu: " + str(net_match_id)
@@ -42,11 +49,14 @@ func _ready():
 		room_name_label.text = "Nazwa pokoju: " + str(room_name)
 
 		print("[Lobby] Moje ID meczu to: ", net_match_id)
+
 	multiplayer.peer_connected.connect(_on_player_count_changed)
 	multiplayer.peer_disconnected.connect(_on_player_count_changed)
 	if not is_multiplayer_authority():
 		_request_current_ready_count.rpc_id(1)
+
 	await get_tree().process_frame
+
 	skins_count = UfosTextures.ufo_textures.size()
 	about_role.add_theme_constant_override("line_separation", 10)
 	set_warning_text(role_idx)
@@ -160,6 +170,19 @@ func _on_start_game():
 func _start_game():
 	var loading_screen: PackedScene = load("uid://c7m7gjtuwjrst")
 	get_tree().change_scene_to_packed(loading_screen)
+
+
+func _copy_room_name_to_clipboard():
+	if room_name_label and room_name_label.text != "":
+		var room_name = room_name_label.text
+		var clean_text = room_name.replace("Nazwa pokoju: ", "").strip_edges()
+		DisplayServer.clipboard_set(clean_text)
+		tooltip.set_deferred("visible", true)
+		var tooltip_timer = Timer.new()
+		tooltip_timer.one_shot = true
+		add_child(tooltip_timer)
+		tooltip_timer.timeout.connect(func(): tooltip.set_deferred("visible", false))
+		tooltip_timer.start(1)
 
 
 func _set_role_info():
