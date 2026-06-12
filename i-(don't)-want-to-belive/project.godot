@@ -13,7 +13,9 @@ config_version=5
 config/name="I (don't) want to belive"
 run/main_scene="uid://8hnv34c0paf"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/show_image=false
+config/icon="uid://3w21pkq8n8b0"
+config/windows_native_icon="res://assets/shipGreen_manned.ico"
 
 [autoload]
 
@@ -41,6 +43,7 @@ gdscript/warnings/shadowed_variable_base_class=0
 window/size/viewport_width=820
 window/size/viewport_height=700
 window/stretch/mode="canvas_items"
+mouse_cursor/custom_image="uid://b0yplndm0ntqm"
 
 [editor_plugins]
 
