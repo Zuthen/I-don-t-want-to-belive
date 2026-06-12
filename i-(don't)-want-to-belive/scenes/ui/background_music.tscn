@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dlhqicat4ktt6"]
+
+[ext_resource type="AudioStream" uid="uid://b852bnxt5g5p1" path="res://assets/sounds/14. Beneath Alien Skies (Loop).ogg" id="1_1fbux"]
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" unique_id=945264445]
+stream = ExtResource("1_1fbux")
+volume_db = -20.0
+autoplay = true

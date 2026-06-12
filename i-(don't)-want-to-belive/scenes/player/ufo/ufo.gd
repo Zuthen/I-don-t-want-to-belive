@@ -7,6 +7,7 @@ extends Player
 @onready var capture_area_collision = $CaptureArea/CaptureArea
 @onready var captured_label = $CapturedLabel
 @onready var coordinates = $Coordinates
+@onready var sound = $Sound
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
@@ -180,7 +181,9 @@ func _on_capture(other):
 func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 	if not multiplayer.is_server():
 		return
-
+	var explosion_sound = Sounds.explosion_sounds.pick_random()
+	sound.stream = explosion_sound
+	sound.play()
 	var sender_id = multiplayer.get_remote_sender_id()
 	var player_core = game.get_node(str(sender_id)) as UfoWithAlien
 
@@ -212,6 +215,9 @@ func server_request_capture(node_path: NodePath, position: Vector2i):
 
 
 func fire_laser():
+	var laser_sound = Sounds.laser_sounds.pick_random()
+	sound.stream = laser_sound
+	sound.play()
 	laser_shoot.emit(laser_shoot_timeout_seconds)
 	server_spawn_laser.rpc(global_position)
 	start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = !laser_shoot_blocked)

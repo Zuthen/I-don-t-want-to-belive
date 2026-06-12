@@ -83,7 +83,6 @@ func _ready():
 
 
 func _update_visibility_for_start():
-	# Czekamy dodatkową klatkę, aby pętla ról w game.gd zakończyła pracę
 	await get_tree().process_frame
 
 	var my_local_hero: Node = null
@@ -129,22 +128,38 @@ func change_state(new_state: State, ufo_index: int):
 	ufo_index_sync = ufo_index
 
 	if new_state == State.UFO:
+		# Powrót do grupy ufos, jeśli to konieczne
+		if is_in_group("aliens"):
+			remove_from_group("aliens")
+		if not is_in_group("ufos"):
+			add_to_group("ufos")
+
 		ufo.visible = true
 		ufo.set_process(true)
 
 		alien.visible = false
 		alien.process_mode = PROCESS_MODE_DISABLED
 		alien.set_process(false)
-		alien.coordinates.visible = false
+
+		if "coordinates" in alien and alien.coordinates:
+			alien.coordinates.visible = false
 
 		ufo_collider.set_deferred("disabled", false)
 		alien_collider.set_deferred("disabled", true)
 		collision_layer = 0
 		collision_mask = 16
+
 	elif new_state == State.ALIEN:
 		ufo_crashed.emit()
 		role = Player.Role.ALIEN
 		alien.role = Player.Role.ALIEN
+
+		# POPRAWKA 1: Podmiana grup węzła, aby skrypt mgły zauważył zmianę tożsamości
+		if is_in_group("ufos"):
+			remove_from_group("ufos")
+		if not is_in_group("aliens"):
+			add_to_group("aliens")
+
 		alien.process_mode = PROCESS_MODE_INHERIT
 		alien.visible = true
 		alien.set_process(true)
@@ -153,7 +168,8 @@ func change_state(new_state: State, ufo_index: int):
 		if alien.has_method("_apply_skin_textures"):
 			alien._apply_skin_textures()
 
-		alien.coordinates.visible = true
+		if "coordinates" in alien and alien.coordinates:
+			alien.coordinates.visible = true
 
 		ufo.visible = false
 		ufo.set_process(false)
@@ -174,10 +190,14 @@ func change_state(new_state: State, ufo_index: int):
 
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
+		# POPRAWKA 2: Bezpieczne czyszczenie zapamiętanej pozycji mgły
 		var fog_layer = game.tile_map_layer
-		if fog_layer and fog_layer.has_method("initialize_fog"):
-			fog_layer.my_lobby_role = "skeptic"
-			fog_layer.last_player_tile = Vector2i(-999, -999)
+		if fog_layer:
+			# Czyścimy bufor, żeby mgła została przeliczona na nowo w klatce _process()
+			if "last_player_tile" in fog_layer:
+				fog_layer.last_player_tile = Vector2i(-999, -999)
+			if "ufo_view_setup" in fog_layer:
+				fog_layer.ufo_view_setup = false
 
 		if is_multiplayer_authority() and is_instance_valid(camera):
 			var camera_tween = create_tween()

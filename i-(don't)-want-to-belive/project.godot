@@ -28,6 +28,8 @@ AliensTextures="*uid://dw5cy02j5kj37"
 Nakama="*uid://dueo0l0rm5aot"
 NakamaNetworkManager="*uid://d1jgj42tmgii0"
 GameManager="*uid://4qkaicl8hudn"
+BackgroundMusic="*uid://dlhqicat4ktt6"
+Sounds="*uid://ccwmjxstlg3jv"
 
 [debug]
 

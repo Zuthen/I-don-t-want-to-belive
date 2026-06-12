@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c388y2src53tl"
+path="res://.godot/imported/2. Entering the Void (Loop).ogg-48a1026d2496abc8a95d7fa28147b724.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/sounds/2. Entering the Void (Loop).ogg"
+dest_files=["res://.godot/imported/2. Entering the Void (Loop).ogg-48a1026d2496abc8a95d7fa28147b724.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

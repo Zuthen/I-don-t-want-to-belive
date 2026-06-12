@@ -131,6 +131,9 @@ collision_layer = 32
 collision_mask = 16
 script = ExtResource("1_psnoh")
 
+[node name="Sound" type="AudioStreamPlayer2D" parent="." unique_id=2066262894]
+volume_db = -20.0
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=718705382]
 libraries/ = SubResource("AnimationLibrary_p8ene")
 
