@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="8_24obi"]
 [ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="8_kghoh"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="9_cyxd6"]
+[ext_resource type="Texture2D" uid="uid://bxvc74wqdpsq3" path="res://assets/ui/exitRight.png" id="11_cyxd6"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bthuv"]
 font = ExtResource("1_5t5el")
@@ -34,6 +35,13 @@ font = ExtResource("9_cyxd6")
 font_size = 23
 font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cyxd6"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_vild7"]
+font = ExtResource("4_2rbxb")
+font_size = 8
+font_color = Color(0.007843138, 0.03137255, 0.14901961, 1)
+
 [node name="Lobby" type="Control" unique_id=24188863]
 layout_mode = 3
 anchors_preset = 15
@@ -41,6 +49,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("1_rqagm")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=414650254]
@@ -149,7 +158,13 @@ theme_override_constants/margin_right = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/MarginContainer" unique_id=232045769]
 layout_mode = 2
 
-[node name="RoomName" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=823325305]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=698032714]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 22
+alignment = 2
+
+[node name="RoomName" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=823325305]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
@@ -157,6 +172,35 @@ theme_override_colors/font_color = Color(1, 0.81960785, 0.101960786, 1)
 theme_override_fonts/font = ExtResource("8_kghoh")
 theme_override_font_sizes/font_size = 20
 text = "Nazwa pokoju"
+
+[node name="CopyButton" type="TextureButton" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1761063911]
+modulate = Color(1, 0.81960785, 0.101960786, 1)
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture_normal = ExtResource("11_cyxd6")
+texture_pressed = ExtResource("11_cyxd6")
+texture_hover = ExtResource("11_cyxd6")
+texture_focused = ExtResource("11_cyxd6")
+ignore_texture_size = true
+stretch_mode = 3
+
+[node name="Tooltip" type="PanelContainer" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton" unique_id=1097731640]
+layout_mode = 0
+offset_left = -30.0
+offset_top = 39.0
+offset_right = 74.0
+offset_bottom = 63.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cyxd6")
+
+[node name="TooltipLabel" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton/Tooltip" unique_id=1456577778]
+layout_mode = 2
+text = "Kod skopiowany do schowka"
+label_settings = SubResource("LabelSettings_vild7")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="AboutRole" type="RichTextLabel" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=1377043126]
 layout_mode = 2

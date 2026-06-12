@@ -4,9 +4,12 @@ var client: NakamaClient
 var session: NakamaSession
 var socket: NakamaSocket
 var multiplayer_bridge: NakamaMultiplayerBridge
-var match_name: String
 
-signal match_joined(match_id: String)
+var match_name: String
+var actual_match_id: String
+var is_host: bool = false
+
+signal match_joined_successfully(server_match_id: String)
 
 
 func _ready():
@@ -20,11 +23,11 @@ func _ready():
 
 func connect_to_nakama_server():
 	var server_key = "defaultkey"
-	var host = "127.0.0.1"
+	var server_host = "127.0.0.1"
 	var port = 7350
 	var scheme = "http"
 
-	client = Nakama.create_client(server_key, host, port, scheme)
+	client = Nakama.create_client(server_key, server_host, port, scheme)
 	var unique_id = OS.get_unique_id() + str(randi() % 10000)
 
 	print("[Nakama] Próba autentykacji urządzenia...")
@@ -41,7 +44,6 @@ func connect_to_nakama_server():
 	print("[Nakama] Połączenie Socket otwarte i gotowe do gry!")
 
 	multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
-
 	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
 
 
@@ -51,7 +53,6 @@ func connect_to_named_room(room_name: String):
 		return
 
 	match_name = room_name
-
 	print("[Nakama] Łączenie z nazwanym pokojem: ", room_name)
 
 	if not multiplayer_bridge.match_joined.is_connected(_on_bridge_match_joined):
@@ -60,7 +61,35 @@ func connect_to_named_room(room_name: String):
 	multiplayer_bridge.join_named_match(room_name)
 
 
+func host_create_match() -> String:
+	is_host = true
+	var generated_code = create_match_name()
+	connect_to_named_room(generated_code)
+	return generated_code
+
+
 func _on_bridge_match_joined():
-	var match_id = multiplayer_bridge.match_id
-	print("[Nakama] Sukces! Połączono z pokojem. ID meczu: ", match_id)
-	match_joined.emit(match_id)
+	var other_players = multiplayer.get_peers()
+
+	if is_host and other_players.size() > 0:
+		print("[Nakama] Pech! Kod %s jest już zajęty przez kogoś innego. Losuję nowy..." % match_name)
+		multiplayer_bridge.leave_match()
+
+		await get_tree().create_timer(0.2).timeout
+		host_create_match()
+		return
+
+	actual_match_id = multiplayer_bridge.match_id
+
+	print("[Nakama] Sukces! Krótki kod: ", match_name, " | ID serwera: ", actual_match_id)
+
+	match_joined_successfully.emit(actual_match_id)
+
+
+func create_match_name():
+	var characters = "ABCDEFGHIJKLMNOPRSTQUVWXYZ"
+	var result: String = ""
+	for i in range(6):
+		var random_index = randi() % characters.length()
+		result += characters[random_index]
+	return result

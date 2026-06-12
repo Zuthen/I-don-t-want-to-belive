@@ -17,9 +17,16 @@ var network_role: NetworkRole:
 
 func _ready():
 	_set_popup(network_role)
+	line_edit.text_changed.connect(cast_to_upper_case)
 	close_button.pressed.connect(func(): set_deferred("visible", false))
 	connect_button.pressed.connect(_on_connect_pressed)
-	NakamaNetworkManager.match_joined.connect(_on_network_match_joined)
+	NakamaNetworkManager.match_joined_successfully.connect(_on_network_match_joined)
+
+
+func cast_to_upper_case(text: String):
+	var caret = line_edit.caret_column
+	line_edit.text = text.to_upper()
+	line_edit.caret_column = caret
 
 
 func _set_popup(role: NetworkRole):
@@ -40,6 +47,8 @@ func _on_connect_pressed():
 
 
 func _on_network_match_joined(match_id: String):
-	print("[UI] Pomyślnie odebrano sygnał dla meczu: ", match_id)
 	var lobby_scene = load("uid://dg7q16m0w6dnx") as PackedScene
-	get_tree().change_scene_to_packed(lobby_scene)
+	if NakamaNetworkManager.is_inside_tree():
+		NakamaNetworkManager.get_tree().change_scene_to_packed(lobby_scene)
+	else:
+		Engine.get_main_loop().change_scene_to_packed(lobby_scene)
