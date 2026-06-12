@@ -11,53 +11,138 @@ var obstacles
 var skeptic_positions = []
 var next_spawn_index: int = 0
 var random: RandomNumberGenerator
+var players: Array[GameManager.Preferences]
+var skeptics: Array[GameManager.Preferences] = []
+var ufos: Array[GameManager.Preferences] = []
 
 
 func _ready():
 	MultiplayerFeatures.spawn(multiplayer_spawner, tile_map_layer)
 
+	var game_map_seed = 12345
+	skeptic_positions = create_map(game_map_seed)
+
 	if multiplayer.is_server():
-		var game_map_seed = randi()
-		skeptic_positions = create_map(game_map_seed)
+		players = GameManager.players_selections
+		_assign_roles(players)
 
-		var server_position = skeptic_positions[0]
-		next_spawn_index += 1
-		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
-			multiplayer.peer_connected.connect(_on_peer_connected.bind(game_map_seed))
+		var spawner_data = map_to_spawn_data(skeptic_positions)
 
-		multiplayer_spawner.spawn({ "peer_id": 1, "type": "skeptic", "spawn_position": server_position, "is_male": true, "is_ufo_team": false })
+		for data in spawner_data:
+			multiplayer_spawner.spawn(data)
 
 
-func _on_peer_connected(peer_id: int, map_seed: int):
-	if not multiplayer.is_server():
-		return
+var ready_peers_for_spawn: Dictionary = { }
 
-	client_build_map_instruction.rpc_id(peer_id, map_seed)
 
-	next_spawn_index += 1
-	var spawn_position: Vector2i
-	var player_type = "skeptic"
+@rpc("any_peer", "call_remote", "reliable")
+func _client_signals_ready_to_spawn(peer_id: int):
+	if multiplayer.is_server():
+		_check_if_everyone_is_ready_to_spawn(peer_id)
 
-	if next_spawn_index > 2:
-		player_type = "ufo"
+
+func _check_if_everyone_is_ready_to_spawn(peer_id: int):
+	ready_peers_for_spawn[peer_id] = true
+	var total_players_in_match = multiplayer.get_peers().size() + 1
+
+	if ready_peers_for_spawn.size() == total_players_in_match:
+		print("[Gra] Wszyscy gotowi. Host balansuje role...")
+		players = GameManager.players_selections
+		_assign_roles(players)
+		var sync_data: Dictionary = { }
+		for p in players:
+			sync_data[str(p.peer_id)] = { "type": p.type, "skin": p._skin_idx }
+		_sync_final_roles_to_all_clients.rpc(sync_data)
+
+
+@rpc("authority", "call_local", "reliable")
+func _sync_final_roles_to_all_clients(sync_data: Dictionary):
+	print("[Gra] Odrzymano oficjalne role od Hosta. Aktualizacja lokalnego GameManager...")
+	GameManager.players_selections.clear()
+
+	for peer_str in sync_data:
+		var p_id = int(peer_str)
+		var pref = GameManager.Preferences.new()
+		pref.peer_id = p_id
+		pref.type = sync_data[peer_str]["type"]
+		pref._skin_idx = sync_data[peer_str]["skin"]
+
+		GameManager.players_selections.append(pref)
+
+	if multiplayer.is_server():
+		_execute_server_spawn_after_sync()
+
+
+func _execute_server_spawn_after_sync():
+	var spawner_data = map_to_spawn_data(skeptic_positions)
+	for data in spawner_data:
+		multiplayer_spawner.spawn(data)
+
+
+func _execute_server_spawn():
+	players = GameManager.players_selections
+	_assign_roles(players)
+
+	var spawner_data = map_to_spawn_data(skeptic_positions)
+	for data in spawner_data:
+		multiplayer_spawner.spawn(data)
+
+
+func _assign_roles(players: Array[GameManager.Preferences]):
+	for player in players:
+		if player.type.to_lower() == "ufo":
+			ufos.append(player)
+		elif player.type.to_lower() == "skeptic":
+			skeptics.append(player)
+
+	if skeptics.size() != 2 and ufos.size() != 2:
+		if skeptics.size() > ufos.size():
+			while ufos.size() < 2:
+				var ufo_player = skeptics.pick_random()
+				if ufo_player:
+					skeptics.erase(ufo_player)
+					ufo_player._skin_idx = randi() % 5
+					ufo_player.type = "ufo"
+					ufos.append(ufo_player)
+		elif ufos.size() > skeptics.size():
+			while skeptics.size() < 2:
+				var skeptic_player = ufos.pick_random()
+				if skeptic_player:
+					ufos.erase(skeptic_player)
+					skeptic_player.type = "skeptic"
+					skeptics.append(skeptic_player)
+
+
+func map_to_spawn_data(skeptic_positions):
+	var players_data = []
+
+	for i in range(skeptics.size()):
+		var skeptic = skeptics[i]
+		var spawn_pos = skeptic_positions[i] if i < skeptic_positions.size() else Vector2i(0, 0)
+
+		var data = {
+			"peer_id": skeptic.peer_id,
+			"type": "skeptic",
+			"spawn_position": spawn_pos,
+			"is_male": bool(i),
+		}
+		players_data.append(data)
+
+	for i in range(ufos.size()):
+		var ufo = ufos[i]
 		var rand_x = randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
 		var rand_y = randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
-		spawn_position = Vector2i(rand_x, rand_y)
-	else:
-		var skeptic_index = next_spawn_index - 1
-		if skeptic_positions.is_empty():
-			spawn_position = Vector2i(0, 0)
-		else:
-			spawn_position = skeptic_positions[skeptic_index % skeptic_positions.size()]
+		var spawn_pos = Vector2i(rand_x, rand_y)
 
-	multiplayer_spawner.spawn(
-		{
-			"peer_id": peer_id,
-			"type": player_type,
-			"spawn_position": spawn_position,
-			"is_ufo_team": (player_type == "ufo"),
-		},
-	)
+		var data = {
+			"peer_id": ufo.peer_id,
+			"type": "ufo",
+			"spawn_position": spawn_pos,
+			"ufo_idx": ufo._skin_idx,
+		}
+		players_data.append(data)
+
+	return players_data
 
 
 @rpc("authority", "call_local", "reliable")

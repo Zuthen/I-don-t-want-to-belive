@@ -3,6 +3,16 @@ extends GutTest
 var ufo_scene = preload("uid://hc74yy2qdg3f")
 
 
+func before_each():
+	var mock_peer = OfflineMultiplayerPeer.new()
+	get_tree().get_multiplayer().set_multiplayer_peer(mock_peer)
+
+
+func after_each():
+	get_tree().get_multiplayer().set_multiplayer_peer(null)
+	await wait_physics_frames(2)
+
+
 func test_laser_cooldown_blocks_and_unblocks_shooting():
 	var test_placeholder_texture = PlaceholderTexture2D.new()
 	test_placeholder_texture.size = Vector2(64, 64)

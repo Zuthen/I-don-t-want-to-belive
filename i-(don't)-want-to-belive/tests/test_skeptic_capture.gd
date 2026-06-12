@@ -6,6 +6,8 @@ var test_placeholder_texture: PlaceholderTexture2D
 
 
 func before_each():
+	var mock_peer = OfflineMultiplayerPeer.new()
+	get_tree().get_multiplayer().set_multiplayer_peer(mock_peer)
 	test_placeholder_texture = PlaceholderTexture2D.new()
 	test_placeholder_texture.size = Vector2(32, 32)
 
@@ -30,6 +32,7 @@ func before_each():
 func after_each():
 	if _skeptic and is_instance_valid(_skeptic):
 		_skeptic.queue_free()
+	get_tree().get_multiplayer().set_multiplayer_peer(null)
 	await wait_physics_frames(2)
 
 

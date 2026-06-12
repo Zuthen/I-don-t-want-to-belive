@@ -75,3 +75,20 @@ func start_cooldown_timer(time: float, callback: Callable):
 	timer.timeout.connect(callback)
 	timer.timeout.connect(timer.queue_free)
 	timer.start(time)
+
+
+func update_synchronizer_visibility_by_role():
+	if not has_node("MultiplayerSynchronizer"):
+		return
+
+	var synchronizer = $MultiplayerSynchronizer
+	var my_network_id = multiplayer.get_unique_id()
+
+	synchronizer.set_visibility_for(my_network_id, true)
+
+	if is_in_group("ufos") and not is_in_group("aliens"):
+		synchronizer.set_visibility_for(0, true) # Widoczne dla każdego peer_id
+
+	else:
+		for peer_id in multiplayer.get_peers():
+			synchronizer.set_visibility_for(peer_id, false)

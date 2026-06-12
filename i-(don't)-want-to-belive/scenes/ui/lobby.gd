@@ -19,7 +19,7 @@ var current_skin_index: int = 0
 var skins_count: int
 var role_idx = 1
 var players: = 0
-var players_requests: Array[Preferences] = []
+var players_requests: Array[GameManager.Preferences] = []
 var ready_players_counter: int = 0
 
 signal all_players_ready
@@ -103,12 +103,6 @@ func _update_players_counter():
 	players_label.text = str(multiplayer.get_peers().size() + 1) + "/4 graczy"
 
 
-class Preferences:
-	var type: String
-	var _skin_idx: int
-	var peer_id: int
-
-
 func _on_preferences_set():
 	confirm_button.set_deferred("visible", false)
 	var sender_id = multiplayer.get_unique_id()
@@ -124,7 +118,7 @@ func _on_preferences_set():
 
 @rpc("any_peer", "call_local", "reliable")
 func _server_request_preferences(sender_id: int, type: String, _skin_idx: int = 0):
-	var preferences = Preferences.new()
+	var preferences = GameManager.Preferences.new()
 	preferences.peer_id = sender_id
 	preferences.type = type
 	if _skin_idx:
@@ -153,6 +147,19 @@ func _on_all_players_ready():
 	if is_multiplayer_authority():
 		confirm_button_label.text = "Rozpocznij grę"
 		confirm_button.set_deferred("visible", true)
+		confirm_button.pressed.disconnect(_on_preferences_set)
+		confirm_button.pressed.connect(_on_start_game)
+		GameManager.players_selections = players_requests
+
+
+func _on_start_game():
+	_start_game.rpc()
+
+
+@rpc("authority", "call_local", "reliable")
+func _start_game():
+	var loading_screen: PackedScene = load("uid://c7m7gjtuwjrst")
+	get_tree().change_scene_to_packed(loading_screen)
 
 
 func _set_role_info():

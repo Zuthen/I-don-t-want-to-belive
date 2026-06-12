@@ -42,9 +42,17 @@ signal alien_seen(peer_id: int)
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
-		set_multiplayer_authority(value)
-		if has_node("PlayerInputSynchronizer"):
-			$PlayerInputSynchronizer.set_multiplayer_authority(value)
+		_deferred_set_network_authority(value)
+
+
+func _deferred_set_network_authority(value: int):
+	if not is_inside_tree():
+		await tree_entered
+	set_multiplayer_authority(value)
+	if has_node("PlayerInputSynchronizer"):
+		$PlayerInputSynchronizer.set_multiplayer_authority(value)
+	if has_node("MultiplayerSynchronizer"):
+		$MultiplayerSynchronizer.set_multiplayer_authority(value)
 
 
 func _ready():
@@ -64,6 +72,12 @@ func _ready():
 
 	await get_tree().process_frame
 	_update_visibility_for_local_player()
+	if has_node("MultiplayerSynchronizer"):
+		var synchronizer = $MultiplayerSynchronizer
+
+		synchronizer.set_visibility_for(0, false)
+
+		update_synchronizer_visibility_by_role()
 
 
 func _update_visibility_for_local_player():
@@ -90,11 +104,19 @@ func _update_visibility_for_local_player():
 
 func callable_initialize_visibility():
 	_update_visibility_for_local_player()
+	if has_node("MultiplayerSynchronizer"):
+		var synchronizer = $MultiplayerSynchronizer
+		synchronizer.set_visibility_for(0, false)
+		synchronizer.set_visibility_for(multiplayer.get_unique_id(), true)
+		synchronizer.set_visibility_for(1, true)
 	if is_multiplayer_authority():
 		get_tree().call_group("ufos", "set_visible", false)
 
 
 func _process(_delta):
+	if not multiplayer or not multiplayer.has_multiplayer_peer():
+		return
+
 	if not is_multiplayer_authority():
 		return
 
@@ -107,6 +129,8 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
+	if not multiplayer or not multiplayer.has_multiplayer_peer():
+		return
 	var sync_direction = move(speed, player_input_synchronizer)
 	animate(sync_direction)
 
@@ -258,15 +282,12 @@ func _teleport_network_rpc(pixel_position: Vector2):
 	collision_area.set_deferred("monitorable", true)
 	collision_shape.set_deferred("disabled", false)
 
-	if is_multiplayer_authority() and is_instance_valid(camera):
-		camera.global_position = pixel_position
-		camera.offset = Vector2.ZERO
-		camera.zoom = camera_zoom
-		camera.position_smoothing_enabled = dynamic_smoothing
-
 	if is_instance_valid(player_input_synchronizer):
 		player_input_synchronizer.set_process(true)
 		player_input_synchronizer.set_physics_process(true)
+
+	if is_multiplayer_authority() and is_instance_valid(camera):
+		camera.position_smoothing_enabled = dynamic_smoothing
 
 
 @rpc("any_peer", "call_local", "reliable")

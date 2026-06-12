@@ -12,6 +12,8 @@ const TILE_HALF_SHADOW = 7
 const TILE_NEAR_LIGHT = 8
 
 var last_player_tile := Vector2i(-999, -999)
+var ufo_view_setup := false
+var my_lobby_role: String = ""
 
 
 func _ready():
@@ -20,9 +22,59 @@ func _ready():
 	if not buildings_layer:
 		push_error("Set buildings layer")
 		return
+	var my_network_id = multiplayer.get_unique_id()
+
+	print("[Mgła] Moje sieciowe ID to: ", my_network_id)
+
+	for pref in GameManager.players_selections:
+		if pref.peer_id == my_network_id:
+			my_lobby_role = pref.type.to_lower()
+			print("[Mgła] Znaleziono moją rolę w bazie: ", my_lobby_role)
+			break
 
 	await get_tree().process_frame
-	initialize_fog()
+
+	if my_lobby_role == "":
+		var local_player = get_local_player()
+		if local_player and local_player.is_in_group("ufos"):
+			my_lobby_role = "ufo"
+		else:
+			my_lobby_role = "skeptic"
+
+
+func _process(_delta):
+	var local_player = get_local_player()
+	if not local_player:
+		return
+
+	var is_alien = local_player.is_in_group("aliens")
+	var is_ufo = local_player.is_in_group("ufos") or my_lobby_role == "ufo"
+	if multiplayer.get_unique_id() == 1:
+		print("[DEBUG HOST] Stan: is_ufo=", is_ufo, " | is_alien=", is_alien, " | lobby_role=", my_lobby_role, " | Nazwa_Wezla=", local_player.name)
+
+	if is_ufo and not is_alien:
+		if not ufo_view_setup:
+			ufo_view_setup = true
+			setup_ufo_view()
+		update_players_visibility(local_player)
+		return
+
+	if last_player_tile == Vector2i(-999, -999):
+		last_player_tile = buildings_layer.local_to_map(local_player.global_position)
+		initialize_fog()
+		apply_new_fog(last_player_tile)
+
+	var current_tile = buildings_layer.local_to_map(local_player.global_position)
+
+	if current_tile != last_player_tile:
+		if last_player_tile != Vector2i(-999, -999):
+			reset_old_fog(last_player_tile)
+
+		ufo_view_setup = false
+		last_player_tile = current_tile
+		apply_new_fog(current_tile)
+
+	update_players_visibility(local_player)
 
 
 func initialize_fog():
@@ -34,34 +86,6 @@ func initialize_fog():
 
 	for cell in cells_pck:
 		set_cell(cell, ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
-
-
-func _process(_delta):
-	var local_player = get_local_player()
-	if not local_player:
-		return
-
-	if local_player.is_in_group("ufos") and not local_player.is_in_group("aliens"):
-		if last_player_tile == Vector2i(-999, -999):
-			last_player_tile = Vector2i(0, 0)
-			setup_ufo_view()
-		update_players_visibility(local_player)
-		return
-
-	if last_player_tile == Vector2i(0, 0) or (last_player_tile == Vector2i(-999, -999) and (local_player.is_in_group("aliens") or local_player.is_in_group("skeptics"))):
-		last_player_tile = buildings_layer.local_to_map(local_player.global_position)
-		initialize_fog()
-		apply_new_fog(last_player_tile)
-
-	var current_tile = buildings_layer.local_to_map(local_player.global_position)
-
-	if current_tile != last_player_tile:
-		if last_player_tile != Vector2i(-999, -999):
-			reset_old_fog(last_player_tile)
-
-		last_player_tile = current_tile
-		apply_new_fog(current_tile)
-	update_players_visibility(local_player)
 
 
 func update_players_visibility(local_player: Node2D):
@@ -138,12 +162,16 @@ func get_local_player() -> Node2D:
 		return null
 
 	var my_id = multiplayer.get_unique_id()
-	var all_nodes = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("aliens")
+	var all_actual_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 
-	for node in all_nodes:
+	for node in all_actual_players:
+		if not node is Node2D:
+			continue
 		if node.get_multiplayer_authority() == my_id:
 			return node
+
 		if node.get_parent() and node.get_parent().get_multiplayer_authority() == my_id:
-			return node.get_parent() as Node2D
+			if node.get_parent().is_in_group("ufos") or node.get_parent().is_in_group("aliens") or node.get_parent().is_in_group("skeptics"):
+				return node.get_parent() as Node2D
 
 	return null

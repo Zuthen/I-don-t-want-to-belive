@@ -9,6 +9,8 @@ var _spawner: MultiplayerSpawner
 
 
 func before_each():
+	var mock_peer = OfflineMultiplayerPeer.new()
+	get_tree().get_multiplayer().set_multiplayer_peer(mock_peer)
 	_game_instance = GAME_SCENE.instantiate()
 	add_child_autofree(_game_instance)
 
@@ -16,6 +18,11 @@ func before_each():
 	_spawner = _game_instance.multiplayer_spawner
 
 	MultiplayerFeatures.spawn(_spawner, _tile_map)
+
+
+func after_each():
+	var mock_peer = OfflineMultiplayerPeer.new()
+	get_tree().get_multiplayer().set_multiplayer_peer(mock_peer)
 
 
 func test_alien_spawns_at_correct_tilemap_position_after_ufo_crash():

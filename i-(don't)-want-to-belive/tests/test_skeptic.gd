@@ -7,6 +7,8 @@ var other_skeptic: CharacterBody2D
 
 
 func before_each():
+	var mock_peer = OfflineMultiplayerPeer.new()
+	get_tree().get_multiplayer().set_multiplayer_peer(mock_peer)
 	game = preload("uid://c4twc836ak4bd").instantiate()
 	game.name = "Game"
 	get_tree().root.add_child(game)
@@ -30,6 +32,7 @@ func after_each():
 	if is_instance_valid(game):
 		game.queue_free()
 
+	get_tree().get_multiplayer().set_multiplayer_peer(null)
 	await wait_physics_frames(2)
 
 
@@ -71,15 +74,12 @@ func test_player_can_t_call_outside_range_size():
 
 func test_walkie_talkie_adds_message_to_ui_for_everyone():
 	await wait_physics_frames(2)
+
 	var real_coordinates = game.get_node_or_null("Coordinates")
 	if not real_coordinates:
 		real_coordinates = game.find_child("Coordinates", true, false)
 
 	if not real_coordinates:
-		fail_test("Brak węzła Coordinates w strukturze sceny testowej!")
-		return
-
-	if game.get_node_or_null("Coordinates") == null:
 		var mock_canvas = Node.new()
 		mock_canvas.name = "Coordinates"
 		game.add_child(mock_canvas)
@@ -92,11 +92,9 @@ func test_walkie_talkie_adds_message_to_ui_for_everyone():
 
 	await wait_physics_frames(1)
 
-	# Act
 	mock_skeptic.send_walkie_talkie_message("C15")
 	await wait_physics_frames(3)
 
-	# Assert
 	assert_eq(
 		real_coordinates.get_child_count(),
 		initial_child_count + 1,

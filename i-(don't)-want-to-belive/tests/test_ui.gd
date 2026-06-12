@@ -15,6 +15,10 @@ var mock_sprite2: TextureRect
 
 
 func before_each():
+	# KLUCZOWA POPRAWKA SIECIOWA: Tworzymy fikcyjną makiętę sieci, aby uciszyć błędy połączenia C++
+	var mock_peer = OfflineMultiplayerPeer.new()
+	get_tree().get_multiplayer().set_multiplayer_peer(mock_peer)
+
 	for node in get_tree().get_nodes_in_group("local_player"):
 		if is_instance_valid(node):
 			node.remove_from_group("local_player")
@@ -55,6 +59,8 @@ func after_each():
 		game.queue_free()
 	if is_instance_valid(ui_instance):
 		ui_instance.queue_free()
+
+	get_tree().get_multiplayer().set_multiplayer_peer(null)
 	await wait_physics_frames(2)
 
 

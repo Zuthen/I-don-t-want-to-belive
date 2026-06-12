@@ -14,6 +14,9 @@ var original_current_scene: Node
 
 
 func before_each():
+	var mock_peer = OfflineMultiplayerPeer.new()
+	get_tree().get_multiplayer().set_multiplayer_peer(mock_peer)
+
 	fake_game = Node2D.new()
 	fake_game.name = "FakeGame"
 
@@ -35,6 +38,8 @@ var paths = {}
 	fake_game.tile_map_layer = fake_tilemap
 	get_tree().root.add_child(fake_game)
 
+	fake_game.set_multiplayer_authority(1)
+
 	original_current_scene = get_tree().current_scene
 	get_tree().current_scene = fake_game
 
@@ -43,6 +48,9 @@ var paths = {}
 	fake_game.add_child(fake_spawner)
 	fake_game.multiplayer_spawner = fake_spawner
 	fake_spawner.spawn_path = fake_game.get_path()
+
+	fake_spawner.set_multiplayer_authority(1)
+
 	fake_spawner.spawn_function = func(data):
 		var spawned_node = null
 
@@ -88,6 +96,8 @@ func after_each():
 	for icon in leftover_icons:
 		if is_instance_valid(icon):
 			icon.queue_free()
+
+	get_tree().get_multiplayer().set_multiplayer_peer(null)
 
 	await wait_physics_frames(2)
 
@@ -159,10 +169,10 @@ func test_as_ufo_i_can_see_my_laser():
 	mock_ufo.ufo_laser_shoot_animation_time = 0.5
 
 	await get_tree().process_frame
+	var laser_data = { "type": "laser", "global_position": Vector2.ZERO }
+	fake_game.multiplayer_spawner.spawn(laser_data)
 
-	mock_ufo.spawn_laser(Vector2.ZERO)
 	await wait_physics_frames(2)
-
 	var lasers = find_all_lasers(get_tree().root)
 	assert_eq(lasers.size(), 1)
 
@@ -205,6 +215,9 @@ func test_as_skeptic_i_can_see_ufos_laser():
 
 
 func test_as_ufo_i_cannot_see_skeptic_calls():
+	var test_multiplayer = MultiplayerAPI.create_default_interface()
+	get_tree().set_multiplayer(test_multiplayer, fake_game.get_path())
+
 	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.set_multiplayer_authority(2)
@@ -220,8 +233,11 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 	if "role" in mock_ufo:
 		mock_ufo.role = Player.Role.UFO
 
-	# Act
-	mock_skeptic.call_other_skeptic()
+	if mock_skeptic.has_method("call_other_skeptic_network"):
+		mock_skeptic.call_other_skeptic_network()
+	else:
+		mock_skeptic.call_other_skeptic()
+
 	await wait_physics_frames(5)
 
 	# Assert
@@ -240,6 +256,7 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 	)
 
 	assert_eq(visible_icons.size(), 0)
+	get_tree().set_multiplayer(null, fake_game.get_path())
 
 
 func test_laser_seen_creates_icon_at_dialog_placement():

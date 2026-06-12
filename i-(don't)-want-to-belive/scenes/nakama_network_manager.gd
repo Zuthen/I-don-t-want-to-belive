@@ -10,6 +10,10 @@ signal match_joined(match_id: String)
 
 
 func _ready():
+	OS.set_restart_on_exit(false)
+	if OS.is_debug_build():
+		ProjectSettings.set_setting("debug/settings/stdout/ignore_warnings", true)
+
 	await get_tree().process_frame
 	connect_to_nakama_server()
 

@@ -6,6 +6,8 @@ var movement_vector = Vector2.ZERO
 
 
 func _process(_delta):
+	if not multiplayer or not multiplayer.has_multiplayer_peer():
+		return
 	if is_multiplayer_authority():
 		gather_input()
 
