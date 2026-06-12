@@ -14,9 +14,13 @@ var random: RandomNumberGenerator
 var players: Array[GameManager.Preferences]
 var skeptics: Array[GameManager.Preferences] = []
 var ufos: Array[GameManager.Preferences] = []
+var game_music = preload("uid://bimjd1o2muktk")
 
 
 func _ready():
+	BackgroundMusic.stop()
+	BackgroundMusic.stream = game_music
+	BackgroundMusic.play()
 	MultiplayerFeatures.spawn(multiplayer_spawner, tile_map_layer)
 
 	var game_map_seed = 12345

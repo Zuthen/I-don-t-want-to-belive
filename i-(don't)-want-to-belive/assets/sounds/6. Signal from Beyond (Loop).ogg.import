@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bimjd1o2muktk"
+path="res://.godot/imported/6. Signal from Beyond (Loop).ogg-11aad87b3e7667c2e9e2d24ab9d99bea.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/sounds/6. Signal from Beyond (Loop).ogg"
+dest_files=["res://.godot/imported/6. Signal from Beyond (Loop).ogg-11aad87b3e7667c2e9e2d24ab9d99bea.oggvorbisstr"]
+
+[params]
+
+loop=true
+loop_offset=0.0
+bpm=0.0
+beat_count=0
+bar_beats=4
