@@ -55,7 +55,7 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 		_assign_roles(players)
 		var sync_data: Dictionary = { }
 		for p in players:
-			sync_data[str(p.peer_id)] = { "type": p.type, "skin": p._skin_idx }
+			sync_data[str(p.peer_id)] = { "type": p.type, "skin": p.skin_idx }
 		_sync_final_roles_to_all_clients.rpc(sync_data)
 
 

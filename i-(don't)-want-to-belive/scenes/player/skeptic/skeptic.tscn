@@ -358,6 +358,9 @@ collision_layer = 0
 collision_mask = 17
 script = ExtResource("1_13dnq")
 
+[node name="Sound" type="AudioStreamPlayer2D" parent="." unique_id=1002717966]
+volume_db = -20.0
+
 [node name="PlayerInputSynchronizer" parent="." unique_id=502860847 instance=ExtResource("2_30q0i")]
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1283327137]

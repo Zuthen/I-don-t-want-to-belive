@@ -48,9 +48,10 @@ func _process(_delta):
 		return
 
 	var is_alien = local_player.is_in_group("aliens")
-	var is_ufo = local_player.is_in_group("ufos") or my_lobby_role == "ufo"
+	var is_ufo = local_player.is_in_group("ufos")
+
 	if multiplayer.get_unique_id() == 1:
-		print("[DEBUG HOST] Stan: is_ufo=", is_ufo, " | is_alien=", is_alien, " | lobby_role=", my_lobby_role, " | Nazwa_Wezla=", local_player.name)
+		print("[DEBUG HOST] Stan: is_ufo=", is_ufo, " | is_alien=", is_alien, " | Nazwa_Wezla=", local_player.name)
 
 	if is_ufo and not is_alien:
 		if not ufo_view_setup:
@@ -58,6 +59,11 @@ func _process(_delta):
 			setup_ufo_view()
 		update_players_visibility(local_player)
 		return
+
+	if ufo_view_setup:
+		ufo_view_setup = false
+		initialize_fog()
+		last_player_tile = Vector2i(-999, -999)
 
 	if last_player_tile == Vector2i(-999, -999):
 		last_player_tile = buildings_layer.local_to_map(local_player.global_position)
@@ -70,7 +76,6 @@ func _process(_delta):
 		if last_player_tile != Vector2i(-999, -999):
 			reset_old_fog(last_player_tile)
 
-		ufo_view_setup = false
 		last_player_tile = current_tile
 		apply_new_fog(current_tile)
 

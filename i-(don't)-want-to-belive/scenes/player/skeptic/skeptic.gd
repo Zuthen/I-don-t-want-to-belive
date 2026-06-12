@@ -10,6 +10,7 @@ extends Player
 @onready var sprite_2d = $Sprite2D
 @onready var collision_shape = $CollisionShape2D
 @onready var warning_label = $WarningLabel
+@onready var sound = $Sound
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
@@ -56,6 +57,8 @@ func _deferred_set_network_authority(value: int):
 
 
 func _ready():
+	if not is_inside_tree():
+		await tree_entered
 	warning_label.visible = false
 	camera_zoom = camera.zoom
 
@@ -81,6 +84,8 @@ func _ready():
 
 
 func _update_visibility_for_local_player():
+	if not is_inside_tree():
+		return
 	var my_local_hero: Node = null
 	var all_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 
@@ -184,6 +189,9 @@ func _on_belive_points_changed(hit_points: int):
 
 
 func _on_laser_seen():
+	var laser_sound = Sounds.laser_sounds.pick_random()
+	sound.stream = laser_sound
+	sound.play()
 	var dialogs = dialog_placements.get_children()
 	if dialogs.is_empty():
 		return
@@ -214,6 +222,9 @@ func _on_skeptic_find_other_skeptic(area: Area2D):
 
 
 func _play_captured_animation(texture: Texture2D, target_position):
+	var capture_sound = Sounds.capture_sounds.pick_random()
+	sound.stream = capture_sound
+	sound.play()
 	sprite_2d.visible = false
 	collision_area.set_deferred("monitoring", false)
 	collision_area.set_deferred("monitorable", false)

@@ -14,6 +14,11 @@ var movement_blocked: = false
 var role: Role
 
 
+func _ready():
+	if not is_inside_tree():
+		await tree_entered
+
+
 func move(speed: float, player_input_synchronizer: PlayerInputSynchronizer) -> Vector2:
 	var sync_direction: Vector2 = Vector2.ZERO
 	if is_instance_valid(player_input_synchronizer):
@@ -78,17 +83,7 @@ func start_cooldown_timer(time: float, callback: Callable):
 
 
 func update_synchronizer_visibility_by_role():
-	if not has_node("MultiplayerSynchronizer"):
-		return
-
-	var synchronizer = $MultiplayerSynchronizer
-	var my_network_id = multiplayer.get_unique_id()
-
-	synchronizer.set_visibility_for(my_network_id, true)
-
 	if is_in_group("ufos") and not is_in_group("aliens"):
-		synchronizer.set_visibility_for(0, true) # Widoczne dla każdego peer_id
-
+		visible = true
 	else:
-		for peer_id in multiplayer.get_peers():
-			synchronizer.set_visibility_for(peer_id, false)
+		pass
