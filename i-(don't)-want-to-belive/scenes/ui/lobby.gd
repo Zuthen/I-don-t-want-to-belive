@@ -42,17 +42,26 @@ func _ready():
 	await get_tree().process_frame
 
 	if NakamaNetworkManager.multiplayer_bridge:
-		var net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
+		var net_match_id = NakamaNetworkManager.actual_match_id
+		if net_match_id == "":
+			net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
+
 		match_id_label.text = "ID meczu: " + str(net_match_id)
 
 		var room_name = NakamaNetworkManager.match_name
 		room_name_label.text = "Nazwa pokoju: " + str(room_name)
 
-		print("[Lobby] Moje ID meczu to: ", net_match_id)
+		print("[Lobby] Wyświetlam dane w UI! ID: ", net_match_id, " | Kod: ", room_name)
 
 	multiplayer.peer_connected.connect(_on_player_count_changed)
 	multiplayer.peer_disconnected.connect(_on_player_count_changed)
-	if not is_multiplayer_authority():
+
+	var my_id = multiplayer.get_unique_id()
+	if my_id > 1:
+		var peer = multiplayer.multiplayer_peer
+		while peer and peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+			await get_tree().create_timer(0.05).timeout
+
 		_request_current_ready_count.rpc_id(1)
 
 	await get_tree().process_frame

@@ -46,7 +46,7 @@ func _on_connect_pressed():
 	NakamaNetworkManager.connect_to_named_room(room_name)
 
 
-func _on_network_match_joined(match_id: String):
+func _on_network_match_joined(_match_name: String, _match_id: String):
 	var lobby_scene = load("uid://dg7q16m0w6dnx") as PackedScene
 	if NakamaNetworkManager.is_inside_tree():
 		NakamaNetworkManager.get_tree().change_scene_to_packed(lobby_scene)

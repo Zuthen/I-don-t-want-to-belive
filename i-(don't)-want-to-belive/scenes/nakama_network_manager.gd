@@ -8,8 +8,9 @@ var multiplayer_bridge: NakamaMultiplayerBridge
 var match_name: String
 var actual_match_id: String
 var is_host: bool = false
+var private: bool = false
 
-signal match_joined_successfully(server_match_id: String)
+signal match_joined_successfully(room_code: String, server_match_id: String)
 
 
 func _ready():
@@ -47,24 +48,11 @@ func connect_to_nakama_server():
 	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
 
 
-func connect_to_named_room(room_name: String):
-	if not socket or not multiplayer_bridge:
-		print("[Nakama] Błąd: Brak otwartego mostu sieciowego!")
-		return
-
-	match_name = room_name
-	print("[Nakama] Łączenie z nazwanym pokojem: ", room_name)
-
-	if not multiplayer_bridge.match_joined.is_connected(_on_bridge_match_joined):
-		multiplayer_bridge.match_joined.connect(_on_bridge_match_joined)
-
-	multiplayer_bridge.join_named_match(room_name)
-
-
 func host_create_match() -> String:
 	is_host = true
+	private = true
 	var generated_code = create_match_name()
-	connect_to_named_room(generated_code)
+	await connect_to_named_room(generated_code)
 	return generated_code
 
 
@@ -82,8 +70,7 @@ func _on_bridge_match_joined():
 	actual_match_id = multiplayer_bridge.match_id
 
 	print("[Nakama] Sukces! Krótki kod: ", match_name, " | ID serwera: ", actual_match_id)
-
-	match_joined_successfully.emit(actual_match_id)
+	match_joined_successfully.emit(match_name, actual_match_id)
 
 
 func create_match_name():
@@ -93,3 +80,82 @@ func create_match_name():
 		var random_index = randi() % characters.length()
 		result += characters[random_index]
 	return result
+
+
+var public_chat_channel = null
+
+
+func join_existing_game():
+	if not socket or not multiplayer_bridge:
+		print("[Nakama] Błąd: Brak otwartego mostu sieciowego!")
+		return
+
+	var random_delay = randf_range(0.05, 0.5)
+	print("[Nakama] Opóźniam start wyszukiwania o %f sek. ..." % random_delay)
+	await get_tree().create_timer(random_delay).timeout
+
+	if not multiplayer_bridge.match_joined.is_connected(_on_bridge_match_joined):
+		multiplayer_bridge.match_joined.connect(_on_bridge_match_joined)
+
+	public_chat_channel = await socket.join_chat_async("global_matchmaking_room", 1, true, false)
+
+	if public_chat_channel.is_exception():
+		print("[Nakama] Błąd czatu matchmakingu: ", public_chat_channel.get_exception().message)
+		return
+
+	var target_room_code = await find_active_room()
+
+	if target_room_code == "":
+		print("[Nakama] Brak gier na czacie. Tworzę mecz jako HOST...")
+		is_host = true
+		private = false
+		var generated_code = create_match_name()
+
+		var msg_content = { "room_code": generated_code }
+		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
+		connect_to_named_room(generated_code)
+
+	else:
+		print("[Nakama] Znaleziono wolną grę na czacie! Kod pokoju: %s. Dołączam..." % target_room_code)
+		is_host = false
+		private = false
+		connect_to_named_room(target_room_code)
+
+
+func find_active_room() -> String:
+	if not socket or not public_chat_channel:
+		return ""
+
+	print("[Nakama] Pobieram historię wiadomości z kanału parowania...")
+	var history_result = await client.list_channel_messages_async(session, public_chat_channel.id, 10, false)
+
+	if history_result.is_exception():
+		print("[Nakama] Błąd pobierania historii czatu: ", history_result.get_exception().message)
+		return ""
+
+	if not history_result.messages or history_result.messages.size() < 1:
+		print("[Nakama] Kanał czatu parowania jest pusty (brak kodów gier).")
+		return ""
+
+	for msg in history_result.messages:
+		var content = JSON.parse_string(msg.content)
+		if content and content.has("room_code"):
+			var found_code = content["room_code"]
+			print("[Nakama] Znaleziono aktualny kod gry na czacie: ", found_code)
+			return found_code
+
+	return ""
+
+
+func connect_to_named_room(room_name: String):
+	if not socket or not multiplayer_bridge:
+		print("[Nakama] Błąd: Brak otwartego mostu sieciowego!")
+		return
+
+	match_name = room_name
+	print("[Nakama] Łączenie z nazwanym pokojem: ", room_name)
+
+	if not multiplayer_bridge.match_joined.is_connected(_on_bridge_match_joined):
+		multiplayer_bridge.match_joined.connect(_on_bridge_match_joined)
+
+	multiplayer_bridge.join_named_match(room_name)

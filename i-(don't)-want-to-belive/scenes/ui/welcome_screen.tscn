@@ -299,6 +299,10 @@ font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
 font = ExtResource("12_ejsg3")
 font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_quars"]
+font = ExtResource("12_ejsg3")
+font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
+
 [node name="WelcomeScreen" type="Node2D" unique_id=1082575388]
 script = ExtResource("1_ejsg3")
 
@@ -436,6 +440,23 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Dołącz do gry"
 label_settings = SubResource("LabelSettings_xktrh")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="QuickGame" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=241338468]
+custom_minimum_size = Vector2(192, 64)
+layout_mode = 2
+texture_normal = ExtResource("11_80at6")
+
+[node name="Label" type="Label" parent="CanvasLayer/Buttons/QuickGame" unique_id=1103691594]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Losuj grę"
+label_settings = SubResource("LabelSettings_quars")
 horizontal_alignment = 1
 vertical_alignment = 1
 
