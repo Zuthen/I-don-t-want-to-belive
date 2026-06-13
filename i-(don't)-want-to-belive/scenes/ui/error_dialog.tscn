@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://chwvx8p2rsobe"]
+
+[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="1_yk654"]
+[ext_resource type="Script" uid="uid://dli5303skmeu" path="res://scenes/ui/error_dialog.gd" id="2_xdgfp"]
+
+[sub_resource type="Theme" id="Theme_8io6i"]
+default_font = ExtResource("1_yk654")
+
+[node name="ErrorDialog" type="AcceptDialog" unique_id=200765431]
+oversampling_override = 1.0
+title = "Niepowodzenie"
+position = Vector2i(0, 36)
+size = Vector2i(421, 100)
+visible = true
+theme = SubResource("Theme_8io6i")
+dialog_text = "Pokój jest już pełen! Spróbuj gry losowej."
+script = ExtResource("2_xdgfp")

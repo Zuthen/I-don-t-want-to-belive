@@ -1,125 +1,37 @@
 [gd_scene format=3 uid="uid://7tume85w3b7a"]
 
-[ext_resource type="Texture2D" uid="uid://bq5ok1etalft8" path="res://assets/ui/panel_glass.png" id="1_g25rl"]
+[ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="1_vh52r"]
 [ext_resource type="Script" uid="uid://dgbic0hfex7j5" path="res://scenes/ui/room_popup.gd" id="2_45cec"]
-[ext_resource type="Texture2D" uid="uid://b3xrgvsgysdtl" path="res://assets/ui/bar_square_gloss_large.png" id="2_av5kr"]
-[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="3_45cec"]
-[ext_resource type="Texture2D" uid="uid://ep2xfdjuamn0" path="res://assets/ui/panel_rectangle.png" id="4_bqx7c"]
-[ext_resource type="Texture2D" uid="uid://bqe7vc0ytby5c" path="res://assets/ui/cross.png" id="5_45cec"]
-[ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="5_qleo6"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_7gx2y"]
-font = ExtResource("3_45cec")
+[sub_resource type="Theme" id="Theme_8io6i"]
+default_font = ExtResource("1_vh52r")
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xueft"]
-texture = ExtResource("4_bqx7c")
-texture_margin_left = 6.0
-texture_margin_top = 6.0
-texture_margin_right = 6.0
-texture_margin_bottom = 6.0
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4k452"]
 
-[node name="Popup" type="NinePatchRect" unique_id=321821047]
-offset_left = 285.0
-offset_top = 310.0
-offset_right = 535.0
-offset_bottom = 470.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_vertical = 3
-texture = ExtResource("1_g25rl")
-patch_margin_left = 10
-patch_margin_top = 10
-patch_margin_right = 10
-patch_margin_bottom = 10
+[node name="Popup" type="AcceptDialog" unique_id=1664527367]
+oversampling_override = 1.0
+title = "Kod pokoju"
+position = Vector2i(0, 36)
+size = Vector2i(266, 95)
+visible = true
+theme = SubResource("Theme_8io6i")
+theme_override_styles/panel = SubResource("StyleBoxTexture_4k452")
+ok_button_text = "Dołącz"
 script = ExtResource("2_45cec")
 
-[node name="Header" type="NinePatchRect" parent="." unique_id=42520496]
-custom_minimum_size = Vector2(250, 40)
-layout_mode = 1
-anchors_preset = 5
+[node name="CodeInput" type="LineEdit" parent="." unique_id=1177118871]
+anchors_preset = -1
 anchor_left = 0.5
+anchor_top = 0.24900001
 anchor_right = 0.5
-grow_horizontal = 2
-texture = ExtResource("2_av5kr")
-
-[node name="MarginContainer" type="MarginContainer" parent="Header" unique_id=1892588437]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.5
+offset_left = -133.0
+offset_top = -23.655
+offset_right = 133.0
+offset_bottom = 8.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = 16
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Header/MarginContainer" unique_id=1867172767]
-layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 4
-alignment = 2
-
-[node name="Label" type="Label" parent="Header/MarginContainer/HBoxContainer" unique_id=311041661]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Nazwa pokoju"
-label_settings = SubResource("LabelSettings_7gx2y")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="CloseButton" type="TextureButton" parent="Header/MarginContainer/HBoxContainer" unique_id=1015117198]
-custom_minimum_size = Vector2(15, 15)
-layout_mode = 2
-texture_normal = ExtResource("5_45cec")
-texture_pressed = ExtResource("5_45cec")
-texture_hover = ExtResource("5_45cec")
-texture_focused = ExtResource("5_45cec")
-ignore_texture_size = true
-stretch_mode = 4
-
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=216241913]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -29.0
-offset_right = 100.0
-offset_bottom = 60.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer" unique_id=2094114307]
-custom_minimum_size = Vector2(200, 0)
-layout_direction = 3
-layout_mode = 2
-focus_mode = 1
-theme_override_colors/font_color = Color(0.08627451, 0.49019608, 0.65882355, 1)
-theme_override_fonts/font = ExtResource("3_45cec")
-theme_override_styles/normal = SubResource("StyleBoxTexture_xueft")
-theme_override_styles/focus = SubResource("StyleBoxTexture_xueft")
-text_direction = 1
-
-[node name="ConnectButton" type="TextureButton" parent="VBoxContainer" unique_id=40986050]
-custom_minimum_size = Vector2(200, 50)
-layout_mode = 2
-texture_normal = ExtResource("5_qleo6")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="Label" type="Label" parent="VBoxContainer/ConnectButton" unique_id=457743708]
-layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -11.5
-offset_bottom = 11.5
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0.08627451, 0.49019608, 0.65882355, 1)
-theme_override_fonts/font = ExtResource("3_45cec")
-text = "Utwórz"
-horizontal_alignment = 1
-vertical_alignment = 1
+placeholder_text = "Wpisz lub wklej kod pokoju"
+alignment = 1

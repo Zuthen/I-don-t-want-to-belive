@@ -28,6 +28,10 @@ signal all_players_ready
 
 
 func _ready():
+	if not is_inside_tree():
+		return
+	if multiplayer.multiplayer_peer == null:
+		await get_tree().process_frame
 	_set_host_label()
 	_set_players_ready(ready_players_counter)
 	_update_players_counter()
@@ -51,18 +55,40 @@ func _connect_signals():
 	factions.item_selected.connect(_set_warning_text)
 	left_button.pressed.connect(_set_previous_skin)
 	right_button.pressed.connect(_set_next_skin)
-	multiplayer.peer_connected.connect(_on_player_count_changed)
-	multiplayer.peer_disconnected.connect(_on_player_count_changed)
+
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if main_loop and main_loop.get_multiplayer():
+		var net = main_loop.get_multiplayer()
+		if not net.peer_connected.is_connected(_on_player_count_changed):
+			net.peer_connected.connect(_on_player_count_changed)
+		if not net.peer_disconnected.is_connected(_on_player_count_changed):
+			net.peer_disconnected.connect(_on_player_count_changed)
+
+
+func _update_players_counter():
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if main_loop and main_loop.get_multiplayer():
+		var net = main_loop.get_multiplayer()
+		var total_players = net.get_peers().size() + 1
+		if total_players >= 5:
+			total_players = 4
+		players_label.text = str(total_players) + "/4 graczy"
+	else:
+		players_label.text = "1/4 graczy"
 
 
 func _connect():
-	var my_id = multiplayer.get_unique_id()
-	if my_id > 1:
-		var peer = multiplayer.multiplayer_peer
-		while peer and peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
-			await get_tree().create_timer(0.05).timeout
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if main_loop and main_loop.get_multiplayer():
+		var net = main_loop.get_multiplayer()
 
-		_request_current_ready_count.rpc_id(1)
+		if net.multiplayer_peer != null:
+			var my_id = net.get_unique_id()
+			var host_id = get_multiplayer_authority()
+
+			if my_id != host_id:
+				print("[Lobby] Requesting ready count from Host ID: ", host_id)
+				_request_current_ready_count.rpc_id(host_id)
 
 
 func _set_game_data():
@@ -126,10 +152,6 @@ func _adjust_ufo_skins_visibility(value):
 
 func _on_player_count_changed(_id: int):
 	_update_players_counter()
-
-
-func _update_players_counter():
-	players_label.text = str(multiplayer.get_peers().size() + 1) + "/4 graczy"
 
 
 func _on_preferences_set():
