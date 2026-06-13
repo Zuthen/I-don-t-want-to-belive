@@ -28,47 +28,92 @@ signal all_players_ready
 
 
 func _ready():
-	tooltip.set_deferred("visible", false)
-	if is_multiplayer_authority():
-		host_label.text = "Jesteś hostem"
-	else:
-		host_label.set_deferred("visible", false)
-	all_players_ready.connect(_on_all_players_ready)
-	set_players_ready(ready_players_counter)
-	confirm_button.pressed.connect(_on_preferences_set)
-	copy_button.pressed.connect(_copy_room_name_to_clipboard)
+	if not is_inside_tree():
+		return
+	if multiplayer.multiplayer_peer == null:
+		await get_tree().process_frame
+	_set_host_label()
+	_set_players_ready(ready_players_counter)
 	_update_players_counter()
-
+	_set_game_data()
+	await _connect()
+	skins_count = UfosTextures.ufo_textures.size()
+	about_role.add_theme_constant_override("line_separation", 10)
 	await get_tree().process_frame
 
+	_set_warning_text(role_idx)
+	_set_ufo_skins()
+	_adjust_ufo_skins_visibility(role_idx)
+	_set_role_info()
+	_connect_signals()
+
+
+func _connect_signals():
+	all_players_ready.connect(_on_all_players_ready)
+	confirm_button.pressed.connect(_on_preferences_set)
+	copy_button.pressed.connect(_copy_room_name_to_clipboard)
+	factions.item_selected.connect(_set_warning_text)
+	left_button.pressed.connect(_set_previous_skin)
+	right_button.pressed.connect(_set_next_skin)
+
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if main_loop and main_loop.get_multiplayer():
+		var net = main_loop.get_multiplayer()
+		if not net.peer_connected.is_connected(_on_player_count_changed):
+			net.peer_connected.connect(_on_player_count_changed)
+		if not net.peer_disconnected.is_connected(_on_player_count_changed):
+			net.peer_disconnected.connect(_on_player_count_changed)
+
+
+func _update_players_counter():
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if main_loop and main_loop.get_multiplayer():
+		var net = main_loop.get_multiplayer()
+		var total_players = net.get_peers().size() + 1
+		if total_players >= 5:
+			total_players = 4
+		players_label.text = str(total_players) + "/4 graczy"
+	else:
+		players_label.text = "1/4 graczy"
+
+
+func _connect():
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if main_loop and main_loop.get_multiplayer():
+		var net = main_loop.get_multiplayer()
+
+		if net.multiplayer_peer != null:
+			var my_id = net.get_unique_id()
+			var host_id = get_multiplayer_authority()
+
+			if my_id != host_id:
+				print("[Lobby] Requesting ready count from Host ID: ", host_id)
+				_request_current_ready_count.rpc_id(host_id)
+
+
+func _set_game_data():
 	if NakamaNetworkManager.multiplayer_bridge:
-		var net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
+		var net_match_id = NakamaNetworkManager.actual_match_id
+		if net_match_id == "":
+			net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
+
 		match_id_label.text = "ID meczu: " + str(net_match_id)
 
 		var room_name = NakamaNetworkManager.match_name
 		room_name_label.text = "Nazwa pokoju: " + str(room_name)
 
-		print("[Lobby] Moje ID meczu to: ", net_match_id)
-
-	multiplayer.peer_connected.connect(_on_player_count_changed)
-	multiplayer.peer_disconnected.connect(_on_player_count_changed)
-	if not is_multiplayer_authority():
-		_request_current_ready_count.rpc_id(1)
-
-	await get_tree().process_frame
-
-	skins_count = UfosTextures.ufo_textures.size()
-	about_role.add_theme_constant_override("line_separation", 10)
-	set_warning_text(role_idx)
-	set_ufo_skins()
-	_adjust_ufo_skins_visibility(role_idx)
-	_set_role_info()
-	factions.item_selected.connect(set_warning_text)
-	left_button.pressed.connect(_set_previous_skin)
-	right_button.pressed.connect(_set_next_skin)
+		print("[Lobby] Wyświetlam dane w UI! ID: ", net_match_id, " | Kod: ", room_name)
 
 
-func set_warning_text(index: int = 0):
+func _set_host_label():
+	tooltip.set_deferred("visible", false)
+	if is_multiplayer_authority():
+		host_label.text = "Jesteś hostem"
+	else:
+		host_label.set_deferred("visible", false)
+
+
+func _set_warning_text(index: int = 0):
 	role_idx = index
 	if index == 0:
 		faction_warning.text = "Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz ufokiem"
@@ -78,7 +123,7 @@ func set_warning_text(index: int = 0):
 	_set_role_info()
 
 
-func set_ufo_skins():
+func _set_ufo_skins():
 	if skins_count > 0:
 		var texture = UfosTextures.ufo_textures[current_skin_index].ship
 		ufo_preview.texture = texture
@@ -88,14 +133,14 @@ func _set_previous_skin():
 	current_skin_index -= 1
 	if current_skin_index < 0:
 		current_skin_index = skins_count - 1
-	set_ufo_skins()
+	_set_ufo_skins()
 
 
 func _set_next_skin():
 	current_skin_index += 1
 	if current_skin_index >= skins_count:
 		current_skin_index = 0
-	set_ufo_skins()
+	_set_ufo_skins()
 
 
 func _adjust_ufo_skins_visibility(value):
@@ -107,10 +152,6 @@ func _adjust_ufo_skins_visibility(value):
 
 func _on_player_count_changed(_id: int):
 	_update_players_counter()
-
-
-func _update_players_counter():
-	players_label.text = str(multiplayer.get_peers().size() + 1) + "/4 graczy"
 
 
 func _on_preferences_set():
@@ -138,11 +179,11 @@ func _server_request_preferences(sender_id: int, type: String, _skin_idx: int = 
 	ready_players_counter += 1
 	if ready_players_counter == 4:
 		all_players_ready.emit()
-	set_players_ready.rpc(ready_players_counter)
+	_set_players_ready.rpc(ready_players_counter)
 
 
 @rpc("any_peer", "call_local", "reliable")
-func set_players_ready(count: int):
+func _set_players_ready(count: int):
 	ready_players_counter = count
 	ready_players_label.text = "gotowi gracze: " + str(count) + "/4"
 
@@ -150,7 +191,7 @@ func set_players_ready(count: int):
 @rpc("any_peer", "call_remote", "reliable")
 func _request_current_ready_count():
 	var sender_id = multiplayer.get_remote_sender_id()
-	set_players_ready.rpc_id(sender_id, ready_players_counter)
+	_set_players_ready.rpc_id(sender_id, ready_players_counter)
 
 
 func _on_all_players_ready():
