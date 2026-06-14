@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://dospyu21svvv"
-path="res://.godot/imported/Audiowide-Regular.ttf-62e85edd5fada4bf3a870f3432dcfb6f.fontdata"
+uid="uid://btrdes176lugr"
+path="res://.godot/imported/Audiowide-Regular.ttf-1097d54a716c834b0b7b4a337860fb79.fontdata"
 
 [deps]
 
-source_file="res://assets/fonts/Audiowide-Regular.ttf"
-dest_files=["res://.godot/imported/Audiowide-Regular.ttf-62e85edd5fada4bf3a870f3432dcfb6f.fontdata"]
+source_file="res://assets/Audiowide-Regular.ttf"
+dest_files=["res://.godot/imported/Audiowide-Regular.ttf-1097d54a716c834b0b7b4a337860fb79.fontdata"]
 
 [params]
 

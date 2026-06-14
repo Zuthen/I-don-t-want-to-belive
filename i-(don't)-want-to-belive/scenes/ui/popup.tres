@@ -1,0 +1,73 @@
+[gd_resource type="Theme" format=3 uid="uid://bckcpiqmd24lp"]
+
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="1_mby25"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp6mp"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.25, 0.25, 0.25, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8io6i"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.26666668, 0.7254902, 0.6117647, 1)
+draw_center = false
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mby25"]
+bg_color = Color(0.88235295, 0.49411765, 0.27058825, 1)
+border_color = Color(0.26666668, 0.7254902, 0.6117647, 1)
+border_blend = true
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+expand_margin_left = 16.0
+expand_margin_top = 8.0
+expand_margin_right = 16.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="FontVariation" id="FontVariation_mby25"]
+base_font = ExtResource("1_mby25")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g25rl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_av5kr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_45cec"]
+
+[resource]
+default_font = ExtResource("1_mby25")
+default_font_size = 15
+AcceptDialog/colors/title_color = Color(0.88235295, 0.49411765, 0.27058825, 1)
+AcceptDialog/colors/title_outline_modulate = Color(0, 0, 0, 0)
+AcceptDialog/constants/buttons_separation = 10
+AcceptDialog/constants/title_height = 32
+AcceptDialog/font_sizes/title_font_size = 24
+AcceptDialog/fonts/title_font = ExtResource("1_mby25")
+AcceptDialog/styles/panel = SubResource("StyleBoxFlat_xp6mp")
+Button/styles/focus = SubResource("StyleBoxFlat_8io6i")
+Button/styles/normal = SubResource("StyleBoxFlat_mby25")
+Label/colors/font_color = Color(0.88235295, 0.49411765, 0.27058825, 1)
+Label/font_sizes/font_size = 23
+Label/fonts/font = SubResource("FontVariation_mby25")
+LineEdit/colors/font_color = Color(0.26666668, 0.7254902, 0.6117647, 1)
+LineEdit/colors/selection_color = Color(0.7098038, 0.9680796, 0.73005724, 1)
+LineEdit/font_sizes/font_size = 14
+LineEdit/styles/focus = SubResource("StyleBoxFlat_g25rl")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_av5kr")
+LineEdit/styles/read_only = SubResource("StyleBoxFlat_45cec")
+RichTextLabel/fonts/mono_font = ExtResource("1_mby25")
+RichTextLabel/fonts/normal_font = ExtResource("1_mby25")

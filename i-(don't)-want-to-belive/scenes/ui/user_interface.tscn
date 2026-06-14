@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://d0oookm6lwggb" path="res://assets/ui/button_rectangle_flat.png" id="1_284y0"]
 [ext_resource type="Script" uid="uid://bdititb3yf3rj" path="res://scenes/ui/user_interface.gd" id="1_rcgkl"]
+[ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="3_737vb"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="5_vo76m"]
 [ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="6_xg44s"]
 [ext_resource type="Texture2D" uid="uid://dqsvg26olobps" path="res://assets/characters/ufos/shipYellow.png" id="7_fhs8v"]
@@ -11,11 +12,11 @@
 [ext_resource type="Texture2D" uid="uid://cbur3mmig4oxr" path="res://assets/ui/keboard_buttons/keyboard_e_outline.png" id="9_737vb"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
-font = ExtResource("5_vo76m")
+font = ExtResource("3_737vb")
 font_size = 80
 font_color = Color(0.8932403, 0.34896463, 0.46216196, 1)
 outline_size = 13
-outline_color = Color(0.2, 0.2, 0.2, 1)
+outline_color = Color(0, 0, 0, 1)
 shadow_size = 7
 
 [sub_resource type="LabelSettings" id="LabelSettings_xg44s"]

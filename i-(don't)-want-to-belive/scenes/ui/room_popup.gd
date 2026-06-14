@@ -14,6 +14,14 @@ func _ready():
 	about_to_popup.connect(_on_about_to_popup)
 
 	NakamaNetworkManager.match_joined_successfully.connect(_on_network_match_joined)
+	var custom_font = load("uid://dospyu21svvv")
+
+	if custom_font and code_input:
+		code_input.add_theme_font_override("font", custom_font)
+		code_input.add_theme_font_size_override("font_size", 14)
+	var connect_btn = get_ok_button()
+	connect_btn.add_theme_font_override("font", custom_font)
+	connect_btn.add_theme_font_size_override("font_size", 16)
 
 
 func _on_about_to_popup():
