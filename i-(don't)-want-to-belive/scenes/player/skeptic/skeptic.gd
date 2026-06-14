@@ -18,7 +18,7 @@ var walkie_talkie_message_scene: PackedScene = preload("uid://tgygvek1j0wa")
 var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
 var ufo_type_camera_scene: PackedScene = preload("uid://cba40e72olvj2")
 
-var is_male
+var animation_sprite_idx: int = 0
 var can_send_coordinates = true
 var voice_emitter_active := false
 
@@ -333,19 +333,18 @@ func animate(direction: Vector2):
 		"right": Vector2.RIGHT,
 	}
 	var norm_dir = direction.normalized()
-	var animation_sprite_name_suffix = "_boy" if is_male else ""
 
 	if norm_dir.is_equal_approx(directions["down"]):
-		animation_player.play("move down" + animation_sprite_name_suffix)
+		animation_player.play("move down " + str(animation_sprite_idx))
 		direction_sprite = "down"
 	elif norm_dir.is_equal_approx(directions["up"]):
-		animation_player.play("move up" + animation_sprite_name_suffix)
+		animation_player.play("move up " + str(animation_sprite_idx))
 		direction_sprite = "up"
 	elif norm_dir.is_equal_approx(directions["left"]):
-		animation_player.play("move left" + animation_sprite_name_suffix)
+		animation_player.play("move left " + str(animation_sprite_idx))
 		direction_sprite = "left"
 	elif norm_dir.is_equal_approx(directions["right"]):
-		animation_player.play("move right" + animation_sprite_name_suffix)
+		animation_player.play("move right " + str(animation_sprite_idx))
 		direction_sprite = "right"
 	elif norm_dir == Vector2.ZERO:
-		animation_player.play("idle " + direction_sprite + animation_sprite_name_suffix)
+		animation_player.play("idle " + direction_sprite + " " + str(animation_sprite_idx))

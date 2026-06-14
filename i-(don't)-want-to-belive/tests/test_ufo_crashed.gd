@@ -62,4 +62,4 @@ func test_alien_spawns_at_correct_tilemap_position_after_ufo_crash():
 
 	if alien_node:
 		assert_eq(player_core.global_position, expected_local_pos)
-		assert_eq(alien_node.ufo_idx, ufo_index)
+		assert_eq(alien_node.skin_idx, ufo_index)

@@ -128,7 +128,7 @@ func map_to_spawn_data(skeptic_positions):
 			"peer_id": skeptic.peer_id,
 			"type": "skeptic",
 			"spawn_position": spawn_pos,
-			"is_male": bool(i),
+			"skin_idx": skeptic.skin_idx,
 		}
 		players_data.append(data)
 
@@ -142,7 +142,7 @@ func map_to_spawn_data(skeptic_positions):
 			"peer_id": ufo.peer_id,
 			"type": "ufo",
 			"spawn_position": spawn_pos,
-			"ufo_idx": ufo._skin_idx,
+			"skin_idx": ufo.skin_idx,
 		}
 		players_data.append(data)
 

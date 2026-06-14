@@ -44,8 +44,8 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 
 		match type:
 			"wreck":
-				if data.has("ufo_idx"):
-					node.ufo_texture_idx = data.ufo_idx
+				if data.has("skin_idx"):
+					node.ufo_texture_idx = data.skin_idx
 				return node
 			"laser":
 				if data.has("color_idx"):
@@ -59,12 +59,9 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 						CONNECT_ONE_SHOT,
 					)
 				return node
-			"ufo":
-				if data.has("ufo_idx"):
-					_apply_ufo_skin(node, data.ufo_idx)
-			"skeptic":
-				if data.has("is_male"):
-					node.is_male = data.is_male
+			"ufo", "skeptic":
+				if data.has("skin_idx"):
+					_apply_skin(node, data.skin_idx)
 
 		var synchronizer_path = "PlayerInput" if node.has_node("PlayerInput") else "PlayerInputSynchronizer"
 		if node.has_node(synchronizer_path):
@@ -78,13 +75,15 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 		return node
 
 
-func _apply_ufo_skin(node: Node, ufo_idx: int):
+func _apply_skin(node: Node, skin_idx: int):
 	if "ufo_index_sync" in node:
-		node.ufo_index_sync = ufo_idx
+		node.ufo_index_sync = skin_idx
 	if node.has_node("Ufo"):
-		node.get_node("Ufo").ufo_idx = ufo_idx
+		node.get_node("Ufo").skin_idx = skin_idx
 	if node.has_node("Alien"):
-		node.get_node("Alien").ufo_idx = ufo_idx
+		node.get_node("Alien").skin_idx = skin_idx
+	if node is Skeptic:
+		node.animation_sprite_idx = skin_idx
 
 
 func assign_to_group(data: Dictionary, node: Node):
