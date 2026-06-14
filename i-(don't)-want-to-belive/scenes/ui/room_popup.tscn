@@ -1,21 +1,83 @@
 [gd_scene format=3 uid="uid://7tume85w3b7a"]
 
-[ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="1_vh52r"]
+[ext_resource type="Texture2D" uid="uid://bq5ok1etalft8" path="res://assets/ui/panel_glass.png" id="1_g25rl"]
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="1_vh52r"]
 [ext_resource type="Script" uid="uid://dgbic0hfex7j5" path="res://scenes/ui/room_popup.gd" id="2_45cec"]
 
-[sub_resource type="Theme" id="Theme_8io6i"]
-default_font = ExtResource("1_vh52r")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8io6i"]
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4k452"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8io6i"]
+bg_color = Color(0.26666668, 0.7254902, 0.6117647, 1)
+draw_center = false
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4k452"]
+bg_color = Color(0.26666668, 0.7019608, 0.59607846, 1)
+border_color = Color(0.26666668, 0.7254902, 0.6117647, 1)
+border_blend = true
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g25rl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_av5kr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_45cec"]
+
+[sub_resource type="Theme" id="Theme_g25rl"]
+default_font = null
+default_font_size = 17
+AcceptDialog/colors/title_color = Color(0.28627452, 0.7529412, 0.6392157, 1)
+AcceptDialog/colors/title_outline_modulate = Color(0, 0, 0, 0)
+AcceptDialog/constants/title_height = 32
+AcceptDialog/font_sizes/title_font_size = 16
+AcceptDialog/fonts/title_font = ExtResource("1_vh52r")
+AcceptDialog/styles/panel = SubResource("StyleBoxTexture_8io6i")
+Button/font_sizes/font_size = 16
+Button/fonts/font = ExtResource("1_vh52r")
+Button/styles/focus = SubResource("StyleBoxFlat_8io6i")
+Button/styles/normal = SubResource("StyleBoxFlat_4k452")
+Label/colors/font_color = Color(0.88235295, 0.49411765, 0.27058825, 1)
+Label/fonts/font = null
+LineEdit/colors/font_color = Color(0.26666668, 0.7254902, 0.6117647, 1)
+LineEdit/colors/selection_color = Color(0.7098038, 0.9680796, 0.73005724, 1)
+LineEdit/font_sizes/font_size = 13
+LineEdit/fonts/font = ExtResource("1_vh52r")
+LineEdit/styles/focus = SubResource("StyleBoxFlat_g25rl")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_av5kr")
+LineEdit/styles/read_only = SubResource("StyleBoxFlat_45cec")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g25rl"]
+texture = ExtResource("1_g25rl")
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
 
 [node name="Popup" type="AcceptDialog" unique_id=1664527367]
 oversampling_override = 1.0
 title = "Kod pokoju"
-position = Vector2i(0, 36)
-size = Vector2i(266, 95)
+position = Vector2i(0, 40)
+size = Vector2i(266, 130)
 visible = true
-theme = SubResource("Theme_8io6i")
-theme_override_styles/panel = SubResource("StyleBoxTexture_4k452")
+keep_title_visible = false
+theme = SubResource("Theme_g25rl")
+theme_override_styles/panel = SubResource("StyleBoxTexture_g25rl")
 ok_button_text = "Dołącz"
 script = ExtResource("2_45cec")
 
@@ -25,10 +87,10 @@ anchor_left = 0.5
 anchor_top = 0.24900001
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -133.0
-offset_top = -23.655
-offset_right = 133.0
-offset_bottom = 8.5
+offset_left = -109.0
+offset_top = -8.370003
+offset_right = 109.0
+offset_bottom = 10.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4

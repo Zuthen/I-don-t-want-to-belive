@@ -1,17 +1,26 @@
 [gd_scene format=3 uid="uid://chwvx8p2rsobe"]
 
-[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="1_yk654"]
+[ext_resource type="Theme" uid="uid://bckcpiqmd24lp" path="res://scenes/ui/popup.tres" id="1_2xp6d"]
+[ext_resource type="Texture2D" uid="uid://bq5ok1etalft8" path="res://assets/ui/panel_glass.png" id="2_5mr78"]
 [ext_resource type="Script" uid="uid://dli5303skmeu" path="res://scenes/ui/error_dialog.gd" id="2_xdgfp"]
 
-[sub_resource type="Theme" id="Theme_8io6i"]
-default_font = ExtResource("1_yk654")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_atmx4"]
+texture = ExtResource("2_5mr78")
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
 
 [node name="ErrorDialog" type="AcceptDialog" unique_id=200765431]
+gui_snap_controls_to_pixels = false
 oversampling_override = 1.0
 title = "Niepowodzenie"
 position = Vector2i(0, 36)
-size = Vector2i(421, 100)
+size = Vector2i(629, 112)
 visible = true
-theme = SubResource("Theme_8io6i")
+content_scale_mode = 2
+content_scale_stretch = 1
+theme = ExtResource("1_2xp6d")
+theme_override_styles/panel = SubResource("StyleBoxTexture_atmx4")
 dialog_text = "Pokój jest już pełen! Spróbuj gry losowej."
 script = ExtResource("2_xdgfp")
