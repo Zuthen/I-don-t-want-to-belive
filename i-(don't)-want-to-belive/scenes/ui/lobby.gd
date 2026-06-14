@@ -112,7 +112,7 @@ func _set_game_data():
 		match_id_label.text = "ID meczu: " + str(net_match_id)
 
 		var room_name = NakamaNetworkManager.match_name
-		room_name_label.text = "Nazwa pokoju: " + str(room_name)
+		room_name_label.text = "Kod pokoju: " + str(room_name)
 
 		print("[Lobby] Wyświetlam dane w UI! ID: ", net_match_id, " | Kod: ", room_name)
 
@@ -209,7 +209,7 @@ func _start_game():
 func _copy_room_name_to_clipboard():
 	if room_name_label and room_name_label.text != "":
 		var room_name = room_name_label.text
-		var clean_text = room_name.replace("Nazwa pokoju: ", "").strip_edges()
+		var clean_text = room_name.replace("Kod pokoju: ", "").strip_edges()
 		DisplayServer.clipboard_set(clean_text)
 		tooltip.set_deferred("visible", true)
 		var tooltip_timer = Timer.new()
