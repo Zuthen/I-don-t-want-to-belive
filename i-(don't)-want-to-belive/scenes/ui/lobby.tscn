@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://j1td5xtbpfc1" path="res://scenes/ui/lobby/skin_slider.tscn" id="6_cyxd6"]
 [ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="8_24obi"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="9_cyxd6"]
-[ext_resource type="Texture2D" uid="uid://bxvc74wqdpsq3" path="res://assets/ui/exitRight.png" id="11_cyxd6"]
+[ext_resource type="Texture2D" uid="uid://dshxw3x2dr2n6" path="res://assets/ui/share1.png" id="9_vfpwc"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bthuv"]
 font = ExtResource("1_5t5el")
@@ -166,12 +166,12 @@ custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture_normal = ExtResource("11_cyxd6")
-texture_pressed = ExtResource("11_cyxd6")
-texture_hover = ExtResource("11_cyxd6")
-texture_focused = ExtResource("11_cyxd6")
+texture_normal = ExtResource("9_vfpwc")
+texture_pressed = ExtResource("9_vfpwc")
+texture_hover = ExtResource("9_vfpwc")
+texture_focused = ExtResource("9_vfpwc")
 ignore_texture_size = true
-stretch_mode = 3
+stretch_mode = 5
 
 [node name="Tooltip" type="PanelContainer" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton" unique_id=1097731640]
 layout_mode = 0

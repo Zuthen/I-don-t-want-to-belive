@@ -32,6 +32,7 @@ NakamaNetworkManager="*uid://d1jgj42tmgii0"
 GameManager="*uid://4qkaicl8hudn"
 BackgroundMusic="*uid://dlhqicat4ktt6"
 Sounds="*uid://ccwmjxstlg3jv"
+CursorManager="*uid://ccgain5nd076f"
 
 [debug]
 
@@ -43,7 +44,7 @@ gdscript/warnings/shadowed_variable_base_class=0
 window/size/viewport_width=820
 window/size/viewport_height=700
 window/stretch/mode="canvas_items"
-mouse_cursor/custom_image="uid://b0yplndm0ntqm"
+mouse_cursor/custom_image="uid://bi3igyqal7l73"
 
 [editor_plugins]
 
