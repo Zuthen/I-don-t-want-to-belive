@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://j1td5xtbpfc1"]
+
+[ext_resource type="Texture2D" uid="uid://bwbph3q6rnawr" path="res://assets/ui/keboard_buttons/backward.png" id="1_0fgly"]
+[ext_resource type="Script" uid="uid://dovcvijx3mq6t" path="res://scenes/ui/lobby/skin_slider.gd" id="1_crq7k"]
+[ext_resource type="Texture2D" uid="uid://degwao8o0rddq" path="res://assets/ui/keboard_buttons/forward.png" id="2_crq7k"]
+
+[node name="SkinSlider" type="HBoxContainer" unique_id=1955197006]
+script = ExtResource("1_crq7k")
+
+[node name="LeftButton" type="TextureButton" parent="." unique_id=1230051632]
+modulate = Color(0.117, 0.27689996, 0.65, 1)
+layout_mode = 2
+texture_normal = ExtResource("1_0fgly")
+
+[node name="UfoPreview" type="TextureRect" parent="." unique_id=990035567]
+layout_mode = 2
+expand_mode = 3
+
+[node name="RightButton" type="TextureButton" parent="." unique_id=1445537742]
+modulate = Color(0.117, 0.27689996, 0.65, 1)
+layout_mode = 2
+texture_normal = ExtResource("2_crq7k")

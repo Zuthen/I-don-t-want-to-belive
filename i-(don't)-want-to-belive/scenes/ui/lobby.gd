@@ -2,10 +2,6 @@ extends Control
 
 @onready var faction_warning = $MarginContainer/HBoxContainer/VBoxContainer/FactionWarning
 @onready var factions = $MarginContainer/HBoxContainer/VBoxContainer/Factions
-@onready var left_button = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider/LeftButton
-@onready var ufo_preview = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider/UfoPreview
-@onready var right_button = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider/RightButton
-@onready var ufo_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider
 @onready var about_role = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/AboutRole
 @onready var match_id_label = $MarginContainer/MatchId
 @onready var room_name_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/RoomName
@@ -16,13 +12,25 @@ extends Control
 @onready var host_label = $MarginContainer/HBoxContainer/VBoxContainer/HostLabel
 @onready var copy_button = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton
 @onready var tooltip = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton/Tooltip
+@onready var ufo_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider
+@onready var skeptic_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/SkepticSkinSlider
 
-var current_skin_index: int = 0
-var skins_count: int
+var ufo_skin_index: int = 0
+var skeptic_skin_index: int = 0
 var role_idx = 1
 var players: = 0
 var players_requests: Array[GameManager.Preferences] = []
 var ready_players_counter: int = 0
+var skeptic_skins: Array[Texture2D] = [
+	preload("uid://dhsp46crp15wo"),
+	preload("uid://difqg4xp0cai7"),
+	preload("uid://cpngrw26iagtq"),
+	preload("uid://m0lvo0ynihlo"),
+	preload("uid://bonb0l27pbhxn"),
+	preload("uid://dia4fsapfv33w"),
+]
+var skeptic_skin_count = skeptic_skins.size()
+var ufo_skins_count = UfosTextures.ufo_textures.size()
 
 signal all_players_ready
 
@@ -32,20 +40,24 @@ func _ready():
 		return
 	if multiplayer.multiplayer_peer == null:
 		await get_tree().process_frame
+	_set_sliders()
+	_adjust_skins_visibility(role_idx)
 	_set_host_label()
 	_set_players_ready(ready_players_counter)
 	_update_players_counter()
 	_set_game_data()
 	await _connect()
-	skins_count = UfosTextures.ufo_textures.size()
 	about_role.add_theme_constant_override("line_separation", 10)
 	await get_tree().process_frame
 
 	_set_warning_text(role_idx)
-	_set_ufo_skins()
-	_adjust_ufo_skins_visibility(role_idx)
 	_set_role_info()
 	_connect_signals()
+
+
+func _set_sliders():
+	ufo_skin_slider.init_slider(_ufo_skins(), ufo_skin_index)
+	skeptic_skin_slider.init_slider(skeptic_skins, skeptic_skin_index)
 
 
 func _connect_signals():
@@ -53,8 +65,8 @@ func _connect_signals():
 	confirm_button.pressed.connect(_on_preferences_set)
 	copy_button.pressed.connect(_copy_room_name_to_clipboard)
 	factions.item_selected.connect(_set_warning_text)
-	left_button.pressed.connect(_set_previous_skin)
-	right_button.pressed.connect(_set_next_skin)
+	ufo_skin_slider.skin_index_changed.connect(func(index): ufo_skin_index = index)
+	skeptic_skin_slider.skin_index_changed.connect(func(index): skeptic_skin_index = index)
 
 	var main_loop = Engine.get_main_loop() as SceneTree
 	if main_loop and main_loop.get_multiplayer():
@@ -119,34 +131,16 @@ func _set_warning_text(index: int = 0):
 		faction_warning.text = "Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz ufokiem"
 	elif index == 1:
 		faction_warning.text = "Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz sceptykiem"
-	_adjust_ufo_skins_visibility(index)
+	_adjust_skins_visibility(index)
 	_set_role_info()
 
 
-func _set_ufo_skins():
-	if skins_count > 0:
-		var texture = UfosTextures.ufo_textures[current_skin_index].ship
-		ufo_preview.texture = texture
-
-
-func _set_previous_skin():
-	current_skin_index -= 1
-	if current_skin_index < 0:
-		current_skin_index = skins_count - 1
-	_set_ufo_skins()
-
-
-func _set_next_skin():
-	current_skin_index += 1
-	if current_skin_index >= skins_count:
-		current_skin_index = 0
-	_set_ufo_skins()
-
-
-func _adjust_ufo_skins_visibility(value):
+func _adjust_skins_visibility(value):
 	if value == 1:
 		ufo_skin_slider.set_deferred("visible", true)
-	else:
+		skeptic_skin_slider.set_deferred("visible", false)
+	elif value == 0:
+		skeptic_skin_slider.set_deferred("visible", true)
 		ufo_skin_slider.set_deferred("visible", false)
 
 
@@ -161,19 +155,18 @@ func _on_preferences_set():
 
 	if role_idx == 0:
 		type = "skeptic"
-		_server_request_preferences.rpc_id(1, sender_id, type, current_skin_index)
+		_server_request_preferences.rpc_id(1, sender_id, type, skeptic_skin_index)
 	elif role_idx == 1:
 		type = "ufo"
-		_server_request_preferences.rpc_id(1, sender_id, type, current_skin_index)
+		_server_request_preferences.rpc_id(1, sender_id, type, ufo_skin_index)
 
 
 @rpc("any_peer", "call_local", "reliable")
-func _server_request_preferences(sender_id: int, type: String, _skin_idx: int = 0):
+func _server_request_preferences(sender_id: int, type: String, skin_idx: int):
 	var preferences = GameManager.Preferences.new()
 	preferences.peer_id = sender_id
 	preferences.type = type
-	if _skin_idx:
-		preferences._skin_idx = _skin_idx
+	preferences.skin_idx = skin_idx
 	players_requests.append(preferences)
 
 	ready_players_counter += 1
@@ -224,6 +217,13 @@ func _copy_room_name_to_clipboard():
 		add_child(tooltip_timer)
 		tooltip_timer.timeout.connect(func(): tooltip.set_deferred("visible", false))
 		tooltip_timer.start(1)
+
+
+func _ufo_skins():
+	var ufo_skins: Array[Texture2D] = []
+	for i in range(ufo_skins_count):
+		ufo_skins.append(UfosTextures.ufo_textures[i].ship)
+	return ufo_skins
 
 
 func _set_role_info():

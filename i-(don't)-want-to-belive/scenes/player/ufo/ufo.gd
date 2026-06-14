@@ -16,7 +16,7 @@ var laser_shoot_blocked := false
 var capture_blocked := false
 var capture_processing := false
 var game: Node2D
-var ufo_idx: int = 3
+var skin_idx: int = 3
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
 const capture_timeout_seconds: float = 1.0
@@ -49,8 +49,8 @@ func _ready():
 
 	await get_tree().process_frame
 
-	if UfosTextures.ufo_textures.size() > ufo_idx and ufo_idx >= 0:
-		ufo_sprites = UfosTextures.ufo_textures[ufo_idx]
+	if UfosTextures.ufo_textures.size() > skin_idx and skin_idx >= 0:
+		ufo_sprites = UfosTextures.ufo_textures[skin_idx]
 		if ship and ufo_sprites and "ship" in ufo_sprites:
 			ship.texture = ufo_sprites.ship
 
@@ -73,7 +73,7 @@ func _capture():
 	movement_blocked = true
 	var animation = animation_player.get_animation("capture")
 	var animation_time = animation.length
-	animation.track_set_key_value(0, 0, UfosTextures.ufo_textures[ufo_idx].laser_pointing)
+	animation.track_set_key_value(0, 0, UfosTextures.ufo_textures[skin_idx].laser_pointing)
 	animation_player.play("capture")
 	captured.emit(capture_timeout_seconds)
 	capture_area_collision.disabled = false
@@ -105,11 +105,11 @@ func _check_capture_result():
 
 	if game.paths.has(my_position):
 		var pixel_position = tile_map.map_to_local(my_position)
-		_on_capture_failed.rpc(ufo_idx, pixel_position)
+		_on_capture_failed.rpc(skin_idx, pixel_position)
 	else:
 		var nearest_tile = find_nearest_path(global_position)
 		var nearest_pixel_path = tile_map.map_to_local(nearest_tile)
-		_on_capture_failed.rpc(ufo_idx, nearest_pixel_path)
+		_on_capture_failed.rpc(skin_idx, nearest_pixel_path)
 
 
 func find_nearest_path(pos_pixels: Vector2) -> Vector2i:
@@ -189,7 +189,7 @@ func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 
 	var crashed_ufo_spawn_data = {
 		"type": "wreck",
-		"ufo_idx": ufo_index,
+		"skin_idx": ufo_index,
 		"spawn_position": game.tile_map_layer.local_to_map(target_global_position),
 		"peer_id": sender_id,
 	}
@@ -211,7 +211,7 @@ func server_request_capture(node_path: NodePath, position: Vector2i):
 		return
 	var player = get_node_or_null(node_path)
 	if player and player is Skeptic:
-		player.trigger_captured_effects_network.rpc(ufo_idx, position)
+		player.trigger_captured_effects_network.rpc(skin_idx, position)
 
 
 func fire_laser():
@@ -230,7 +230,7 @@ func server_spawn_laser(position: Vector2):
 		var laser_data = {
 			"type": "laser",
 			"global_position": position,
-			"color_idx": ufo_idx,
+			"color_idx": skin_idx,
 		}
 		game.multiplayer_spawner.spawn(laser_data)
 

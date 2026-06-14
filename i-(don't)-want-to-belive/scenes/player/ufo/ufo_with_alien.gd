@@ -24,9 +24,8 @@ signal ufo_crashed()
 	set(value):
 		ufo_index_sync = value
 		if alien:
-			alien.ufo_idx = value
+			alien.skin_idx = value
 
-# POPRAWKA 1: Bezpieczne, odroczone przypisywanie autorytetu i grup lokalnych
 var input_multiplayer_authority: int:
 	set(value):
 		input_multiplayer_authority = value
@@ -69,7 +68,7 @@ func _ready():
 	if alien.has_node("Coordinates"):
 		alien.get_node("Coordinates").visible = false
 
-	alien.ufo_idx = ufo_index_sync
+	alien.skin_idx = ufo_index_sync
 
 	if input_multiplayer_authority != 0:
 		_deferred_set_network_authority(input_multiplayer_authority)
@@ -128,7 +127,6 @@ func change_state(new_state: State, ufo_index: int):
 	ufo_index_sync = ufo_index
 
 	if new_state == State.UFO:
-		# Powrót do grupy ufos, jeśli to konieczne
 		if is_in_group("aliens"):
 			remove_from_group("aliens")
 		if not is_in_group("ufos"):
@@ -164,7 +162,7 @@ func change_state(new_state: State, ufo_index: int):
 		alien.visible = true
 		alien.set_process(true)
 
-		alien.ufo_idx = ufo_index
+		alien.skin_idx = ufo_index
 		if alien.has_method("_apply_skin_textures"):
 			alien._apply_skin_textures()
 
