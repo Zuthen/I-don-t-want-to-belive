@@ -9,6 +9,7 @@ class_name UserInterface
 @onready var faction_label = $WinInfo/FactionLabel
 @onready var belive_points_counter_background = $Belive_Points_Counter_Background
 @onready var belive_points_counter = $Belive_Points_Counter
+@onready var walkie_talkie_message = $WalkieTalkieMessage
 
 var ufos_sprites
 var hit_points: int = 0
@@ -22,6 +23,7 @@ takie latają!"
 
 
 func _ready():
+	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
 	win_info.visible = false
 
@@ -110,3 +112,20 @@ func _on_belive_points_changed(amount):
 		hit_points = ufos_sprites.size()
 	for i in range(hit_points):
 		ufos_sprites[i].visible = (i < hit_points)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func receive_walkie_talkie_message(msg_content: String):
+	if not is_instance_valid(walkie_talkie_message):
+		return
+
+	var sender_id = multiplayer.get_remote_sender_id()
+	var my_id = multiplayer.get_unique_id()
+
+	var label_type = ""
+	if sender_id == my_id:
+		label_type = "Nadana wiadomość:"
+	else:
+		label_type = "Odebrana wiadomość:"
+
+	walkie_talkie_message.setup(label_type, msg_content)

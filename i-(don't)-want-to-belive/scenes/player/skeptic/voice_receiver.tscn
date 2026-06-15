@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bddac54674vhl"]
 
 [ext_resource type="Script" uid="uid://k275bs1lylsc" path="res://scenes/player/skeptic/voice_receiver.gd" id="1_lv48i"]
+[ext_resource type="PackedScene" uid="uid://d03xota05sdvx" path="res://scenes/emotes/emote_placeholder.tscn" id="2_6v7g7"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_fm80t"]
 radius = 70.0
@@ -12,3 +13,5 @@ script = ExtResource("1_lv48i")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1571217175]
 shape = SubResource("CircleShape2D_fm80t")
+
+[node name="EmotePlaceholder" parent="." unique_id=1410910992 instance=ExtResource("2_6v7g7")]

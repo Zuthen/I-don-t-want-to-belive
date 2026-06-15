@@ -79,9 +79,6 @@
 [ext_resource type="Texture2D" uid="uid://dqs6d1iqarutx" path="res://assets/characters/green/tile_0079.png" id="74_b6hkh"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_gsmgp"]
-properties/0/path = NodePath(".:global_position")
-properties/0/spawn = true
-properties/0/replication_mode = 2
 
 [sub_resource type="Animation" id="Animation_yj68g"]
 length = 0.001

@@ -14,7 +14,6 @@ extends Player
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
-var walkie_talkie_message_scene: PackedScene = preload("uid://tgygvek1j0wa")
 var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
 var ufo_type_camera_scene: PackedScene = preload("uid://cba40e72olvj2")
 
@@ -73,33 +72,40 @@ func _ready():
 	if is_multiplayer_authority() and has_node("Camera2D"):
 		set_camera(camera)
 
-	await get_tree().process_frame
-	_update_visibility_for_local_player()
 	if has_node("MultiplayerSynchronizer"):
-		var synchronizer = $MultiplayerSynchronizer
+		var pos_sync = $MultiplayerSynchronizer
 
-		synchronizer.set_visibility_for(0, false)
+		pos_sync.public_visibility = true
+		pos_sync.set_multiplayer_authority(id if id != 0 else get_multiplayer_authority())
 
+		var config = SceneReplicationConfig.new()
+		config.add_property(NodePath(".:global_position"))
+		config.property_set_replication_mode(NodePath(".:global_position"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
+		pos_sync.replication_config = config
+
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	_update_visibility_for_local_player()
+
+	if has_node("MultiplayerSynchronizer") and has_method("update_synchronizer_visibility_by_role"):
 		update_synchronizer_visibility_by_role()
 
 
 func _update_visibility_for_local_player():
 	if not is_inside_tree():
 		return
-	var my_local_hero: Node = null
-	var all_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 
-	for p in all_players:
-		if p.is_multiplayer_authority():
-			my_local_hero = p
-			break
+	var my_unique_id = multiplayer.get_unique_id()
 
-	if is_multiplayer_authority():
+	if id == my_unique_id or is_multiplayer_authority():
 		visible = true
 		sprite_2d.visible = true
 		return
 
-	if my_local_hero and my_local_hero.is_in_group("ufos"):
+	var my_role = MultiplayerFeatures.get_local_player_role()
+
+	if my_role == Player.Role.UFO:
 		visible = false
 		sprite_2d.visible = false
 	else:
@@ -158,20 +164,17 @@ func walkie_talkie_message():
 		message = coordinates.letter + str(coordinates.number) if randi() % 100 < 40 else coordinates.letter
 
 	walkie_talkie_message_sent.emit(walkie_talkie_timeout_seconds)
-	send_walkie_talkie_message.rpc(message)
+	MultiplayerFeatures.broadcast_walkie_talkie.rpc(message)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func send_walkie_talkie_message(message: String):
-	var ui = get_tree().current_scene.get_node_or_null("Coordinates")
+	var ui = get_node_or_null("UserInterface")
 	if not ui:
-		ui = get_tree().root.find_child("Coordinates", true, false)
+		ui = get_tree().root.find_child("UserInterface", true, false)
 
-	var walkie_talkie_message = walkie_talkie_message_scene.instantiate()
-	if is_multiplayer_authority():
-		walkie_talkie_message.message = "Nadana wiadomość:"
-	walkie_talkie_message.coordinates_text = message
-	ui.add_child(walkie_talkie_message)
+	if is_instance_valid(ui) and ui.has_method("receive_walkie_talkie_message"):
+		ui.receive_walkie_talkie_message(message)
 
 
 func _reset_voice_emmitter():
