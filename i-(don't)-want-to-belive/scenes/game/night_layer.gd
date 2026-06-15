@@ -1,7 +1,7 @@
 extends TileMapLayer
 
 @export var buildings_layer: TileMapLayer
-@export var vision_radius: int = 1
+@export var vision_radius: int = 6
 
 var black_tile_coords: Vector2i = Vector2i(9, 1)
 
@@ -24,12 +24,9 @@ func _ready():
 		return
 	var my_network_id = multiplayer.get_unique_id()
 
-	print("[Mgła] Moje sieciowe ID to: ", my_network_id)
-
 	for pref in GameManager.players_selections:
 		if pref.peer_id == my_network_id:
 			my_lobby_role = pref.type.to_lower()
-			print("[Mgła] Znaleziono moją rolę w bazie: ", my_lobby_role)
 			break
 
 	await get_tree().process_frame
@@ -49,9 +46,6 @@ func _process(_delta):
 
 	var is_alien = local_player.is_in_group("aliens")
 	var is_ufo = local_player.is_in_group("ufos")
-
-	if multiplayer.get_unique_id() == 1:
-		print("[DEBUG HOST] Stan: is_ufo=", is_ufo, " | is_alien=", is_alien, " | Nazwa_Wezla=", local_player.name)
 
 	if is_ufo and not is_alien:
 		if not ufo_view_setup:
@@ -95,42 +89,27 @@ func initialize_fog():
 
 func update_players_visibility(local_player: Node2D):
 	var my_network_id = multiplayer.get_unique_id()
-	if local_player.is_in_group("ufos") and not local_player.is_in_group("aliens"):
-		var ground_entities = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens") + get_tree().get_nodes_in_group("wrecks")
-		for entity in ground_entities:
-			entity.visible = false
-
-		var ufo_players = get_tree().get_nodes_in_group("ufos")
-		for ufo in ufo_players:
-			ufo.visible = true
-		return
 
 	var all_ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 	var local_tile = buildings_layer.local_to_map(local_player.global_position)
 
 	for player in all_ground_players:
-		if player.get_multiplayer_authority() == my_network_id:
+		var player_net_id = player.id if "id" in player else player.get_multiplayer_authority()
+		var player_tile = buildings_layer.local_to_map(player.global_position)
+
+		if player_net_id == my_network_id or player.is_multiplayer_authority():
 			player.visible = true
 			continue
 
-		var player_tile = buildings_layer.local_to_map(player.global_position)
 		var distance_in_tiles = local_tile.distance_to(player_tile)
 		var fog_tile_alternative = get_cell_alternative_tile(player_tile)
 
-		if fog_tile_alternative != TILE_DEEP_NIGHT and distance_in_tiles <= vision_radius:
+		var is_visible_by_fog = (fog_tile_alternative != TILE_DEEP_NIGHT and distance_in_tiles <= vision_radius)
+
+		if is_visible_by_fog:
 			player.visible = true
 		else:
 			player.visible = false
-	var all_wrecks = get_tree().get_nodes_in_group("wrecks")
-	for wreck in all_wrecks:
-		var wreck_tile = buildings_layer.local_to_map(wreck.global_position)
-		var distance_to_wreck = local_tile.distance_to(wreck_tile)
-		var fog_at_wreck = get_cell_alternative_tile(wreck_tile)
-
-		if fog_at_wreck != TILE_DEEP_NIGHT and distance_to_wreck <= vision_radius:
-			wreck.visible = true
-		else:
-			wreck.visible = false
 
 
 func setup_ufo_view():
@@ -172,11 +151,15 @@ func get_local_player() -> Node2D:
 	for node in all_actual_players:
 		if not node is Node2D:
 			continue
-		if node.get_multiplayer_authority() == my_id:
+
+		if "id" in node and node.id == my_id:
 			return node
 
-		if node.get_parent() and node.get_parent().get_multiplayer_authority() == my_id:
-			if node.get_parent().is_in_group("ufos") or node.get_parent().is_in_group("aliens") or node.get_parent().is_in_group("skeptics"):
-				return node.get_parent() as Node2D
+		if node.name == str(my_id):
+			return node
+
+	var local_group = get_tree().get_nodes_in_group("local_player")
+	if not local_group.is_empty() and local_group[0] is Node2D:
+		return local_group[0]
 
 	return null

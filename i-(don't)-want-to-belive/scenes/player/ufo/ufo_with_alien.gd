@@ -40,14 +40,14 @@ func _deferred_set_network_authority(value: int):
 	set_multiplayer_authority(value)
 
 	if has_node("PlayerInputSynchronizer"):
-		get_node("PlayerInputSynchronizer").set_multiplayer_authority(value)
+		var sync_node = get_node("PlayerInputSynchronizer")
+		sync_node.public_visibility = false
+		sync_node.set_deferred("multiplayer_authority", value)
+		get_tree().process_frame.connect(func(): sync_node.public_visibility = true, CONNECT_ONE_SHOT)
 
-	# Synchronizujemy ogólny synchronizator pozycji, jeśli istnieje na scenie
 	if has_node("MultiplayerSynchronizer"):
-		$MultiplayerSynchronizer.set_multiplayer_authority(value)
+		$MultiplayerSynchronizer.set_deferred("multiplayer_authority", value)
 
-	# KLUCZOWA POPRAWKA SIECIOWA: Jeśli to jest nasze sieciowe ID,
-	# dopisujemy się lokalnie do grupy ufos, aby skrypt mgły od razu nas widział!
 	if value == multiplayer.get_unique_id():
 		if not is_in_group("ufos"):
 			add_to_group("ufos")
@@ -188,10 +188,8 @@ func change_state(new_state: State, ufo_index: int):
 
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
-		# POPRAWKA 2: Bezpieczne czyszczenie zapamiętanej pozycji mgły
 		var fog_layer = game.tile_map_layer
 		if fog_layer:
-			# Czyścimy bufor, żeby mgła została przeliczona na nowo w klatce _process()
 			if "last_player_tile" in fog_layer:
 				fog_layer.last_player_tile = Vector2i(-999, -999)
 			if "ufo_view_setup" in fog_layer:

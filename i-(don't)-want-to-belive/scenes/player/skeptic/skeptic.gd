@@ -72,33 +72,40 @@ func _ready():
 	if is_multiplayer_authority() and has_node("Camera2D"):
 		set_camera(camera)
 
-	await get_tree().process_frame
-	_update_visibility_for_local_player()
 	if has_node("MultiplayerSynchronizer"):
-		var synchronizer = $MultiplayerSynchronizer
+		var pos_sync = $MultiplayerSynchronizer
 
-		synchronizer.set_visibility_for(0, false)
+		pos_sync.public_visibility = true
+		pos_sync.set_multiplayer_authority(id if id != 0 else get_multiplayer_authority())
 
+		var config = SceneReplicationConfig.new()
+		config.add_property(NodePath(".:global_position"))
+		config.property_set_replication_mode(NodePath(".:global_position"), SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
+		pos_sync.replication_config = config
+
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	_update_visibility_for_local_player()
+
+	if has_node("MultiplayerSynchronizer") and has_method("update_synchronizer_visibility_by_role"):
 		update_synchronizer_visibility_by_role()
 
 
 func _update_visibility_for_local_player():
 	if not is_inside_tree():
 		return
-	var my_local_hero: Node = null
-	var all_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 
-	for p in all_players:
-		if p.is_multiplayer_authority():
-			my_local_hero = p
-			break
+	var my_unique_id = multiplayer.get_unique_id()
 
-	if is_multiplayer_authority():
+	if id == my_unique_id or is_multiplayer_authority():
 		visible = true
 		sprite_2d.visible = true
 		return
 
-	if my_local_hero and my_local_hero.is_in_group("ufos"):
+	var my_role = MultiplayerFeatures.get_local_player_role()
+
+	if my_role == Player.Role.UFO:
 		visible = false
 		sprite_2d.visible = false
 	else:

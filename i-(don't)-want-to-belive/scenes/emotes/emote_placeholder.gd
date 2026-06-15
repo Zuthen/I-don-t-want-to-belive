@@ -16,7 +16,7 @@ func setup(player_role: Player.Role, accepted_roles: Array[Player.Role], icon: T
 	display_icon.rpc(icon, player_role, warning)
 
 
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func display_icon(base_icon: Texture2D, player_role: Player.Role, warning: bool):
 	var local_player = get_local_character()
 	if local_player == null:

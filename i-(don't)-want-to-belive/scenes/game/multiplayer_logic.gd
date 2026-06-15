@@ -9,6 +9,9 @@ var local_ui: UserInterface
 
 
 func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
+	if not multiplayer_spawner.spawned.is_connected(_on_network_node_spawned):
+		multiplayer_spawner.spawned.connect(_on_network_node_spawned)
+
 	multiplayer_spawner.spawn_function = func(data: Dictionary):
 		if not data.has("type"):
 			return null
@@ -41,7 +44,8 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				return null
 
 		if data.has("spawn_position") and type != "laser":
-			node.position = tile_map.map_to_local(data.spawn_position)
+			var local_pos = tile_map.map_to_local(data.spawn_position)
+			node.tree_entered.connect(func(): node.global_position = local_pos, CONNECT_ONE_SHOT)
 
 		match type:
 			"wreck":
@@ -64,16 +68,32 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				if data.has("skin_idx"):
 					_apply_skin(node, data.skin_idx)
 
-		var synchronizer_path = "PlayerInput" if node.has_node("PlayerInput") else "PlayerInputSynchronizer"
-		if node.has_node(synchronizer_path):
-			node.get_node(synchronizer_path).set_multiplayer_authority(data.peer_id)
+		assign_to_group(data, node)
 
-		if node.get_multiplayer_authority() == multiplayer.get_unique_id():
+		if data.peer_id == multiplayer.get_unique_id():
 			get_tree().call_group("local_player", "remove_from_group", "local_player")
 			node.add_to_group("local_player")
 
-		assign_to_group(data, node)
+		node.set_multiplayer_authority(data.peer_id)
+
+		var sync_node = node.get_node_or_null("PlayerInputSynchronizer")
+		if is_instance_valid(sync_node):
+			sync_node.set_multiplayer_authority(data.peer_id)
+
+		var pos_sync = node.get_node_or_null("MultiplayerSynchronizer")
+		if is_instance_valid(pos_sync):
+			pos_sync.set_multiplayer_authority(data.peer_id)
+
+		if multiplayer.is_server():
+			call_deferred("_force_refresh_visibility")
+
 		return node
+
+
+func _force_refresh_visibility():
+	get_tree().call_group("skeptics", "_update_visibility_for_local_player")
+	get_tree().call_group("ufos", "_update_visibility_for_local_player")
+	get_tree().call_group("aliens", "_update_visibility_for_local_player")
 
 
 func _apply_skin(node: Node, skin_idx: int):
@@ -115,3 +135,16 @@ func broadcast_walkie_talkie(message_content: String):
 
 		if is_instance_valid(local_ui.walkie_talkie_message):
 			local_ui.walkie_talkie_message.setup(label_type, message_content)
+
+
+func _on_network_node_spawned(node: Node):
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_force_refresh_visibility()
+
+
+func get_local_player_role() -> Player.Role:
+	var local_hero = get_local_player()
+	if is_instance_valid(local_hero) and "role" in local_hero:
+		return local_hero.role
+	return Player.Role.SKEPTIC
