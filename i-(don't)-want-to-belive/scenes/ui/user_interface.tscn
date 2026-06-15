@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://d0oookm6lwggb" path="res://assets/ui/button_rectangle_flat.png" id="1_284y0"]
 [ext_resource type="Script" uid="uid://bdititb3yf3rj" path="res://scenes/ui/user_interface.gd" id="1_rcgkl"]
-[ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="3_737vb"]
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="3_737vb"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="5_vo76m"]
 [ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="6_xg44s"]
 [ext_resource type="Texture2D" uid="uid://dqsvg26olobps" path="res://assets/characters/ufos/shipYellow.png" id="7_fhs8v"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="8_fhs8v"]
 [ext_resource type="Texture2D" uid="uid://d25q2or8yvuv7" path="res://assets/ui/keboard_buttons/keyboard_e.png" id="8_kw8g8"]
 [ext_resource type="Texture2D" uid="uid://cbur3mmig4oxr" path="res://assets/ui/keboard_buttons/keyboard_e_outline.png" id="9_737vb"]
+[ext_resource type="PackedScene" uid="uid://tgygvek1j0wa" path="res://scenes/ui/walkie_talkie_message.tscn" id="11_y3ul1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
 font = ExtResource("3_737vb")
@@ -144,3 +145,7 @@ layout_mode = 2
 layout_mode = 2
 icon_active_texture = ExtResource("8_kw8g8")
 icon_not_active_texture = ExtResource("9_737vb")
+
+[node name="WalkieTalkieMessage" parent="." unique_id=1820157147 instance=ExtResource("11_y3ul1")]
+visible = false
+layout_mode = 0

@@ -5,6 +5,7 @@ var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://m52fuwcrlo2k")
 var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
 var laser_scene = preload("uid://dnsiqidfpctrc")
+var local_ui: UserInterface
 
 
 func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
@@ -102,3 +103,15 @@ func get_local_player() -> Player:
 		if player is Player and player.id == my_id:
 			return player
 	return null
+
+
+@rpc("any_peer", "call_local", "reliable")
+func broadcast_walkie_talkie(message_content: String):
+	if is_instance_valid(local_ui):
+		var sender_id = multiplayer.get_remote_sender_id()
+		var my_id = multiplayer.get_unique_id()
+
+		var label_type = "Nadana wiadomość:" if sender_id == my_id else "Odebrana wiadomość:"
+
+		if is_instance_valid(local_ui.walkie_talkie_message):
+			local_ui.walkie_talkie_message.setup(label_type, message_content)

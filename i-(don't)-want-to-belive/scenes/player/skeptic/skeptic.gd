@@ -14,7 +14,6 @@ extends Player
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
-var walkie_talkie_message_scene: PackedScene = preload("uid://tgygvek1j0wa")
 var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
 var ufo_type_camera_scene: PackedScene = preload("uid://cba40e72olvj2")
 
@@ -158,20 +157,17 @@ func walkie_talkie_message():
 		message = coordinates.letter + str(coordinates.number) if randi() % 100 < 40 else coordinates.letter
 
 	walkie_talkie_message_sent.emit(walkie_talkie_timeout_seconds)
-	send_walkie_talkie_message.rpc(message)
+	MultiplayerFeatures.broadcast_walkie_talkie.rpc(message)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func send_walkie_talkie_message(message: String):
-	var ui = get_tree().current_scene.get_node_or_null("Coordinates")
+	var ui = get_node_or_null("UserInterface")
 	if not ui:
-		ui = get_tree().root.find_child("Coordinates", true, false)
+		ui = get_tree().root.find_child("UserInterface", true, false)
 
-	var walkie_talkie_message = walkie_talkie_message_scene.instantiate()
-	if is_multiplayer_authority():
-		walkie_talkie_message.message = "Nadana wiadomość:"
-	walkie_talkie_message.coordinates_text = message
-	ui.add_child(walkie_talkie_message)
+	if is_instance_valid(ui) and ui.has_method("receive_walkie_talkie_message"):
+		ui.receive_walkie_talkie_message(message)
 
 
 func _reset_voice_emmitter():

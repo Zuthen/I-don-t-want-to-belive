@@ -87,3 +87,13 @@ func update_synchronizer_visibility_by_role():
 		visible = true
 	else:
 		pass
+
+
+@rpc("any_peer", "call_local", "reliable")
+func receive_network_message(message: String):
+	var ui = get_node_or_null("UserInterface")
+	if is_instance_valid(ui) and ui.is_inside_tree():
+		var sender_id = multiplayer.get_remote_sender_id()
+		var my_id = multiplayer.get_unique_id()
+		var label_type = "Nadana wiadomość:" if sender_id == my_id else "Odebrana wiadomość:"
+		ui.walkie_talkie_message.setup(label_type, message)
