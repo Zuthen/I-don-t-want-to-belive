@@ -260,6 +260,7 @@ func test_as_ufo_i_cannot_see_skeptic_calls():
 
 
 func test_laser_seen_creates_icon_at_dialog_placement():
+	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	fake_game.add_child(mock_skeptic)
 
@@ -278,15 +279,29 @@ func test_laser_seen_creates_icon_at_dialog_placement():
 
 	mock_skeptic.global_position = Vector2(100, 200)
 
+	await wait_physics_frames(1)
+
+	var initial_icons = find_all_icons(get_tree().root)
+	var initial_count = initial_icons.size()
+
 	mock_skeptic._on_laser_seen()
 	await wait_physics_frames(2)
 
-	var icons = find_all_icons(get_tree().root)
-	assert_eq(icons.size(), 1)
+	var final_icons = find_all_icons(get_tree().root)
 
-	if icons.size() > 0:
-		var spawned_icon = icons[0] as Node2D
-		assert_eq(spawned_icon.scale, Vector2(1.0, 1.0))
+	assert_eq(final_icons.size(), initial_count + 1, "Po ujrzeniu lasera powinna pojawić się dokładnie jedna nowa ikona!")
+
+	var spawned_icon: Node2D = null
+	for icon in final_icons:
+		if not initial_icons.has(icon):
+			spawned_icon = icon as Node2D
+			break
+
+	if spawned_icon != null:
+		assert_eq(spawned_icon.scale, Vector2(1.0, 1.0), "Nowa ikona ma nieprawidłową skalę!")
+		assert_ne(spawned_icon.global_position, Vector2.ZERO, "Ikona lasera powinna mieć przypisaną pozycję na scenie!")
+	else:
+		fail_test("Nie udało się zidentyfikować nowo zespawnowanej ikony lasera!")
 
 
 func test_skeptic_receives_alien_voice_call():

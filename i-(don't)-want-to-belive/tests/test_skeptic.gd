@@ -63,7 +63,7 @@ func test_player_can_call_other_player():
 
 
 func test_player_can_t_call_outside_range_size():
-	# Arrange: Potrzebujemy dwóch sceptyków, aby sprawdzić, czy sygnał do nich NIE dotrze
+	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.id = 1
 	mock_skeptic.add_to_group("skeptics")
@@ -74,7 +74,7 @@ func test_player_can_t_call_outside_range_size():
 	other_skeptic.id = 2
 	other_skeptic.add_to_group("skeptics")
 	get_tree().root.add_child(other_skeptic)
-	# Ustawiamy drugiego sceptyka potężnie daleko
+
 	other_skeptic.global_position = Vector2(99999, 99999)
 
 	await wait_physics_frames(3)
@@ -83,7 +83,7 @@ func test_player_can_t_call_outside_range_size():
 	mock_skeptic.call_other_skeptic()
 	await wait_physics_frames(5)
 
-	# Assert: Sprawdzamy czy w całym silniku nie narodził się żaden IconPlaceholder
+	# Assert
 	var icons = find_all_icons_in_engine(get_tree().root)
 	assert_eq(icons.size(), 2)
 	for icon in icons:
@@ -93,19 +93,14 @@ func test_player_can_t_call_outside_range_size():
 func test_walkie_talkie_adds_message_to_ui_for_everyone():
 	await wait_physics_frames(2)
 
-	# Instancjonujemy Twój prawdziwy interfejs
-	# (Upewnij się, że ścieżka do Twojej sceny UI jest poprawna!)
 	var ui_scene = preload("uid://cjks5cw6xyieq")
 	var mock_ui = ui_scene.instantiate()
 	mock_ui.name = "UserInterface"
 	game.add_child(mock_ui)
 
-	# KLUCZOWE DLA TESTU: Wymuszamy autorytet sieciowy dla UI w środowisku offline,
-	# aby funkcje sprawdzające "multiplayer.get_unique_id()" przepuściły kod dalej
 	mock_ui.set_multiplayer_authority(1)
 	mock_ui.walkie_talkie_message.visible = false
 
-	# Tworzymy sceptyka i przypisujemy mu ID pasujące do autorytetu sieci (w GUT to zwykle 1)
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.id = 1
 	mock_skeptic.set_multiplayer_authority(1)
@@ -114,15 +109,11 @@ func test_walkie_talkie_adds_message_to_ui_for_everyone():
 
 	await wait_physics_frames(4)
 
-	# Rejestrujemy UI w Twoim skrypcie globalnym, dokładnie tak jak w grze!
-	# (Zakładam, że Twój Singleton nazywa się Multiplayer lub NetworkManager)
 	MultiplayerFeatures.local_ui = mock_ui
 
-	# Act: Wywołujemy bezpośrednio funkcję RPC, która ma zmienić stan UI
 	if mock_ui.has_method("receive_walkie_talkie_message"):
 		mock_ui.receive_walkie_talkie_message("C15")
 	else:
-		# Jeśli funkcja nadal jest w Skeptic.gd, wywołujemy ją przez Sceptyka:
 		mock_skeptic.send_walkie_talkie_message("C15")
 
 	await wait_physics_frames(5)
