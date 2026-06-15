@@ -9,20 +9,32 @@ var icon: Texture2D
 var role: Player.Role
 
 
-func setup(player_role: Player.Role, accepted_roles: Array[Player.Role], icon: Texture = texture):
+func setup(player_role: Player.Role, accepted_roles: Array[Player.Role], icon: Texture2D = texture):
 	role = player_role
-	var warning = randi() % 100 < 40
 	accepts_role = accepted_roles
-	display_icon.rpc(icon, player_role, warning)
+	var warning = randi() % 100 < 40
+
+	var icon_path: String = ""
+	if is_instance_valid(icon):
+		icon_path = icon.resource_path
+
+	display_icon.rpc(icon_path, player_role, warning, accepted_roles)
 
 
 @rpc("any_peer", "call_local", "reliable")
-func display_icon(base_icon: Texture2D, player_role: Player.Role, warning: bool):
+func display_icon(base_icon_path: String, player_role: Player.Role, warning: bool, net_accepted_roles: Array):
+	accepts_role = Array(net_accepted_roles, TYPE_INT, &"", null)
+	role = player_role
+
 	var local_player = get_local_character()
 	if local_player == null:
 		return
 
 	var local_role = local_player.role
+
+	var base_icon: Texture2D = texture
+	if base_icon_path != "":
+		base_icon = load(base_icon_path) as Texture2D
 
 	sprite_2d.texture = determine_local_texture(local_role, player_role, base_icon, warning)
 
@@ -30,6 +42,7 @@ func display_icon(base_icon: Texture2D, player_role: Player.Role, warning: bool)
 		sprite_2d.visible = false
 	else:
 		sprite_2d.visible = true
+		sprite_2d.scale = Vector2(1.5, 1.5)
 
 
 func determine_local_texture(local_role: Player.Role, target_role: Player.Role, base_icon: Texture2D, warning: bool) -> Texture2D:
