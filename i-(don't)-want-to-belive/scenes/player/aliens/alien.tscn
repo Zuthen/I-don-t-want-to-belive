@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bddac54674vhl" path="res://scenes/player/skeptic/voice_receiver.tscn" id="4_srrot"]
 [ext_resource type="Texture2D" uid="uid://c3i0c5yn8ys7w" path="res://assets/characters/aliens/character_beige_jump.png" id="4_u533k"]
 [ext_resource type="Texture2D" uid="uid://ionub6i75mfd" path="res://assets/characters/aliens/character_beige_duck.png" id="5_srrot"]
-[ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/coordinates.tscn" id="5_wcstr"]
+[ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/game_ui/coordinates.tscn" id="5_wcstr"]
 [ext_resource type="Texture2D" uid="uid://bld3bir5dwwkg" path="res://assets/characters/aliens/character_beige_walk_a.png" id="6_ib4rs"]
 [ext_resource type="Texture2D" uid="uid://clmkjcqyladey" path="res://assets/characters/aliens/character_beige_climb_a.png" id="6_wcstr"]
 [ext_resource type="Texture2D" uid="uid://b7st2ep8qp6uc" path="res://assets/characters/aliens/character_beige_climb_b.png" id="7_l3473"]

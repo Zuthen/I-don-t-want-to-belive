@@ -44,7 +44,7 @@
 [ext_resource type="Texture2D" uid="uid://brjb4hl32a271" path="res://assets/characters/old/tile_0187.png" id="25_tpucu"]
 [ext_resource type="Texture2D" uid="uid://bbqipggi3td43" path="res://assets/characters/male/tile_0484.png" id="26_2ktkh"]
 [ext_resource type="Texture2D" uid="uid://biualxbup38uh" path="res://assets/characters/green/tile_0025.png" id="26_uthkx"]
-[ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/coordinates.tscn" id="28_y0kdb"]
+[ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/game_ui/coordinates.tscn" id="28_y0kdb"]
 [ext_resource type="Texture2D" uid="uid://bx7qiq1v0l77g" path="res://assets/characters/engineer/tile_0321.png" id="31_0mk4g"]
 [ext_resource type="Texture2D" uid="uid://cttvw2au1ya4t" path="res://assets/characters/engineer/tile_0294.png" id="32_j3s7j"]
 [ext_resource type="Texture2D" uid="uid://fkgp5sak48c5" path="res://assets/characters/bold/tile_0375.png" id="33_r7g7n"]

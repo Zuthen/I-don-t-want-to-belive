@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dcefoyhqiavv6"]
 
 [ext_resource type="Texture2D" uid="uid://dbjdyoew6bdm1" path="res://assets/ui/keboard_buttons/keyboard_q.png" id="1_0w5t2"]
-[ext_resource type="Script" uid="uid://5gf03o267cci" path="res://scenes/ui/skill.gd" id="1_f8ipa"]
+[ext_resource type="Script" uid="uid://5gf03o267cci" path="res://scenes/ui/game_ui/skill.gd" id="1_f8ipa"]
 [ext_resource type="Texture2D" uid="uid://cj766dki20mjg" path="res://assets/ui/keboard_buttons/generic_button_circle.png" id="3_rogof"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="3_y1pqf"]
 [ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="5_y1pqf"]

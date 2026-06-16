@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dg7q16m0w6dnx"]
 
 [ext_resource type="FontFile" uid="uid://c6bbdf1ltbu1b" path="res://assets/fonts/Orbitron-VariableFont_wght.ttf" id="1_5t5el"]
-[ext_resource type="Script" uid="uid://d1sucjjwx883e" path="res://scenes/ui/lobby.gd" id="1_rqagm"]
+[ext_resource type="Script" uid="uid://d1sucjjwx883e" path="res://scenes/ui/lobby/lobby.gd" id="1_rqagm"]
 [ext_resource type="Texture2D" uid="uid://dhsp46crp15wo" path="res://assets/characters/female/tile_0105.png" id="2_2rbxb"]
 [ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="3_rqagm"]
 [ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="4_2rbxb"]

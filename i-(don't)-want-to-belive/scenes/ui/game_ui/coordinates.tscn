@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bqxxtb22y4v3c"]
 
 [ext_resource type="FontFile" uid="uid://yovp4qpp5pqo" path="res://assets/fonts/Kenney Rocket Square.ttf" id="1_2tght"]
-[ext_resource type="Script" uid="uid://bjpy7cdpqncfv" path="res://scenes/ui/coordinates.gd" id="1_vcfnq"]
+[ext_resource type="Script" uid="uid://bjpy7cdpqncfv" path="res://scenes/ui/game_ui/coordinates.gd" id="1_vcfnq"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vcfnq"]
 font = ExtResource("1_2tght")
