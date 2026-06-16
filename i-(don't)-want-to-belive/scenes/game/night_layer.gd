@@ -23,7 +23,6 @@ func _ready():
 		push_error("Set buildings layer")
 		return
 
-	# Inicjalizujemy mgłę od razu raz, na czysto, zamiast katować procesor w _process()
 	initialize_fog()
 
 	var my_network_id = multiplayer.get_unique_id()
@@ -46,8 +45,6 @@ func _process(_delta):
 	var local_player = get_local_player()
 	if not local_player:
 		return
-
-	# Dynamicznie sprawdzamy grupy, aby zapobiec rozjeżdżaniu się ról w sieci Nakama
 	var is_alien = local_player.is_in_group("aliens")
 	var is_ufo = local_player.is_in_group("ufos")
 
@@ -64,8 +61,6 @@ func _process(_delta):
 		last_player_tile = Vector2i(-999, -999)
 
 	var current_tile = buildings_layer.local_to_map(local_player.global_position)
-
-	# POPRAWKA: Inicjalizacja pierwszej pozycji bez ponownego wywoływania ciężkiego initialize_fog()
 	if last_player_tile == Vector2i(-999, -999):
 		last_player_tile = current_tile
 		apply_new_fog(last_player_tile)
@@ -81,9 +76,7 @@ func _process(_delta):
 
 
 func initialize_fog():
-	# OPTYMALIZACJA: Używamy wbudowanej metody set_cells_terrain_connect
-	# lub rysujemy bezpośrednio, usuwając zbędne alokacje tablic w pętli process
-	clear() # Czyścimy stare kafelki przed nałożeniem nocy
+	clear()
 	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
 		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
 			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)

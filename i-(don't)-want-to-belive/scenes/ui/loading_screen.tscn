@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="2_s41fs"]
 [ext_resource type="Texture2D" uid="uid://ccmuqvey761ql" path="res://assets/objects/stars/star_09.png" id="3_y06jl"]
 [ext_resource type="Texture2D" uid="uid://buidbtnxfuv1y" path="res://assets/objects/stars/star_04.png" id="4_g5iak"]
-[ext_resource type="FontFile" uid="uid://dexexhiionuny" path="res://assets/fonts/Audiowide-Regular.ttf" id="6_y06jl"]
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="6_y06jl"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s41fs"]
 

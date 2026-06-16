@@ -19,47 +19,31 @@ var ready_peers_for_spawn: Dictionary = { }
 
 
 func _ready():
-	print("--- [GRA LOG] Start funkcji _ready() w game.gd ---")
 	BackgroundMusic.stop()
 	BackgroundMusic.stream = game_music
 	BackgroundMusic.play()
 	MultiplayerFeatures.spawn(multiplayer_spawner, tile_map_layer)
-	print("[GRA LOG] Spawner sieciowy został wpięty pomyślnie.")
 
-	# GWARANCJA SUKCESU: Serwer generuje losową mapę i rodzi postacie OD RAZU w _ready()!
-	# Dzięki temu UI u graczy natychmiast wykryje postacie i błędy znikną.
 	if multiplayer.is_server():
-		print("[GRA LOG] Jestem serwerem. Losuję seed i buduję mapę startową.")
 		randomize()
 		var game_map_seed = randi()
-		print("[GRA LOG] Wylosowany SEED mapy: ", game_map_seed)
 
-		# Generujemy mapę lokalnie na serwerze
 		skeptic_positions = create_map(game_map_seed)
-
 		players = GameManager.players_selections
 		_assign_roles(players)
 
-		# Rozsyłamy wylosowany seed do wszystkich podłączonych klientów (0 = wszyscy)
-		print("[GRA LOG] Wysyłam seed mapy do klientów przez RPC.")
 		client_build_map_instruction.rpc_id(0, game_map_seed)
 
-		# NATYCHMIASTOWY SPAWN: Rodzimy postacie, które będą czekać w sieci na załadowanie graczy
 		var spawner_data = map_to_spawn_data(skeptic_positions)
-		print("[GRA LOG] Spawner sieciowy rodzi postacie w liczbie: ", spawner_data.size())
 		for data in spawner_data:
 			multiplayer_spawner.spawn(data)
 
 
-# Czyścimy tę funkcję, usuwając z niej powtórny spawn, aby nie dublować kodu:
 func _check_if_everyone_is_ready_to_spawn(peer_id: int):
-	print("[GRA LOG] Gracz o ID ", peer_id, " zgłasza gotowość w Nakama.")
 	ready_peers_for_spawn[peer_id] = true
 	var total_players_in_match = multiplayer.get_peers().size() + 1
-	print("[GRA LOG] Licznik gotowości sieciowej: ", ready_peers_for_spawn.size(), "/", total_players_in_match)
 
 	if ready_peers_for_spawn.size() == total_players_in_match:
-		print("[GRA LOG] Wszyscy gracze w pełni połączeni. Przesyłam końcową synchronizację ról.")
 		players = GameManager.players_selections
 		_assign_roles(players)
 
@@ -80,8 +64,6 @@ func _sync_final_roles_to_all_clients(sync_data: Dictionary):
 		pref.type = sync_data[peer_str]["type"]
 		pref._skin_idx = sync_data[peer_str]["skin"]
 		GameManager.players_selections.append(pref)
-
-	# Inicjalizujemy interfejs użytkownika – to on teraz zdecyduje, kiedy zamknąć loading screen!
 	get_tree().call_group("local_user_interface", "initialize_ui")
 
 
