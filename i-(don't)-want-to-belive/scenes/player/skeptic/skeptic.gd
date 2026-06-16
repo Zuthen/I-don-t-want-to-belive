@@ -262,7 +262,8 @@ func _play_captured_animation(ufo_texture_idx: int, target_position):
 	sprite_2d.visible = false
 	collision_area.set_deferred("monitoring", false)
 	collision_area.set_deferred("monitorable", false)
-	collision_area.set_deferred("disabled", true)
+	if is_instance_valid(collision_shape):
+		collision_shape.set_deferred("disabled", true)
 
 	var pixel_position = get_parent().tile_map_layer.map_to_local(target_position)
 	var relative_offset = pixel_position - global_position
@@ -339,6 +340,10 @@ func _capture_animation_cleanup(pixel_position: Vector2):
 	sprite_2d.visible = true
 	movement_blocked = false
 	global_position = pixel_position
+	collision_area.set_deferred("monitoring", true)
+	collision_area.set_deferred("monitorable", true)
+	if is_instance_valid(collision_shape):
+		collision_shape.set_deferred("disabled", false)
 
 	if is_multiplayer_authority() and is_instance_valid(camera):
 		camera.set_as_top_level(false)

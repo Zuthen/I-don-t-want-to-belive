@@ -22,8 +22,14 @@ func _init():
 
 
 func _on_scene_tree_node_added(node: Node):
+	if not is_instance_valid(node):
+		return
+
 	if node.name == "Control" or (node.get_script() and node.get_script().get_path().ends_with("lobby.gd")):
 		await get_tree().process_frame
+
+		if not is_instance_valid(node):
+			return
 
 		var peers_list = multiplayer.get_peers()
 		var total_players = peers_list.size() + 1

@@ -178,7 +178,10 @@ func test_as_ufo_i_can_see_my_laser():
 
 
 func test_as_ufo_i_can_see_other_ufo_laser():
-	get_tree().get_multiplayer().multiplayer_peer = OfflineMultiplayerPeer.new()
+	var mock_multiplayer = SceneMultiplayer.new()
+	mock_multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+
+	get_tree().set_multiplayer(mock_multiplayer, get_tree().root.get_path())
 
 	mock_ufo = _setup_ufo_hierarchy(1, true)
 	second_ufo = _setup_ufo_hierarchy(2, false)
@@ -190,7 +193,9 @@ func test_as_ufo_i_can_see_other_ufo_laser():
 	await wait_physics_frames(2)
 
 	var lasers = find_all_lasers(get_tree().root)
-	assert_eq(lasers.size(), 1)
+	assert_eq(lasers.size(), 1, "Laser powinien pojawić się w drzewie scen, gdy wywołanie następuje na serwerze")
+
+	get_tree().set_multiplayer(null, get_tree().root.get_path())
 
 
 func test_as_skeptic_i_can_see_ufos_laser():
