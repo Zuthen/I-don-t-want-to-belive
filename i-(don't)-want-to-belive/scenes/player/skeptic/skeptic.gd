@@ -266,7 +266,6 @@ func _play_captured_animation(ufo_texture_idx: int, target_position):
 		collision_shape.set_deferred("disabled", true)
 
 	var pixel_position = get_parent().tile_map_layer.map_to_local(target_position)
-	var relative_offset = pixel_position - global_position
 	var animation = captured_animation_scene.instantiate()
 
 	movement_blocked = true

@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://c01cqwjs1e822" path="res://assets/objects/planets/planet04.png" id="4_05yft"]
 [ext_resource type="Texture2D" uid="uid://b3o6lacdx8gpt" path="res://assets/objects/stars/star_05.png" id="4_m7lbu"]
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="10_tk3c2"]
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="10_xktrh"]
 [ext_resource type="Texture2D" uid="uid://b0b803uoec4md" path="res://assets/ui/button_rectangle_depth.png" id="11_80at6"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="12_ejsg3"]
 [ext_resource type="PackedScene" uid="uid://7tume85w3b7a" path="res://scenes/ui/room_popup.tscn" id="14_4ak4v"]
@@ -376,7 +377,7 @@ theme_override_colors/default_color = Color(0.8932403, 0.34896463, 0.46216196, 1
 theme_override_colors/font_outline_color = Color(0.8666667, 0.8666667, 0.8666667, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 theme_override_constants/outline_size = 24
-theme_override_fonts/normal_font = null
+theme_override_fonts/normal_font = ExtResource("10_xktrh")
 theme_override_font_sizes/normal_font_size = 55
 text = "Nie chcę uwierzyć"
 fit_content = true
