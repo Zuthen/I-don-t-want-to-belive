@@ -22,8 +22,11 @@ func _ready():
 	if not buildings_layer:
 		push_error("Set buildings layer")
 		return
-	var my_network_id = multiplayer.get_unique_id()
 
+	# Inicjalizujemy mgłę od razu raz, na czysto, zamiast katować procesor w _process()
+	initialize_fog()
+
+	var my_network_id = multiplayer.get_unique_id()
 	for pref in GameManager.players_selections:
 		if pref.peer_id == my_network_id:
 			my_lobby_role = pref.type.to_lower()
@@ -44,6 +47,7 @@ func _process(_delta):
 	if not local_player:
 		return
 
+	# Dynamicznie sprawdzamy grupy, aby zapobiec rozjeżdżaniu się ról w sieci Nakama
 	var is_alien = local_player.is_in_group("aliens")
 	var is_ufo = local_player.is_in_group("ufos")
 
@@ -59,12 +63,12 @@ func _process(_delta):
 		initialize_fog()
 		last_player_tile = Vector2i(-999, -999)
 
-	if last_player_tile == Vector2i(-999, -999):
-		last_player_tile = buildings_layer.local_to_map(local_player.global_position)
-		initialize_fog()
-		apply_new_fog(last_player_tile)
-
 	var current_tile = buildings_layer.local_to_map(local_player.global_position)
+
+	# POPRAWKA: Inicjalizacja pierwszej pozycji bez ponownego wywoływania ciężkiego initialize_fog()
+	if last_player_tile == Vector2i(-999, -999):
+		last_player_tile = current_tile
+		apply_new_fog(last_player_tile)
 
 	if current_tile != last_player_tile:
 		if last_player_tile != Vector2i(-999, -999):
@@ -77,19 +81,16 @@ func _process(_delta):
 
 
 func initialize_fog():
-	var cells_pck: Array[Vector2i] = []
-
+	# OPTYMALIZACJA: Używamy wbudowanej metody set_cells_terrain_connect
+	# lub rysujemy bezpośrednio, usuwając zbędne alokacje tablic w pętli process
+	clear() # Czyścimy stare kafelki przed nałożeniem nocy
 	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
 		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
-			cells_pck.append(Vector2i(x, y))
-
-	for cell in cells_pck:
-		set_cell(cell, ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
+			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
 
 func update_players_visibility(local_player: Node2D):
 	var my_network_id = multiplayer.get_unique_id()
-
 	var all_ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 	var local_tile = buildings_layer.local_to_map(local_player.global_position)
 
@@ -105,29 +106,19 @@ func update_players_visibility(local_player: Node2D):
 		var fog_tile_alternative = get_cell_alternative_tile(player_tile)
 
 		var is_visible_by_fog = (fog_tile_alternative != TILE_DEEP_NIGHT and distance_in_tiles <= vision_radius)
-
-		if is_visible_by_fog:
-			player.visible = true
-		else:
-			player.visible = false
+		player.visible = is_visible_by_fog
 
 
 func setup_ufo_view():
-	var cells_pck: Array[Vector2i] = []
-
 	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
 		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
-			cells_pck.append(Vector2i(x, y))
-
-	for cell in cells_pck:
-		set_cell(cell, ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
+			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
 
 
 func reset_old_fog(center_tile: Vector2i):
 	for x in range(-vision_radius, vision_radius + 1):
 		for y in range(-vision_radius, vision_radius + 1):
 			var target_tile = center_tile + Vector2i(x, y)
-
 			if vision_radius == 1 or center_tile.distance_to(target_tile) <= vision_radius:
 				set_cell(target_tile, ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
@@ -136,7 +127,6 @@ func apply_new_fog(center_tile: Vector2i):
 	for x in range(-vision_radius, vision_radius + 1):
 		for y in range(-vision_radius, vision_radius + 1):
 			var target_tile = center_tile + Vector2i(x, y)
-
 			if vision_radius == 1 or center_tile.distance_to(target_tile) <= vision_radius:
 				set_cell(target_tile, ATLAS_SOURCE_ID, black_tile_coords, TILE_NEAR_LIGHT)
 
@@ -151,10 +141,8 @@ func get_local_player() -> Node2D:
 	for node in all_actual_players:
 		if not node is Node2D:
 			continue
-
 		if "id" in node and node.id == my_id:
 			return node
-
 		if node.name == str(my_id):
 			return node
 

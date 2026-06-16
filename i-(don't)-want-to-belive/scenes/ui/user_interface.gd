@@ -23,12 +23,12 @@ takie latają!"
 
 
 func _ready():
-	print("--- [UI LOG] Start funkcji _ready() w interfejsie ---")
+	print("--- [UI LOG] Start funkcji _ready() w interfejsie użytkownika ---")
 	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
 	win_info.visible = false
 
-	# Wyczyszczenie tekstów z edytora na starcie
+	# Czyszczenie tekstów zastępczych z edytora na starcie
 	if is_instance_valid(q):
 		q.set_icon_text("")
 	if is_instance_valid(e):
@@ -36,10 +36,11 @@ func _ready():
 
 	var player: Player = null
 	print("[UI LOG] Rozpoczynam pętlę szukania lokalnego gracza (20 prób)...")
-	for i in range(20):
+
+	for i in range(60):
 		player = MultiplayerFeatures.get_local_player()
 		if player != null:
-			print("[UI LOG] Sukces! Znaleziono gracza w próbie nr: ", i)
+			print("[UI LOG] SUKCES! Znaleziono postać gracza w próbie nr: ", i)
 			break
 		await get_tree().create_timer(0.05).timeout
 
@@ -58,10 +59,22 @@ func _ready():
 			var ufo_with_alien = ufo.get_parent() as UfoWithAlien if ufo else null
 			if ufo_with_alien:
 				ufo_with_alien.ufo_crashed.connect(func(): setup_ui(Player.Role.ALIEN))
-		print("[UI LOG] Odpalam setup_ui() dla roli: ", player.role)
+
+		print("[UI LOG] Gracz ma rolę: ", player.role, ". Odpalam setup_ui().")
 		setup_ui(player.role)
+
+		# KLUCZOWE ROZWIĄZANIE: Dajemy silnikowi sieciowemu i graficznemu
+		# mały bufor czasowy (0.15s) na zrenderowanie spritów postaci i ułożenie kamery!
+		await get_tree().create_timer(0.15).timeout
+
+		# Dopiero gdy cały świat i postacie stoją gotowe, gasimy ekran ładowania
+		for child in get_tree().root.get_children():
+			if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
+				child.queue_free()
 	else:
-		printerr("[UI LOG ERROR] Klient o ID ", multiplayer.get_unique_id(), " ostatecznie NIE doczekał się postaci!")
+		printerr("[UI LOG ERROR] Klient o ID ", multiplayer.get_unique_id(), " ostatecznie NIE doczekał się swojej postaci!")
+
+		printerr("[UI LOG ERROR] Klient o ID ", multiplayer.get_unique_id(), " ostatecznie NIE doczekał się swojej postaci!")
 
 
 func _on_player_role_assigned():

@@ -71,7 +71,6 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 
 @rpc("authority", "call_local", "reliable")
 func _sync_final_roles_to_all_clients(sync_data: Dictionary):
-	print("[DEBUG GAME] Odebrano końcowe RPC o rolach od serwera.")
 	GameManager.players_selections.clear()
 
 	for peer_str in sync_data:
@@ -82,16 +81,8 @@ func _sync_final_roles_to_all_clients(sync_data: Dictionary):
 		pref._skin_idx = sync_data[peer_str]["skin"]
 		GameManager.players_selections.append(pref)
 
-	print("[DEBUG GAME] Lista preferences wyczyszczona i nadpisana. Wywołuję grupę lokalnego UI.")
+	# Inicjalizujemy interfejs użytkownika – to on teraz zdecyduje, kiedy zamknąć loading screen!
 	get_tree().call_group("local_user_interface", "initialize_ui")
-
-	print("[DEBUG GAME] Rozpoczynam poszukiwanie i usuwanie ekranu ładowania z pamięci.")
-	var closed_any: bool = false
-	for child in get_tree().root.get_children():
-		if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
-			child.queue_free()
-			closed_any = true
-	print("[DEBUG GAME] Czy zamknięto ekran ładowania w roocie? ", closed_any)
 
 
 @rpc("authority", "call_remote", "reliable")
