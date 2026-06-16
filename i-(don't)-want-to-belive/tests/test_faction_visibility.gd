@@ -359,7 +359,10 @@ func test_skeptic_receives_alien_voice_call():
 	var peer = OfflineMultiplayerPeer.new()
 	get_tree().get_multiplayer().multiplayer_peer = peer
 
-	# 1. Tworzymy Sceptyka (Odbiorcę krzyku)
+	fake_game.name = "Game"
+	if fake_game.get_parent() == null:
+		get_tree().root.add_child(fake_game)
+
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.name = "LocalSkeptic"
 	fake_game.add_child(mock_skeptic)
@@ -369,7 +372,7 @@ func test_skeptic_receives_alien_voice_call():
 	mock_skeptic.role = Player.Role.SKEPTIC
 
 	var ufo_combo = ufo_with_alien_scene.instantiate()
-	ufo_combo.name = "UfoWithAlien_2"
+	ufo_combo.name = "2"
 	fake_game.add_child(ufo_combo)
 	ufo_combo.input_multiplayer_authority = 2
 	ufo_combo.id = 2
@@ -387,29 +390,25 @@ func test_skeptic_receives_alien_voice_call():
 
 	await wait_physics_frames(2)
 
-	# Act: Zamiast kapryśnego spawnera, sami bezpiecznie tworzymy obiekt i wstrzykujemy dane 1:1,
-	# dokładnie tak, jak dzieje się to w Multiplayer.gd przy narodzinach ikony z sieci!
+	# Act
 	var icon_scene = preload("uid://d03xota05sdvx")
 	var node = icon_scene.instantiate()
 	node.name = "LaserWarningIcon_Test"
 
-	# Pakujemy słownik spawnu do zmiennych wewnętrznych ikony
 	node.net_target_pos = Vector2(100, 100)
 	node.net_icon_key = "call"
 	node.net_sender_id = 2 # Od Aliena
 	node.net_target_id = 1 # Do Sceptyka
 	node.net_is_laser_type = false
 
-	# Wpinamy obiekt bezpośrednio do makiety gry – to w 100% usuwa błąd 'parent is null'
 	fake_game.add_child(node)
-
-	# Wymuszamy pozycję w pikselach, ponieważ test nie odpali automatycznego _process
 	node.global_position = Vector2(100, 100)
+
 	if "initialized" in node:
 		node.initialized = true
 
-	# Dajemy czas na przetworzenie klatek procesu i weryfikacji ról
-	await wait_process_frames(5)
+	await get_tree().create_timer(0.15).timeout
+	await wait_physics_frames(1)
 
 	# Assert
 	var icons = find_all_icons(fake_game)
@@ -417,11 +416,13 @@ func test_skeptic_receives_alien_voice_call():
 
 	if icons.size() > 0:
 		var spawned_icon = icons[0] as Node2D
-		# Sceptyk na ziemi powinien bez problemu widzieć i słyszeć emotkę typu "call"
 		assert_true(spawned_icon.visible, "Ikona wezwania powinna być widoczna na ekranie Sceptyka!")
 
 		var sprite = spawned_icon.get_node_or_null("Sprite2D") as Sprite2D
 		assert_not_null(sprite, "Nie znaleziono węzła Sprite2D wewnątrz ikony!")
+
+	if fake_game.get_parent() != null:
+		get_tree().root.remove_child(fake_game)
 
 
 func find_all_lasers(node: Node) -> Array:
