@@ -15,6 +15,7 @@ var players: Array[GameManager.Preferences]
 var skeptics: Array[GameManager.Preferences] = []
 var ufos: Array[GameManager.Preferences] = []
 var game_music = preload("uid://bimjd1o2muktk")
+var ready_peers_for_spawn: Dictionary = { }
 
 
 func _ready():
@@ -23,26 +24,19 @@ func _ready():
 	BackgroundMusic.play()
 	MultiplayerFeatures.spawn(multiplayer_spawner, tile_map_layer)
 
-	var game_map_seed = 12345
-	skeptic_positions = create_map(game_map_seed)
-
 	if multiplayer.is_server():
+		randomize()
+		var game_map_seed = randi()
+		skeptic_positions = create_map(game_map_seed)
+
 		players = GameManager.players_selections
 		_assign_roles(players)
 
-		var spawner_data = map_to_spawn_data(skeptic_positions)
+		client_build_map_instruction.rpc_id(0, game_map_seed)
 
+		var spawner_data = map_to_spawn_data(skeptic_positions)
 		for data in spawner_data:
 			multiplayer_spawner.spawn(data)
-
-
-var ready_peers_for_spawn: Dictionary = { }
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func _client_signals_ready_to_spawn(peer_id: int):
-	if multiplayer.is_server():
-		_check_if_everyone_is_ready_to_spawn(peer_id)
 
 
 func _check_if_everyone_is_ready_to_spawn(peer_id: int):
@@ -52,10 +46,25 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 	if ready_peers_for_spawn.size() == total_players_in_match:
 		players = GameManager.players_selections
 		_assign_roles(players)
+
 		var sync_data: Dictionary = { }
 		for p in players:
 			sync_data[str(p.peer_id)] = { "type": p.type, "skin": p.skin_idx }
 		_sync_final_roles_to_all_clients.rpc(sync_data)
+
+
+@rpc("authority", "call_remote", "reliable")
+func client_build_map_instruction(map_seed: int):
+	skeptic_positions = create_map(map_seed)
+
+	if not multiplayer.is_server():
+		peer_ready.rpc_id(1)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _client_signals_ready_to_spawn(peer_id: int):
+	if multiplayer.is_server():
+		_check_if_everyone_is_ready_to_spawn(peer_id)
 
 
 @rpc("authority", "call_local", "reliable")
@@ -145,14 +154,6 @@ func map_to_spawn_data(skeptic_positions):
 		players_data.append(data)
 
 	return players_data
-
-
-@rpc("authority", "call_local", "reliable")
-func client_build_map_instruction(map_seed: int):
-	skeptic_positions = create_map(map_seed)
-
-	if not is_multiplayer_authority():
-		peer_ready.rpc_id(1)
 
 
 @rpc("any_peer", "call_local", "reliable")
