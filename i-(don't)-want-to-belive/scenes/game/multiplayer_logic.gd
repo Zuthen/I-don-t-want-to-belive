@@ -98,15 +98,18 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 			get_tree().call_group("local_player", "remove_from_group", "local_player")
 			node.add_to_group("local_player")
 
-		node.set_deferred("multiplayer_authority", data.peer_id)
+		# POPRAWKA: Nadajemy autorytet sieciowy NATYCHMIAST.
+		# Dzięki temu funkcja _ready() w postaci nie zwróci błędu o braku autorytetu.
+		node.name = str(data.peer_id)
+		node.set_multiplayer_authority(data.peer_id)
 
 		var sync_node = node.get_node_or_null("PlayerInputSynchronizer")
 		if is_instance_valid(sync_node):
-			sync_node.set_deferred("multiplayer_authority", data.peer_id)
+			sync_node.set_multiplayer_authority(data.peer_id)
 
 		var pos_sync = node.get_node_or_null("MultiplayerSynchronizer")
 		if is_instance_valid(pos_sync):
-			pos_sync.set_deferred("multiplayer_authority", data.peer_id)
+			pos_sync.set_multiplayer_authority(data.peer_id)
 
 		if multiplayer.is_server():
 			call_deferred("_force_refresh_visibility")

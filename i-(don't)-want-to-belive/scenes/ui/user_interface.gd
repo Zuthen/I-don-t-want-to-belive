@@ -27,8 +27,14 @@ func _ready():
 	ufos_sprites = belive_points_counter.get_children()
 	win_info.visible = false
 
+	if is_instance_valid(q):
+		q.set_icon_text("")
+	if is_instance_valid(e):
+		e.set_icon_text("")
+
 	var player: Player = null
-	for i in range(20):
+
+	for i in range(60):
 		player = MultiplayerFeatures.get_local_player()
 		if player != null:
 			break
@@ -43,13 +49,19 @@ func _ready():
 			player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
 		elif player.role == Player.Role.UFO:
 			var ufo = player.get_node_or_null("Ufo")
-			ufo.laser_shoot.connect(_on_q_skill_fired)
-			ufo.captured.connect(_on_e_skill_fired)
-			var ufo_with_alien = ufo.get_parent() as UfoWithAlien
-			ufo_with_alien.ufo_crashed.connect(func(): setup_ui(Player.Role.ALIEN))
+			if ufo:
+				ufo.laser_shoot.connect(_on_q_skill_fired)
+				ufo.captured.connect(_on_e_skill_fired)
+			var ufo_with_alien = ufo.get_parent() as UfoWithAlien if ufo else null
+			if ufo_with_alien:
+				ufo_with_alien.ufo_crashed.connect(func(): setup_ui(Player.Role.ALIEN))
+
 		setup_ui(player.role)
-	else:
-		printerr("[UI] Błąd sieciowy: Klient o ID ", multiplayer.get_unique_id(), " nie doczekał się swojej postaci!")
+
+		await get_tree().create_timer(0.15).timeout
+		for child in get_tree().root.get_children():
+			if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
+				child.queue_free()
 
 
 func _on_player_role_assigned():

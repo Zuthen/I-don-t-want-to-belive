@@ -27,8 +27,8 @@ func _ready():
 	if multiplayer.is_server():
 		randomize()
 		var game_map_seed = randi()
-		skeptic_positions = create_map(game_map_seed)
 
+		skeptic_positions = create_map(game_map_seed)
 		players = GameManager.players_selections
 		_assign_roles(players)
 
@@ -53,6 +53,20 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 		_sync_final_roles_to_all_clients.rpc(sync_data)
 
 
+@rpc("authority", "call_local", "reliable")
+func _sync_final_roles_to_all_clients(sync_data: Dictionary):
+	GameManager.players_selections.clear()
+
+	for peer_str in sync_data:
+		var p_id = int(peer_str)
+		var pref = GameManager.Preferences.new()
+		pref.peer_id = p_id
+		pref.type = sync_data[peer_str]["type"]
+		pref._skin_idx = sync_data[peer_str]["skin"]
+		GameManager.players_selections.append(pref)
+	get_tree().call_group("local_user_interface", "initialize_ui")
+
+
 @rpc("authority", "call_remote", "reliable")
 func client_build_map_instruction(map_seed: int):
 	skeptic_positions = create_map(map_seed)
@@ -65,23 +79,6 @@ func client_build_map_instruction(map_seed: int):
 func _client_signals_ready_to_spawn(peer_id: int):
 	if multiplayer.is_server():
 		_check_if_everyone_is_ready_to_spawn(peer_id)
-
-
-@rpc("authority", "call_local", "reliable")
-func _sync_final_roles_to_all_clients(sync_data: Dictionary):
-	GameManager.players_selections.clear()
-
-	for peer_str in sync_data:
-		var p_id = int(peer_str)
-		var pref = GameManager.Preferences.new()
-		pref.peer_id = p_id
-		pref.type = sync_data[peer_str]["type"]
-		pref._skin_idx = sync_data[peer_str]["skin"]
-
-		GameManager.players_selections.append(pref)
-
-	if multiplayer.is_server():
-		_execute_server_spawn_after_sync()
 
 
 func _execute_server_spawn_after_sync():
