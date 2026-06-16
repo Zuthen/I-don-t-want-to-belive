@@ -99,7 +99,6 @@ func _connect():
 			var host_id = get_multiplayer_authority()
 
 			if my_id != host_id:
-				print("[Lobby] Requesting ready count from Host ID: ", host_id)
 				_request_current_ready_count.rpc_id(host_id)
 
 
@@ -113,8 +112,6 @@ func _set_game_data():
 
 		var room_name = NakamaNetworkManager.match_name
 		room_name_label.text = "Kod pokoju: " + str(room_name)
-
-		print("[Lobby] Wyświetlam dane w UI! ID: ", net_match_id, " | Kod: ", room_name)
 
 
 func _set_host_label():

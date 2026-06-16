@@ -11,6 +11,7 @@ extends Player
 @onready var collision_shape = $CollisionShape2D
 @onready var warning_label = $WarningLabel
 @onready var sound = $Sound
+@onready var voice_receiver = $VoiceReceiver
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
@@ -35,7 +36,7 @@ var camera_zoom: Vector2
 var warning_time: float = 1.5
 
 signal belive_points_changed(amount: int)
-signal laser_seen
+signal laser_seen(ufo_sender_id: int)
 signal walkie_talkie_message_sent(time: float)
 signal alien_seen(peer_id: int)
 
@@ -191,32 +192,62 @@ func _on_belive_points_changed(hit_points: int):
 		ufo_wins.emit()
 
 
-func _on_laser_seen():
-	var laser_sound = Sounds.laser_sounds.pick_random()
-	sound.stream = laser_sound
-	sound.play()
+func _on_laser_seen(ufo_sender_id: int):
+	if dialog_timer and not dialog_timer.is_stopped():
+		return
+
+	if sound != null and is_instance_valid(sound):
+		var laser_sound = Sounds.laser_sounds.pick_random()
+		sound.stream = laser_sound
+		sound.play()
+
 	var dialogs = dialog_placements.get_children()
 	if dialogs.is_empty():
 		return
 
 	var dialog = dialogs.pick_random() as Marker2D
-	var target_position = dialog.global_position + global_position
-	var icon_placeholder = icon_placeholder_scene.instantiate()
+	var target_position = global_position + dialog.position
 
-	icon_placeholder.accepts_role = [Player.Role.UFO, Player.Role.SKEPTIC] as Array[Player.Role]
-	icon_placeholder.icon = preload("uid://ddjkfec0jsuw")
-	get_tree().root.add_child(icon_placeholder)
-
-	icon_placeholder.global_position = target_position
-	icon_placeholder.setup(Player.Role.SKEPTIC, icon_placeholder.accepts_role)
-
-	dialog_timer.timeout.connect(func(): _on_dialog_timer_timeout(icon_placeholder), CONNECT_ONE_SHOT)
-	dialog_timer.start()
+	request_icon_spawn_on_server.rpc(target_position, ufo_sender_id, multiplayer.get_unique_id(), "angry")
 
 
-func _on_dialog_timer_timeout(node: Node2D):
-	if is_instance_valid(node):
-		node.queue_free()
+@rpc("any_peer", "call_local", "reliable")
+func request_icon_spawn_on_server(target_position: Vector2, sender_id: int, target_id: int, icon_ref: String):
+	if not multiplayer.is_server():
+		return
+
+	if MultiplayerFeatures.server_icon_cooldowns.has(target_id):
+		return
+	MultiplayerFeatures.server_icon_cooldowns.append(target_id)
+
+	var is_laser = true if icon_ref == "angry" else false
+	var spawn_data = {
+		"type": "icon",
+		"global_position": target_position,
+		"peer_id": target_id,
+		"icon_key": icon_ref,
+		"sender_id": sender_id,
+		"target_id": target_id,
+		"is_laser_type": is_laser,
+	}
+
+	var current_root = get_tree().current_scene if get_tree().current_scene else get_tree().root
+	var spawner = current_root.find_child("MultiplayerSpawner", true, false)
+
+	if spawner:
+		spawner.spawn(spawn_data)
+
+		get_tree().create_timer(3.0).timeout.connect(
+			func():
+				if MultiplayerFeatures.server_icon_cooldowns.has(target_id):
+					MultiplayerFeatures.server_icon_cooldowns.erase(target_id),
+			CONNECT_ONE_SHOT,
+		)
+
+
+func _hide_emote():
+	if is_instance_valid(voice_receiver) and is_instance_valid(voice_receiver.emote_placeholder):
+		voice_receiver.emote_placeholder.visible = false
 
 
 func _on_skeptic_find_other_skeptic(area: Area2D):
@@ -329,6 +360,8 @@ func _on_alien_seen(alien_peer_id: int):
 
 
 func animate(direction: Vector2):
+	if not is_inside_tree() or animation_player == null:
+		return
 	var directions = {
 		"down": Vector2.DOWN,
 		"up": Vector2.UP,

@@ -1,7 +1,7 @@
 extends TileMapLayer
 
 @export var buildings_layer: TileMapLayer
-@export var vision_radius: int = 6
+@export var vision_radius: int = 2
 
 var black_tile_coords: Vector2i = Vector2i(9, 1)
 

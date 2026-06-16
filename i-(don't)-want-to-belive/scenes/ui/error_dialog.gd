@@ -18,6 +18,5 @@ func _ready():
 
 
 func _show():
-	print("[UI Error Popup] Displaying full room message after hard redirect...")
 	hide()
 	popup_centered()

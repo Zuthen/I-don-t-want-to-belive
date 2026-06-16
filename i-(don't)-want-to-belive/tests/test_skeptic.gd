@@ -4,6 +4,7 @@ var game: Node
 var skeptic_scene = preload("uid://b7wo2a5407873")
 var mock_skeptic: CharacterBody2D
 var other_skeptic: CharacterBody2D
+var mock_spawner: MultiplayerSpawner
 
 
 func before_each():
@@ -14,6 +15,13 @@ func before_each():
 	game.name = "Game"
 	get_tree().root.add_child(game)
 	get_tree().current_scene = game
+
+	mock_spawner = MultiplayerSpawner.new()
+	mock_spawner.name = "MultiplayerSpawner"
+	game.add_child(mock_spawner)
+
+	if "server_icon_cooldowns" in MultiplayerFeatures:
+		MultiplayerFeatures.server_icon_cooldowns.clear()
 
 	for node in get_tree().get_nodes_in_group("local_player"):
 		node.remove_from_group("local_player")
@@ -42,15 +50,27 @@ func test_player_can_call_other_player():
 	mock_skeptic.id = 1
 	mock_skeptic.role = Player.Role.SKEPTIC
 	mock_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(mock_skeptic)
+	game.add_child(mock_skeptic)
 
 	other_skeptic = skeptic_scene.instantiate()
 	other_skeptic.id = 2
 	other_skeptic.role = Player.Role.SKEPTIC
 	other_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(other_skeptic)
+	game.add_child(other_skeptic)
 
 	await wait_physics_frames(3)
+
+	mock_spawner.spawn_function = func(data):
+		var icon_scene = preload("uid://d03xota05sdvx")
+		var node = icon_scene.instantiate()
+		node.name = "LaserWarningIcon_Test"
+		node.net_target_pos = data.get("global_position", Vector2.ZERO)
+		node.net_icon_key = data.get("icon_key", "call")
+		node.net_sender_id = data.get("sender_id", 0)
+		node.net_target_id = data.get("target_id", 0)
+		node.net_is_laser_type = data.get("is_laser_type", false)
+		get_tree().root.add_child(node)
+		return node
 
 	# Act
 	mock_skeptic.call_other_skeptic()
@@ -66,28 +86,38 @@ func test_player_can_t_call_outside_range_size():
 	# Arrange
 	mock_skeptic = skeptic_scene.instantiate()
 	mock_skeptic.id = 1
+	mock_skeptic.role = Player.Role.SKEPTIC
 	mock_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(mock_skeptic)
+	game.add_child(mock_skeptic)
 	mock_skeptic.global_position = Vector2(0, 0)
 
 	other_skeptic = skeptic_scene.instantiate()
 	other_skeptic.id = 2
+	other_skeptic.role = Player.Role.SKEPTIC
 	other_skeptic.add_to_group("skeptics")
-	get_tree().root.add_child(other_skeptic)
-
+	game.add_child(other_skeptic)
 	other_skeptic.global_position = Vector2(99999, 99999)
 
 	await wait_physics_frames(3)
 
-	# Act
+	mock_spawner.spawn_function = func(data):
+		var icon_scene = preload("uid://d03xota05sdvx")
+		var node = icon_scene.instantiate()
+		node.net_target_pos = data.get("global_position", Vector2.ZERO)
+		node.net_icon_key = data.get("icon_key", "call")
+		node.net_sender_id = data.get("sender_id", 0)
+		node.net_target_id = data.get("target_id", 0)
+		node.net_is_laser_type = data.get("is_laser_type", false)
+		get_tree().root.add_child(node)
+		return node
+
+	# Act:
 	mock_skeptic.call_other_skeptic()
 	await wait_physics_frames(5)
 
-	# Assert
+	# Assert:
 	var icons = find_all_icons_in_engine(get_tree().root)
-	assert_eq(icons.size(), 2)
-	for icon in icons:
-		assert_false(icon.visible)
+	assert_eq(icons.size(), 0, "Gracze byli za daleko! Spawner nie miał prawa wygenerować ikony!")
 
 
 func test_walkie_talkie_adds_message_to_ui_for_everyone():
