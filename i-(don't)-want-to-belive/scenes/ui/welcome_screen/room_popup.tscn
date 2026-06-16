@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bq5ok1etalft8" path="res://assets/ui/panel_glass.png" id="1_g25rl"]
 [ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="1_vh52r"]
-[ext_resource type="Script" uid="uid://dgbic0hfex7j5" path="res://scenes/ui/room_popup.gd" id="2_45cec"]
+[ext_resource type="Script" uid="uid://dgbic0hfex7j5" path="res://scenes/ui/welcome_screen/room_popup.gd" id="2_45cec"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8io6i"]
 texture_margin_left = 8.0

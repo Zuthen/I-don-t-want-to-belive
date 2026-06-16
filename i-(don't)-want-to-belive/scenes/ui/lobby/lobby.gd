@@ -150,6 +150,9 @@ func _on_preferences_set():
 	var sender_id = multiplayer.get_unique_id()
 	var type: String = ""
 
+	ufo_skin_slider.visible = false
+	skeptic_skin_slider.visible = false
+
 	if role_idx == 0:
 		type = "skeptic"
 		_server_request_preferences.rpc_id(1, sender_id, type, skeptic_skin_index)

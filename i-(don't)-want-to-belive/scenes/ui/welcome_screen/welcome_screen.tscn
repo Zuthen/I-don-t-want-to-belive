@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://8hnv34c0paf"]
 
-[ext_resource type="Script" uid="uid://cx2glryjp6hoc" path="res://scenes/ui/welcome_screen.gd" id="1_ejsg3"]
+[ext_resource type="Script" uid="uid://cx2glryjp6hoc" path="res://scenes/ui/welcome_screen/welcome_screen.gd" id="1_ejsg3"]
 [ext_resource type="Texture2D" uid="uid://bvsh4hvd1nfa8" path="res://assets/objects/planets/planet01.png" id="1_suexb"]
 [ext_resource type="Texture2D" uid="uid://bla8l3q5a3a10" path="res://assets/objects/stars/star_01.png" id="1_w47s1"]
 [ext_resource type="Texture2D" uid="uid://50kg0886ox8g" path="res://assets/objects/planets/planet02.png" id="2_ifbom"]
@@ -13,8 +13,8 @@
 [ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="10_xktrh"]
 [ext_resource type="Texture2D" uid="uid://b0b803uoec4md" path="res://assets/ui/button_rectangle_depth.png" id="11_80at6"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="12_ejsg3"]
-[ext_resource type="PackedScene" uid="uid://7tume85w3b7a" path="res://scenes/ui/room_popup.tscn" id="14_4ak4v"]
-[ext_resource type="PackedScene" uid="uid://chwvx8p2rsobe" path="res://scenes/ui/error_dialog.tscn" id="15_xktrh"]
+[ext_resource type="PackedScene" uid="uid://7tume85w3b7a" path="res://scenes/ui/welcome_screen/room_popup.tscn" id="14_4ak4v"]
+[ext_resource type="PackedScene" uid="uid://chwvx8p2rsobe" path="res://scenes/ui/welcome_screen/error_dialog.tscn" id="15_xktrh"]
 
 [sub_resource type="Animation" id="Animation_80at6"]
 length = 4.0

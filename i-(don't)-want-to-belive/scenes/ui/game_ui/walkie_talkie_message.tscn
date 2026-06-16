@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://tgygvek1j0wa"]
 
 [ext_resource type="Texture2D" uid="uid://docqhanuu25rr" path="res://assets/ui/button_rectangle_border.png" id="1_cklnq"]
-[ext_resource type="Script" uid="uid://0ocmqxsvwnsj" path="res://scenes/ui/walkie_talkie_message.gd" id="1_iy84m"]
+[ext_resource type="Script" uid="uid://0ocmqxsvwnsj" path="res://scenes/ui/game_ui/walkie_talkie_message.gd" id="1_iy84m"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="2_iy84m"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2fyms"]

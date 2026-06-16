@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://de6sywk55p8ge" path="res://scenes/player/ufo/ufo.gd" id="1_psnoh"]
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="2_p8ene"]
-[ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/coordinates.tscn" id="4_elve6"]
+[ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/game_ui/coordinates.tscn" id="4_elve6"]
 [ext_resource type="Texture2D" uid="uid://dbxf7yvrhjp60" path="res://assets/characters/ufos/laserBeige3.png" id="5_grf6f"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="7_psnoh"]
 

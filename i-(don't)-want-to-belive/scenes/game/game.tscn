@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bt6so2huvttp0" path="res://scenes/game/game.gd" id="1_kelw5"]
 [ext_resource type="Texture2D" uid="uid://dm3js0r4mwqdm" path="res://assets/tilemap_packed.png" id="2_7h61r"]
-[ext_resource type="PackedScene" uid="uid://cjks5cw6xyieq" path="res://scenes/ui/user_interface.tscn" id="3_0sr1o"]
+[ext_resource type="PackedScene" uid="uid://cjks5cw6xyieq" path="res://scenes/ui/game_ui/user_interface.tscn" id="3_0sr1o"]
 [ext_resource type="Script" uid="uid://cnyep4nx72ket" path="res://scenes/game/night_layer.gd" id="3_kelw5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kelw5"]
