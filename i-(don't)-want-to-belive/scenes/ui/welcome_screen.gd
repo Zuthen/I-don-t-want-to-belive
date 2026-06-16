@@ -33,7 +33,6 @@ func _create_game_and_go_to_lobby():
 
 func _join_existing_game():
 	quick_game.disabled = true
-	print("[Menu] Szukam gry, blokuję przycisk...")
 	await NakamaNetworkManager.join_existing_game()
 
 

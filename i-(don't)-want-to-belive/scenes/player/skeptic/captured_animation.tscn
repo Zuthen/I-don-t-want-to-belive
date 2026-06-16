@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://68od6wexu11a"]
 
-[ext_resource type="Script" uid="uid://c2iqdrycqvw15" path="res://scenes/player/skeptic/captured_animation.gd" id="1_n3f08"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="2_ww3gr"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ucn1j"]
@@ -10,7 +9,6 @@ font_size = 20
 font_color = Color(0.9490196, 0.23137255, 0.32941177, 1)
 
 [node name="CapturedAnimation" type="Node2D" unique_id=278131588]
-script = ExtResource("1_n3f08")
 
 [node name="CapturedLabel" type="Label" parent="." unique_id=2075382145]
 anchors_preset = 5

@@ -13,28 +13,24 @@ var laser_hit_points := 1
 var pointing_animation: Animation
 var color_idx: int = 0
 var textures: UfosTextures.UfoTextures
+var peer_id: int = 0
+
+
+# Wewnątrz laser.gd
+func _physics_process(_delta):
+	# Loguje pozycję lasera raz na 60 klatek, żeby zobaczyć czy w ogóle leci w stronę gracza
+	if Engine.get_frames_drawn() % 60 == 0:
+		print("[LOG FIZYKI LASERA] Żyję w świecie! Moja globalna pozycja to: ", global_position)
 
 
 func _ready():
-	# 1. Pobieramy tekstury z bazy danych dla zsynchronizowanego koloru
 	textures = UfosTextures.ufo_textures[color_idx]
-
-	# 2. !!! KLUCZOWY FIX AMINACJI !!!
-	# Duplikujemy zasób animacji z dysku, tworząc unikalną kopię tylko dla tego jednego strzału.
-	# Od teraz 'track_set_key_value' nie zepsuje klatek startowych innych laserów!
 	var original_anim = animation_player.get_animation("laser pointing")
 	pointing_animation = original_anim.duplicate()
-
-	# Podmieniamy oryginalną animację w odtwarzaczu na naszą unikalną kopię
 	animation_player.get_animation_library("").add_animation("laser pointing", pointing_animation)
-
 	animation_player.animation_finished.connect(_on_pointing_finished)
 	laser_range.area_entered.connect(_on_skeptic_see_laser)
-
-	# Ustawiamy tekstury bazowe
 	set_textures(textures)
-
-	# Odpalamy animację – części będą pojawiać się po kolei, tak jak to zaprojektowałaś!
 	if animation_player:
 		animation_player.play("laser pointing")
 
@@ -65,7 +61,7 @@ func _on_skeptic_see_laser(other):
 	if player is Skeptic:
 		_set_animation_hit()
 		player.belive_points_changed.emit(laser_hit_points)
-		player.laser_seen.emit()
+		player.laser_seen.emit(peer_id)
 
 
 func _set_animation_hit():

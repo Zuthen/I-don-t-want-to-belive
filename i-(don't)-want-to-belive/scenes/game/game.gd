@@ -50,7 +50,6 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 	var total_players_in_match = multiplayer.get_peers().size() + 1
 
 	if ready_peers_for_spawn.size() == total_players_in_match:
-		print("[Gra] Wszyscy gotowi. Host balansuje role...")
 		players = GameManager.players_selections
 		_assign_roles(players)
 		var sync_data: Dictionary = { }
@@ -61,7 +60,6 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 
 @rpc("authority", "call_local", "reliable")
 func _sync_final_roles_to_all_clients(sync_data: Dictionary):
-	print("[Gra] Odrzymano oficjalne role od Hosta. Aktualizacja lokalnego GameManager...")
 	GameManager.players_selections.clear()
 
 	for peer_str in sync_data:

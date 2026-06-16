@@ -11,6 +11,7 @@ extends Player
 @onready var collision_shape = $CollisionShape2D
 @onready var warning_label = $WarningLabel
 @onready var sound = $Sound
+@onready var voice_receiver = $VoiceReceiver
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
@@ -35,7 +36,7 @@ var camera_zoom: Vector2
 var warning_time: float = 1.5
 
 signal belive_points_changed(amount: int)
-signal laser_seen
+signal laser_seen(ufo_sender_id: int)
 signal walkie_talkie_message_sent(time: float)
 signal alien_seen(peer_id: int)
 
@@ -191,32 +192,62 @@ func _on_belive_points_changed(hit_points: int):
 		ufo_wins.emit()
 
 
-func _on_laser_seen():
-	var laser_sound = Sounds.laser_sounds.pick_random()
-	sound.stream = laser_sound
-	sound.play()
+func _on_laser_seen(ufo_sender_id: int):
+	if dialog_timer and not dialog_timer.is_stopped():
+		return
+
+	if sound != null and is_instance_valid(sound):
+		var laser_sound = Sounds.laser_sounds.pick_random()
+		sound.stream = laser_sound
+		sound.play()
+
 	var dialogs = dialog_placements.get_children()
 	if dialogs.is_empty():
 		return
 
 	var dialog = dialogs.pick_random() as Marker2D
-	var target_position = dialog.global_position + global_position
-	var icon_placeholder = icon_placeholder_scene.instantiate()
+	var target_position = global_position + dialog.position
 
-	icon_placeholder.accepts_role = [Player.Role.UFO, Player.Role.SKEPTIC] as Array[Player.Role]
-	icon_placeholder.icon = preload("uid://ddjkfec0jsuw")
-	get_tree().root.add_child(icon_placeholder)
-
-	icon_placeholder.global_position = target_position
-	icon_placeholder.setup(Player.Role.SKEPTIC, icon_placeholder.accepts_role)
-
-	dialog_timer.timeout.connect(func(): _on_dialog_timer_timeout(icon_placeholder), CONNECT_ONE_SHOT)
-	dialog_timer.start()
+	request_icon_spawn_on_server.rpc(target_position, ufo_sender_id, multiplayer.get_unique_id(), "angry")
 
 
-func _on_dialog_timer_timeout(node: Node2D):
-	if is_instance_valid(node):
-		node.queue_free()
+@rpc("any_peer", "call_local", "reliable")
+func request_icon_spawn_on_server(target_position: Vector2, sender_id: int, target_id: int, icon_ref: String):
+	if not multiplayer.is_server():
+		return
+
+	if MultiplayerFeatures.server_icon_cooldowns.has(target_id):
+		return
+	MultiplayerFeatures.server_icon_cooldowns.append(target_id)
+
+	var is_laser = true if icon_ref == "angry" else false
+	var spawn_data = {
+		"type": "icon",
+		"global_position": target_position,
+		"peer_id": target_id,
+		"icon_key": icon_ref,
+		"sender_id": sender_id,
+		"target_id": target_id,
+		"is_laser_type": is_laser,
+	}
+
+	var current_root = get_tree().current_scene if get_tree().current_scene else get_tree().root
+	var spawner = current_root.find_child("MultiplayerSpawner", true, false)
+
+	if spawner:
+		spawner.spawn(spawn_data)
+
+		get_tree().create_timer(3.0).timeout.connect(
+			func():
+				if MultiplayerFeatures.server_icon_cooldowns.has(target_id):
+					MultiplayerFeatures.server_icon_cooldowns.erase(target_id),
+			CONNECT_ONE_SHOT,
+		)
+
+
+func _hide_emote():
+	if is_instance_valid(voice_receiver) and is_instance_valid(voice_receiver.emote_placeholder):
+		voice_receiver.emote_placeholder.visible = false
 
 
 func _on_skeptic_find_other_skeptic(area: Area2D):
@@ -224,45 +255,104 @@ func _on_skeptic_find_other_skeptic(area: Area2D):
 		skeptics_win.emit()
 
 
-func _play_captured_animation(texture: Texture2D, target_position):
+func _play_captured_animation(ufo_texture_idx: int, target_position):
 	var capture_sound = Sounds.capture_sounds.pick_random()
 	sound.stream = capture_sound
 	sound.play()
 	sprite_2d.visible = false
 	collision_area.set_deferred("monitoring", false)
 	collision_area.set_deferred("monitorable", false)
-	collision_shape.set_deferred("disabled", true)
+	if is_instance_valid(collision_shape):
+		collision_shape.set_deferred("disabled", true)
 
 	var pixel_position = get_parent().tile_map_layer.map_to_local(target_position)
 	var relative_offset = pixel_position - global_position
 	var animation = captured_animation_scene.instantiate()
 
 	movement_blocked = true
-	animation.texture = texture
-	animation.target_position = pixel_position
-	animation.time = capture_animation_time
-	animation.position = relative_offset
-	camera.zoom = Vector2(1.5, 1.5)
+
 	add_child(animation)
+	animation.set_as_top_level(true)
+	animation.z_index = 20
+	animation.global_position = pixel_position
+
+	var ufo_sprite: Sprite2D = null
+	var ufo_texture = UfosTextures.ufo_textures[ufo_texture_idx].ship
+
+	if animation.has_node("Sprite2D"):
+		ufo_sprite = animation.get_node("Sprite2D")
+		ufo_sprite.texture = ufo_texture
+	else:
+		animation.texture = ufo_texture
+
+	var was_zoom_smoothing: bool = false
+	var was_smoothing_enabled: bool = false
 
 	if is_multiplayer_authority() and is_instance_valid(camera):
-		camera.zoom = Vector2(1.5, 1.5)
-		var camera_tween = create_tween()
-		camera_tween.tween_property(camera, "offset", relative_offset, capture_animation_time) \
-				.set_trans(Tween.TRANS_CUBIC) \
-				.set_ease(Tween.EASE_OUT)
-		camera_tween.tween_callback(_capture_animation_cleanup.bind(pixel_position))
-	else:
-		var fallback_timer = get_tree().create_timer(capture_animation_time)
-		fallback_timer.timeout.connect(_capture_animation_cleanup.bind(pixel_position))
+		was_zoom_smoothing = camera.is_class("Camera2D") and camera.has_method("is_zoom_smoothing_enabled") and camera.zoom_smoothing_enabled
+		if "zoom_smoothing_enabled" in camera:
+			camera.zoom_smoothing_enabled = false
+
+		camera.zoom = Vector2(1.1, 1.1)
+		camera.anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
+
+		was_smoothing_enabled = camera.position_smoothing_enabled
+		camera.position_smoothing_enabled = false
+
+		camera.set_as_top_level(true)
+		camera.offset = Vector2.ZERO
+		camera.global_position = pixel_position
+		camera.reset_smoothing()
+
+	var main_tween = get_tree().create_tween().set_parallel(true)
+
+	animation.scale = Vector2(0.75, 0.75)
+	if is_instance_valid(ufo_sprite):
+		ufo_sprite.scale = Vector2.ONE
+
+	var target_y = pixel_position.y - 150.0
+
+	main_tween.tween_property(animation, "global_position:y", target_y, capture_animation_time) \
+			.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+
+	if is_multiplayer_authority() and is_instance_valid(camera):
+		main_tween.tween_property(camera, "global_position:y", target_y, capture_animation_time) \
+				.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+
+	main_tween.set_parallel(false)
+
+	var cleanup_callable = func(was_zoom: bool, was_smooth: bool):
+		if is_multiplayer_authority() and is_instance_valid(camera):
+			if "zoom_smoothing_enabled" in camera:
+				camera.zoom_smoothing_enabled = was_zoom
+			camera.position_smoothing_enabled = was_smooth
+
+		if is_instance_valid(animation):
+			animation.queue_free()
+
+		_capture_animation_cleanup(pixel_position)
+
+	var bound_cleanup = cleanup_callable.bind(was_zoom_smoothing, was_smoothing_enabled)
+	main_tween.tween_callback(bound_cleanup)
 
 
 func _capture_animation_cleanup(pixel_position: Vector2):
 	sprite_2d.visible = true
 	movement_blocked = false
+	global_position = pixel_position
+	collision_area.set_deferred("monitoring", true)
+	collision_area.set_deferred("monitorable", true)
+	if is_instance_valid(collision_shape):
+		collision_shape.set_deferred("disabled", false)
+
 	if is_multiplayer_authority() and is_instance_valid(camera):
+		camera.set_as_top_level(false)
 		camera.offset = Vector2.ZERO
 		camera.zoom = camera_zoom
+
+		camera.position = Vector2.ZERO
+		camera.reset_smoothing()
+
 	rpc("_teleport_network_rpc", pixel_position)
 
 
@@ -307,9 +397,8 @@ func _teleport_network_rpc(pixel_position: Vector2):
 @rpc("any_peer", "call_local", "reliable")
 func trigger_captured_effects_network(ufo_index: int, target_pos: Vector2i):
 	if is_multiplayer_authority():
-		var ufo_texture = UfosTextures.ufo_textures[ufo_index].ship
 		belive_points_changed.emit(3)
-		_play_captured_animation(ufo_texture, target_pos)
+		_play_captured_animation(ufo_index, target_pos)
 
 
 func _on_crashed_ufo_discovered(ufo_peer_id: int):
@@ -329,6 +418,8 @@ func _on_alien_seen(alien_peer_id: int):
 
 
 func animate(direction: Vector2):
+	if not is_inside_tree() or animation_player == null:
+		return
 	var directions = {
 		"down": Vector2.DOWN,
 		"up": Vector2.UP,

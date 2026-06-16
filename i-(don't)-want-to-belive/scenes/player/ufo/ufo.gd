@@ -231,6 +231,7 @@ func server_spawn_laser(position: Vector2):
 			"type": "laser",
 			"global_position": position,
 			"color_idx": skin_idx,
+			"peer_id": multiplayer.get_unique_id(),
 		}
 		game.multiplayer_spawner.spawn(laser_data)
 

@@ -5,7 +5,9 @@ var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://m52fuwcrlo2k")
 var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
 var laser_scene = preload("uid://dnsiqidfpctrc")
+var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var local_ui: UserInterface
+var server_icon_cooldowns: Array[int] = []
 
 
 func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
@@ -40,10 +42,28 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				node = laser_scene.instantiate()
 				node.z_index = 11
 				node.name = "Laser"
+			"icon":
+				node = icon_placeholder_scene.instantiate()
+				node.z_index = 15
+				node.name = "LaserWarningIcon_" + str(randi())
+				if data.has("global_position"):
+					var target_pos: Vector2 = data.global_position
+					node.net_target_pos = target_pos
+					node.tree_entered.connect(
+						func():
+							node.position = Vector2.ZERO
+							node.global_position = target_pos,
+						CONNECT_ONE_SHOT,
+					)
+				node.net_icon_key = data.get("icon_key", "call")
+				node.net_sender_id = data.get("sender_id", 0)
+				node.net_target_id = data.get("target_id", 0)
+				node.net_is_laser_type = data.get("is_laser_type", false)
+				return node
 			_:
 				return null
 
-		if data.has("spawn_position") and type != "laser":
+		if data.has("spawn_position") and type != "laser" and type != "icon":
 			var local_pos = tile_map.map_to_local(data.spawn_position)
 			node.tree_entered.connect(func(): node.global_position = local_pos, CONNECT_ONE_SHOT)
 
@@ -63,6 +83,10 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 							node.global_position = target_pos,
 						CONNECT_ONE_SHOT,
 					)
+				if data.has("peer_id"):
+					node.peer_id = data.peer_id
+				return node
+			"icon":
 				return node
 			"ufo", "skeptic":
 				if data.has("skin_idx"):
@@ -74,15 +98,15 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 			get_tree().call_group("local_player", "remove_from_group", "local_player")
 			node.add_to_group("local_player")
 
-		node.set_multiplayer_authority(data.peer_id)
+		node.set_deferred("multiplayer_authority", data.peer_id)
 
 		var sync_node = node.get_node_or_null("PlayerInputSynchronizer")
 		if is_instance_valid(sync_node):
-			sync_node.set_multiplayer_authority(data.peer_id)
+			sync_node.set_deferred("multiplayer_authority", data.peer_id)
 
 		var pos_sync = node.get_node_or_null("MultiplayerSynchronizer")
 		if is_instance_valid(pos_sync):
-			pos_sync.set_multiplayer_authority(data.peer_id)
+			pos_sync.set_deferred("multiplayer_authority", data.peer_id)
 
 		if multiplayer.is_server():
 			call_deferred("_force_refresh_visibility")
@@ -137,10 +161,29 @@ func broadcast_walkie_talkie(message_content: String):
 			local_ui.walkie_talkie_message.setup(label_type, message_content)
 
 
-func _on_network_node_spawned(node: Node):
+func _on_network_node_spawned(_node: Node):
 	await get_tree().process_frame
 	await get_tree().process_frame
 	_force_refresh_visibility()
+
+
+func get_role_by_peer_id(peer_id: int) -> Player.Role:
+	if "players_selections" in GameManager:
+		for pref in GameManager.players_selections:
+			if pref.peer_id == peer_id:
+				if pref.type.to_lower() == "alien":
+					return Player.Role.ALIEN
+				elif pref.type.to_lower() == "ufo":
+					return Player.Role.UFO
+				else:
+					return Player.Role.SKEPTIC
+
+	var all_actual_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
+	for p in all_actual_players:
+		if "id" in p and p.id == peer_id:
+			return p.role
+
+	return Player.Role.SKEPTIC
 
 
 func get_local_player_role() -> Player.Role:
