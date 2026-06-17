@@ -7,8 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="3_rqagm"]
 [ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="4_2rbxb"]
 [ext_resource type="PackedScene" uid="uid://j1td5xtbpfc1" path="res://scenes/ui/lobby/skin_slider.tscn" id="6_cyxd6"]
-[ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="8_24obi"]
-[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="9_cyxd6"]
+[ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="9_gj1jc"]
 [ext_resource type="Texture2D" uid="uid://dshxw3x2dr2n6" path="res://assets/ui/share1.png" id="9_vfpwc"]
 [ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="10_tprm0"]
 [ext_resource type="PackedScene" uid="uid://8a8u2iqtqs2w" path="res://scenes/ui/lobby/text_with_background.tscn" id="11_gj1jc"]
@@ -30,11 +29,6 @@ PopupMenu/constants/icon_max_width = 32
 font = ExtResource("4_2rbxb")
 font_size = 12
 font_color = Color(1, 0.81960785, 0.101960786, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_7vhxf"]
-font = ExtResource("9_cyxd6")
-font_size = 23
-font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cyxd6"]
 
@@ -130,29 +124,13 @@ layout_mode = 2
 [node name="SkepticSkinSlider" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=2009941466 instance=ExtResource("6_cyxd6")]
 layout_mode = 2
 
-[node name="Confirm" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1122357887]
-modulate = Color(0.117, 0.27689996, 0.65, 1)
-layout_mode = 2
-size_flags_horizontal = 4
-texture_normal = ExtResource("8_24obi")
-
-[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer/Confirm" unique_id=1075860301]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.0
-offset_right = -1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Potwierdź"
-label_settings = SubResource("LabelSettings_7vhxf")
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="HostLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1261512671]
 modulate = Color(1, 0.81960785, 0.101960786, 1)
 layout_mode = 2
+
+[node name="Confirm" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1723459190 instance=ExtResource("9_gj1jc")]
+layout_mode = 2
+label_text = "Potwierdź"
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer" unique_id=800251229]
 layout_mode = 2

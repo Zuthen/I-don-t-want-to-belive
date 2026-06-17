@@ -8,7 +8,6 @@ extends Control
 @onready var players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/Players
 @onready var confirm_button = $MarginContainer/HBoxContainer/VBoxContainer/Confirm
 @onready var ready_players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/ReadyPlayers
-@onready var confirm_button_label = $MarginContainer/HBoxContainer/VBoxContainer/Confirm/Label
 @onready var host_label = $MarginContainer/HBoxContainer/VBoxContainer/HostLabel
 @onready var copy_button = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton
 @onready var tooltip = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton/Tooltip
@@ -189,7 +188,7 @@ func _request_current_ready_count():
 
 func _on_all_players_ready():
 	if is_multiplayer_authority():
-		confirm_button_label.text = "Rozpocznij grę"
+		confirm_button.update_label("Rozpocznij grę")
 		confirm_button.set_deferred("visible", true)
 		confirm_button.pressed.disconnect(_on_preferences_set)
 		confirm_button.pressed.connect(_on_start_game)

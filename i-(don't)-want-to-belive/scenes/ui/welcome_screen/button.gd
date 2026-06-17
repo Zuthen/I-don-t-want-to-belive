@@ -6,3 +6,7 @@ extends TextureButton
 
 func _ready():
 	label.text = label_text
+
+
+func update_label(text: String):
+	label.text = text

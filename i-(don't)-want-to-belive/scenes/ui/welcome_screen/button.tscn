@@ -10,6 +10,8 @@ font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
 
 [node name="Button" type="TextureButton" unique_id=1723459190]
 custom_minimum_size = Vector2(192, 64)
+size_flags_horizontal = 4
+size_flags_vertical = 4
 texture_normal = ExtResource("1_surop")
 script = ExtResource("2_qhspo")
 
@@ -20,7 +22,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "Utwórz nową grę"
 label_settings = SubResource("LabelSettings_4ak4v")
 horizontal_alignment = 1
 vertical_alignment = 1
