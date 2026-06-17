@@ -182,6 +182,49 @@ func create_map(map_seed: int = 0):
 	return find_skeptics_positions(areas.paths, random)
 
 
+func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumberGenerator) -> Array[Vector2i]:
+	var valid_dirs: Dictionary[String, Vector2i] = { }
+	var valid_ways: Dictionary[String, Vector2i] = { }
+	var destinations = directions(2)
+	var ways_to_destinations = directions(1)
+
+	for key in destinations:
+		var dest_vec = destinations[key]
+
+		if not ways_to_destinations.has(key):
+			continue
+
+		var way_vec = ways_to_destinations[key]
+		var next = position + dest_vec
+
+		if next == previous:
+			continue
+		if paths.has(next):
+			continue
+		if next.x < MapSettings.min_position.x or next.x > MapSettings.max_position.x:
+			continue
+		if next.y < MapSettings.min_position.y or next.y > MapSettings.max_position.y:
+			continue
+
+		valid_dirs[key] = dest_vec
+		valid_ways[key] = way_vec
+
+	if valid_dirs.is_empty():
+		var random_index = random.randi() % paths.size()
+		var new_start = paths[random_index]
+		return find_next_path(new_start, Vector2i(-9999, -9999), random)
+
+	var keys = valid_dirs.keys()
+	var random_key_index = random.randi() % keys.size()
+	var key = keys[random_key_index]
+
+	var next_node = position + valid_dirs[key]
+	var next_2 = position + valid_ways[key]
+
+	paths.append_array([next_node, next_2])
+	return [next_node, next_2]
+
+
 func genereate_map(map_seed: int = 0):
 	random = RandomNumberGenerator.new()
 	random.seed = map_seed
@@ -189,7 +232,8 @@ func genereate_map(map_seed: int = 0):
 	var rand_x = random.randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
 	var rand_y = random.randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
 	var start: Vector2i = Vector2i(rand_x, rand_y)
-	var next: Array[Vector2i] = find_next_path(start, Vector2i.ZERO, random)
+	paths.append(start)
+	var next: Array[Vector2i] = find_next_path(start, Vector2i(-9999, -9999), random)
 
 	for i in range(MapSettings.paths_tiles):
 		var way = find_next_path(next[0], next[1], random)
@@ -261,47 +305,6 @@ func directions(step: int) -> Dictionary:
 		"left": Vector2i(-step, 0),
 		"right": Vector2i(step, 0),
 	}
-
-
-func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumberGenerator) -> Array[Vector2i]:
-	var valid_dirs: Dictionary[String, Vector2i] = { }
-	var valid_ways: Dictionary[String, Vector2i] = { }
-	var destinations = directions(2)
-	var ways_to_destinations = directions(1)
-
-	for key in destinations:
-		var dest_vec = destinations[key]
-
-		if not ways_to_destinations.has(key):
-			continue
-
-		var way_vec = ways_to_destinations[key]
-		var next = position + dest_vec
-		if next == previous:
-			continue
-		if paths.has(next):
-			continue
-		if next.x < MapSettings.min_position.x or next.x > MapSettings.max_position.x:
-			continue
-		if next.y < MapSettings.min_position.y or next.y > MapSettings.max_position.y:
-			continue
-
-		valid_dirs[key] = dest_vec
-		valid_ways[key] = way_vec
-
-	if valid_dirs.is_empty():
-		var random_index = random.randi() % paths.size()
-		var new_path = paths[random_index]
-		return find_next_path(new_path, previous, random)
-
-	var keys = valid_dirs.keys()
-	var random_key_index = random.randi() % keys.size()
-	var key = keys[random_key_index]
-
-	var next_node = position + valid_dirs[key]
-	var next_2 = position + valid_ways[key]
-	paths.append_array([next_node, next_2])
-	return [position + valid_dirs[key], position + valid_ways[key]]
 
 
 func find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberGenerator) -> Array[Vector2i]:
