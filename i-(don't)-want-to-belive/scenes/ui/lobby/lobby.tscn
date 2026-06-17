@@ -3,12 +3,15 @@
 [ext_resource type="FontFile" uid="uid://c6bbdf1ltbu1b" path="res://assets/fonts/Orbitron-VariableFont_wght.ttf" id="1_5t5el"]
 [ext_resource type="Script" uid="uid://d1sucjjwx883e" path="res://scenes/ui/lobby/lobby.gd" id="1_rqagm"]
 [ext_resource type="Texture2D" uid="uid://dhsp46crp15wo" path="res://assets/characters/female/tile_0105.png" id="2_2rbxb"]
+[ext_resource type="Texture2D" uid="uid://diuojxfyrhoyv" path="res://assets/objects/stars/star_02.png" id="2_bxh51"]
 [ext_resource type="Texture2D" uid="uid://fehu3j1x7vn" path="res://assets/characters/ufos/shipYellow_manned.png" id="3_rqagm"]
 [ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="4_2rbxb"]
 [ext_resource type="PackedScene" uid="uid://j1td5xtbpfc1" path="res://scenes/ui/lobby/skin_slider.tscn" id="6_cyxd6"]
 [ext_resource type="Texture2D" uid="uid://cefba5lldjbo3" path="res://assets/ui/button_rectangle_depth_flat.png" id="8_24obi"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="9_cyxd6"]
 [ext_resource type="Texture2D" uid="uid://dshxw3x2dr2n6" path="res://assets/ui/share1.png" id="9_vfpwc"]
+[ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="10_tprm0"]
+[ext_resource type="PackedScene" uid="uid://8a8u2iqtqs2w" path="res://scenes/ui/lobby/text_with_background.tscn" id="11_gj1jc"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bthuv"]
 font = ExtResource("1_5t5el")
@@ -57,6 +60,22 @@ offset_top = -20.0
 offset_right = 851.0
 offset_bottom = 712.0
 color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
+
+[node name="Stars" type="Node" parent="." unique_id=1601477543]
+
+[node name="small" type="Sprite2D" parent="Stars" unique_id=501698829]
+position = Vector2(47.00006, 394.99997)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_bxh51")
+
+[node name="Earth" type="TextureRect" parent="." unique_id=101446406]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 325.0
+offset_right = 1278.0
+offset_bottom = 1605.0
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("10_tprm0")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1013880461]
 layout_mode = 1
@@ -144,10 +163,10 @@ theme_override_constants/margin_right = 10
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/MarginContainer" unique_id=232045769]
 layout_mode = 2
+theme_override_constants/separation = 28
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=698032714]
 layout_mode = 2
-size_flags_vertical = 0
 theme_override_constants/separation = 22
 alignment = 2
 
@@ -156,7 +175,6 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
 theme_override_colors/font_color = Color(1, 0.81960785, 0.101960786, 1)
-theme_override_fonts/font = null
 theme_override_font_sizes/font_size = 20
 text = "Nazwa pokoju"
 
@@ -189,11 +207,8 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="AboutRole" type="RichTextLabel" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=1377043126]
+[node name="TextBackground" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=1490259344 instance=ExtResource("11_gj1jc")]
 layout_mode = 2
-size_flags_horizontal = 3
-bbcode_enabled = true
-fit_content = true
 
 [node name="Players" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=1734239862]
 layout_mode = 2
