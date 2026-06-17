@@ -1,15 +1,15 @@
 [gd_scene format=3 uid="uid://bqxxtb22y4v3c"]
 
-[ext_resource type="FontFile" uid="uid://yovp4qpp5pqo" path="res://assets/fonts/Kenney Rocket Square.ttf" id="1_2tght"]
 [ext_resource type="Script" uid="uid://bjpy7cdpqncfv" path="res://scenes/ui/game_ui/coordinates.gd" id="1_vcfnq"]
+[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="2_vaqch"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vcfnq"]
-font = ExtResource("1_2tght")
+font = ExtResource("2_vaqch")
 font_size = 20
 font_color = Color(0.23137255, 0.9490196, 0.52156866, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_8qnfe"]
-font = ExtResource("1_2tght")
+font = ExtResource("2_vaqch")
 font_size = 20
 font_color = Color(0.28235295, 0.85882354, 0.9843137, 1)
 

@@ -13,7 +13,9 @@
 [ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="10_xktrh"]
 [ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="12_o4vrg"]
 [ext_resource type="PackedScene" uid="uid://7tume85w3b7a" path="res://scenes/ui/welcome_screen/room_popup.tscn" id="14_4ak4v"]
+[ext_resource type="PackedScene" uid="uid://kl4f1idrmk8k" path="res://scenes/ui/icon_button.tscn" id="15_keojs"]
 [ext_resource type="PackedScene" uid="uid://chwvx8p2rsobe" path="res://scenes/ui/welcome_screen/error_dialog.tscn" id="15_xktrh"]
+[ext_resource type="Texture2D" uid="uid://coenw2bmwm82g" path="res://assets/ui/icons/door.png" id="16_jp4pw"]
 
 [sub_resource type="Animation" id="Animation_80at6"]
 length = 4.0
@@ -413,3 +415,13 @@ visible = false
 
 [node name="ErrorDialog" parent="CanvasLayer" unique_id=200765431 instance=ExtResource("15_xktrh")]
 visible = false
+
+[node name="HBoxContainer" parent="CanvasLayer" unique_id=95362926 instance=ExtResource("15_keojs")]
+
+[node name="QuitButton" parent="CanvasLayer" unique_id=2111074099 instance=ExtResource("15_keojs")]
+offset_left = 693.0
+offset_top = 655.0
+offset_right = 763.0
+offset_bottom = 695.0
+texture = ExtResource("16_jp4pw")
+label_text = "Wyjdź"

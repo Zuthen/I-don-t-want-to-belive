@@ -8,7 +8,7 @@
 [ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="4_2rbxb"]
 [ext_resource type="PackedScene" uid="uid://j1td5xtbpfc1" path="res://scenes/ui/lobby/skin_slider.tscn" id="6_cyxd6"]
 [ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="9_gj1jc"]
-[ext_resource type="Texture2D" uid="uid://dshxw3x2dr2n6" path="res://assets/ui/share1.png" id="9_vfpwc"]
+[ext_resource type="Texture2D" uid="uid://dshxw3x2dr2n6" path="res://assets/ui/icons/share1.png" id="9_vfpwc"]
 [ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="10_tprm0"]
 [ext_resource type="PackedScene" uid="uid://8a8u2iqtqs2w" path="res://scenes/ui/lobby/text_with_background.tscn" id="11_gj1jc"]
 
