@@ -2,7 +2,7 @@ extends Control
 
 @onready var faction_warning = $MarginContainer/HBoxContainer/VBoxContainer/FactionWarning
 @onready var factions = $MarginContainer/HBoxContainer/VBoxContainer/Factions
-@onready var about_role = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/AboutRole
+@onready var about_role = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/TextBackground/AboutRole
 @onready var match_id_label = $MarginContainer/MatchId
 @onready var room_name_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/RoomName
 @onready var players_label = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/Players
