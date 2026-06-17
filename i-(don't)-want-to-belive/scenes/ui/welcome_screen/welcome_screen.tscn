@@ -11,8 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://b3o6lacdx8gpt" path="res://assets/objects/stars/star_05.png" id="4_m7lbu"]
 [ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="10_tk3c2"]
 [ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="10_xktrh"]
-[ext_resource type="Texture2D" uid="uid://b0b803uoec4md" path="res://assets/ui/button_rectangle_depth.png" id="11_80at6"]
-[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="12_ejsg3"]
+[ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="12_o4vrg"]
 [ext_resource type="PackedScene" uid="uid://7tume85w3b7a" path="res://scenes/ui/welcome_screen/room_popup.tscn" id="14_4ak4v"]
 [ext_resource type="PackedScene" uid="uid://chwvx8p2rsobe" path="res://scenes/ui/welcome_screen/error_dialog.tscn" id="15_xktrh"]
 
@@ -292,18 +291,6 @@ gravity = Vector3(0, 0, 0)
 scale_min = 0.049999997
 scale_max = 0.089999996
 
-[sub_resource type="LabelSettings" id="LabelSettings_4ak4v"]
-font = ExtResource("12_ejsg3")
-font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_xktrh"]
-font = ExtResource("12_ejsg3")
-font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_quars"]
-font = ExtResource("12_ejsg3")
-font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
-
 [node name="WelcomeScreen" type="Node2D" unique_id=1082575388]
 script = ExtResource("1_ejsg3")
 
@@ -409,57 +396,17 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 100
 
-[node name="CreateGame" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=10049442]
-custom_minimum_size = Vector2(192, 64)
+[node name="CreateGame" parent="CanvasLayer/Buttons" unique_id=1723459190 instance=ExtResource("12_o4vrg")]
 layout_mode = 2
-texture_normal = ExtResource("11_80at6")
+label_text = "Utwórz nową grę"
 
-[node name="Label" type="Label" parent="CanvasLayer/Buttons/CreateGame" unique_id=1506075115]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Utwórz nową grę"
-label_settings = SubResource("LabelSettings_4ak4v")
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 2
-
-[node name="Join" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=1283684816]
-custom_minimum_size = Vector2(192, 64)
+[node name="Join" parent="CanvasLayer/Buttons" unique_id=565622636 instance=ExtResource("12_o4vrg")]
 layout_mode = 2
-texture_normal = ExtResource("11_80at6")
+label_text = "Dołącz"
 
-[node name="Label" type="Label" parent="CanvasLayer/Buttons/Join" unique_id=1950270238]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Dołącz do gry"
-label_settings = SubResource("LabelSettings_xktrh")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="QuickGame" type="TextureButton" parent="CanvasLayer/Buttons" unique_id=241338468]
-custom_minimum_size = Vector2(192, 64)
+[node name="QuickGame" parent="CanvasLayer/Buttons" unique_id=1335872747 instance=ExtResource("12_o4vrg")]
 layout_mode = 2
-texture_normal = ExtResource("11_80at6")
-
-[node name="Label" type="Label" parent="CanvasLayer/Buttons/QuickGame" unique_id=1103691594]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Losuj grę"
-label_settings = SubResource("LabelSettings_quars")
-horizontal_alignment = 1
-vertical_alignment = 1
+label_text = "Losuj grę"
 
 [node name="RoomPopup" parent="CanvasLayer" unique_id=321821047 instance=ExtResource("14_4ak4v")]
 visible = false
