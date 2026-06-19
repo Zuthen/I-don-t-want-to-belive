@@ -334,3 +334,8 @@ func reconnect_after_error_dismissed():
 
 	is_connected_to_server = true
 	connection_established.emit()
+
+
+func leave_room():
+	NakamaNetworkManager.multiplayer_bridge.leave()
+	print("[UI] Mostek Nakamy powiadomiony.")

@@ -24,6 +24,9 @@ func _ready():
 
 
 func _process(_delta):
+	if not multiplayer or not multiplayer.has_multiplayer_peer():
+		return
+
 	if not tile_map_layer:
 		return
 

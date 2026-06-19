@@ -56,6 +56,9 @@ func _ready():
 
 
 func _process(_delta):
+	if not multiplayer or not multiplayer.has_multiplayer_peer():
+		return
+
 	if not is_multiplayer_authority():
 		return
 

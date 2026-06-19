@@ -9,13 +9,13 @@ extends Node2D
 
 
 func _ready():
+	connect_buttons()
+	NakamaNetworkManager.connection_established.connect(_on_connect)
+
 	if NakamaNetworkManager.is_connected_to_server:
-		buttons.visible = true
+		_on_connect()
 	else:
 		buttons.visible = false
-	connect_buttons()
-	buttons.visible = false
-	NakamaNetworkManager.connection_established.connect(_on_connect)
 
 
 func connect_buttons():
