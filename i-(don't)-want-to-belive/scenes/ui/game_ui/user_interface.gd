@@ -10,6 +10,7 @@ class_name UserInterface
 @onready var belive_points_counter_background = $Belive_Points_Counter_Background
 @onready var belive_points_counter = $Belive_Points_Counter
 @onready var walkie_talkie_message = $WalkieTalkieMessage
+@onready var main_menu_button = $WinInfo/MainMenuButton
 
 var ufos_sprites
 var hit_points: int = 0
@@ -26,7 +27,7 @@ func _ready():
 	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
 	win_info.visible = false
-
+	main_menu_button.pressed.connect(_go_to_main_menu)
 	if is_instance_valid(q):
 		q.set_icon_text("")
 	if is_instance_valid(e):
@@ -62,6 +63,11 @@ func _ready():
 		for child in get_tree().root.get_children():
 			if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
 				child.queue_free()
+
+
+func _go_to_main_menu():
+	var main_menu_scene: PackedScene = load("uid://8hnv34c0paf")
+	get_tree().change_scene_to_packed(main_menu_scene)
 
 
 func _on_player_role_assigned():
