@@ -71,35 +71,25 @@ func setup_win_section():
 
 
 func _go_to_main_menu():
-	# Lokalna natychmiastowa blokada u gracza klikającego
 	visible = false
 	main_menu_button.disabled = true
-
-	# Klient wysyła prośbę do Hosta (ID = 1)
 	_request_game_over_from_server.rpc_id(1)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func _request_game_over_from_server():
 	if multiplayer.is_server():
-		print("[UI][SERVER] Prośba odebrana. Wysyłam rozkaz ucieczki na ekran ładowania!")
-		# Serwer wysyła rozkaz natychmiastowej zmiany sceny dla WSZYSTKICH 4 graczy
 		_network_broadcast_game_over.rpc_id(0)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func _network_broadcast_game_over():
-	# Blokujemy interfejs u każdego na wszelki wypadek
 	visible = false
 	main_menu_button.disabled = true
-
 	if is_instance_valid(MultiplayerFeatures) and MultiplayerFeatures.local_ui == self:
 		MultiplayerFeatures.local_ui = null
 
-	# ZMIANA: Zamiast bawić się w queue_free(), wyciszanie grup i resetowanie peera tutaj,
-	# po prostu ładujemy naszą nową, czystą scenę przejściową.
-	# Ta zmiana automatycznie i bezpiecznie usunie węzeł Game oraz stare UI ze struktury drzewa!
-	var cleanup_screen = load("uid://cl8gmmdjy0oxx") # Podmień na prawidłową ścieżkę do nowej sceny
+	var cleanup_screen = load("uid://cl8gmmdjy0oxx")
 	if cleanup_screen:
 		get_tree().change_scene_to_packed(cleanup_screen)
 

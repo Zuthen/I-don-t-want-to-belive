@@ -1,15 +1,15 @@
 [gd_scene format=3 uid="uid://cl8gmmdjy0oxx"]
 
-[ext_resource type="Script" uid="uid://dxaj5jc68xbi3" path="res://scenes/ui/network_cleanup_screen.gd" id="1_tfh6w"]
-[ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="2_rfpe1"]
-[ext_resource type="Texture2D" uid="uid://ccmuqvey761ql" path="res://assets/objects/stars/star_09.png" id="3_ewfja"]
-[ext_resource type="Texture2D" uid="uid://buidbtnxfuv1y" path="res://assets/objects/stars/star_04.png" id="4_qgwby"]
-[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="5_hx6pa"]
+[ext_resource type="Script" uid="uid://dxaj5jc68xbi3" path="res://scenes/ui/network_cleanup_screen.gd" id="1_buxs4"]
+[ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="2_d5tjy"]
+[ext_resource type="Texture2D" uid="uid://ccmuqvey761ql" path="res://assets/objects/stars/star_09.png" id="3_8nlqx"]
+[ext_resource type="Texture2D" uid="uid://buidbtnxfuv1y" path="res://assets/objects/stars/star_04.png" id="4_wugde"]
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="5_g15b3"]
 
 [node name="NetworkCleanupScreen" type="Control" unique_id=867649157]
 layout_mode = 3
 anchors_preset = 0
-script = ExtResource("1_tfh6w")
+script = ExtResource("1_buxs4")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=162774683]
 layout_mode = 0
@@ -30,7 +30,7 @@ offset_left = 231.0
 offset_top = 96.0
 offset_right = 1511.0
 offset_bottom = 1376.0
-texture = ExtResource("2_rfpe1")
+texture = ExtResource("2_d5tjy")
 flip_h = true
 flip_v = true
 
@@ -39,7 +39,7 @@ layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 scale = Vector2(0.4, 0.4)
-texture = ExtResource("3_ewfja")
+texture = ExtResource("3_8nlqx")
 
 [node name="TextureRect3" type="TextureRect" parent="Background" unique_id=2098171306]
 layout_mode = 0
@@ -48,7 +48,7 @@ offset_top = 115.0
 offset_right = 767.0
 offset_bottom = 627.0
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("4_qgwby")
+texture = ExtResource("4_wugde")
 
 [node name="TextureRect4" type="TextureRect" parent="Background" unique_id=1991790724]
 layout_mode = 0
@@ -57,7 +57,7 @@ offset_top = 599.99994
 offset_right = 487.00006
 offset_bottom = 1112.0
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("4_qgwby")
+texture = ExtResource("4_wugde")
 
 [node name="TextureRect5" type="TextureRect" parent="Background" unique_id=1226387181]
 layout_mode = 0
@@ -66,7 +66,7 @@ offset_top = 566.99994
 offset_right = 679.0
 offset_bottom = 1079.0
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("4_qgwby")
+texture = ExtResource("4_wugde")
 
 [node name="TextureRect6" type="TextureRect" parent="Background" unique_id=47066540]
 layout_mode = 0
@@ -75,7 +75,7 @@ offset_top = 65.00001
 offset_right = 1102.0
 offset_bottom = 577.0
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("4_qgwby")
+texture = ExtResource("4_wugde")
 
 [node name="TextureRect7" type="TextureRect" parent="Background" unique_id=1075289311]
 layout_mode = 0
@@ -84,7 +84,7 @@ offset_top = 373.99997
 offset_right = 580.00006
 offset_bottom = 886.0
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("4_qgwby")
+texture = ExtResource("4_wugde")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=878465578]
 layout_mode = 1
@@ -98,6 +98,6 @@ offset_right = -412.0
 offset_bottom = -58.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_fonts/normal_font = ExtResource("5_hx6pa")
+theme_override_fonts/normal_font = ExtResource("5_g15b3")
 theme_override_font_sizes/normal_font_size = 40
 text = "Ładowanie"

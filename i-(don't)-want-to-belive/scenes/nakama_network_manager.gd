@@ -337,5 +337,16 @@ func reconnect_after_error_dismissed():
 
 
 func leave_room():
-	NakamaNetworkManager.multiplayer_bridge.leave()
-	print("[UI] Mostek Nakamy powiadomiony.")
+	if is_instance_valid(multiplayer_bridge):
+		multiplayer_bridge.leave()
+		print("[NAKAMA] Mostek Multiplayer opuścił stary mecz.")
+
+	actual_match_id = ""
+	match_name = ""
+	is_host = false
+	private = false
+
+	multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
+	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
+
+	print("[NAKAMA] Nowy potok sieciowy zainicjalizowany pomyślnie. Gotowy na nowe lobby.")
