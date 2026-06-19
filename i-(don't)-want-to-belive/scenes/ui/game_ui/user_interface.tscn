@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://d25q2or8yvuv7" path="res://assets/ui/keboard_buttons/keyboard_e.png" id="8_kw8g8"]
 [ext_resource type="Texture2D" uid="uid://cbur3mmig4oxr" path="res://assets/ui/keboard_buttons/keyboard_e_outline.png" id="9_737vb"]
 [ext_resource type="PackedScene" uid="uid://tgygvek1j0wa" path="res://scenes/ui/game_ui/walkie_talkie_message.tscn" id="11_y3ul1"]
+[ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="12_olnl4"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
 font = ExtResource("3_737vb")
@@ -73,6 +74,10 @@ label_settings = SubResource("LabelSettings_xg44s")
 horizontal_alignment = 2
 vertical_alignment = 2
 metadata/_edit_group_ = true
+
+[node name="MainMenuButton" parent="WinInfo" unique_id=1723459190 instance=ExtResource("12_olnl4")]
+layout_mode = 2
+label_text = "Wróć do menu"
 
 [node name="Belive_Points_Counter_Background" type="TextureRect" parent="." unique_id=94978155]
 layout_mode = 0

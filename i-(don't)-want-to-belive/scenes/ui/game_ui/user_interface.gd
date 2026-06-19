@@ -10,6 +10,7 @@ class_name UserInterface
 @onready var belive_points_counter_background = $Belive_Points_Counter_Background
 @onready var belive_points_counter = $Belive_Points_Counter
 @onready var walkie_talkie_message = $WalkieTalkieMessage
+@onready var main_menu_button = $WinInfo/MainMenuButton
 
 var ufos_sprites
 var hit_points: int = 0
@@ -25,8 +26,8 @@ takie latają!"
 func _ready():
 	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
-	win_info.visible = false
-
+	setup_win_section()
+	main_menu_button.pressed.connect(_go_to_main_menu)
 	if is_instance_valid(q):
 		q.set_icon_text("")
 	if is_instance_valid(e):
@@ -62,6 +63,35 @@ func _ready():
 		for child in get_tree().root.get_children():
 			if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
 				child.queue_free()
+
+
+func setup_win_section():
+	win_info.visible = false
+	main_menu_button.disabled = true
+
+
+func _go_to_main_menu():
+	visible = false
+	main_menu_button.disabled = true
+	_request_game_over_from_server.rpc_id(1)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _request_game_over_from_server():
+	if multiplayer.is_server():
+		_network_broadcast_game_over.rpc_id(0)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _network_broadcast_game_over():
+	visible = false
+	main_menu_button.disabled = true
+	if is_instance_valid(MultiplayerFeatures) and MultiplayerFeatures.local_ui == self:
+		MultiplayerFeatures.local_ui = null
+
+	var cleanup_screen = load("uid://cl8gmmdjy0oxx")
+	if cleanup_screen:
+		get_tree().change_scene_to_packed(cleanup_screen)
 
 
 func _on_player_role_assigned():
@@ -109,6 +139,7 @@ func show_ufo_victory_screen():
 	win_label.text = UFO_WINS
 	faction_label.text = "Wygrywają ufoki"
 	win_info.visible = true
+	main_menu_button.disabled = false
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -116,6 +147,7 @@ func show_skeptics_victory_screen():
 	win_label.text = SKEPTICS_WIN
 	faction_label.text = "Wygrywają sceptycy"
 	win_info.visible = true
+	main_menu_button.disabled = false
 
 
 func _on_belive_points_changed(amount):

@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://kl4f1idrmk8k"]
+
+[ext_resource type="Script" uid="uid://1e24g1egbgxb" path="res://scenes/ui/icon_button.gd" id="1_35eef"]
+[ext_resource type="Shader" uid="uid://ju0c4hi6cp5n" path="res://scenes/ui/icon_button.gdshader" id="2_8758h"]
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="3_8758h"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pyd6f"]
+shader = ExtResource("2_8758h")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 3.0000001425
+
+[node name="IconButton" type="Button" unique_id=2111074099]
+offset_left = -1.0
+offset_right = 69.0
+offset_bottom = 40.0
+flat = true
+script = ExtResource("1_35eef")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1865683485]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = -7
+alignment = 1
+
+[node name="Label" type="Label" parent="HBoxContainer" unique_id=1789916971]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8932403, 0.34896463, 0.46216196, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("3_8758h")
+theme_override_font_sizes/font_size = 20
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer" unique_id=2041576709]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/MarginContainer" unique_id=538647708]
+modulate = Color(0.8932403, 0.34896463, 0.46216196, 1)
+material = SubResource("ShaderMaterial_pyd6f")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5

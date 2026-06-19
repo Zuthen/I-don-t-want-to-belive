@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://jj3estcxvid4"]
+
+[ext_resource type="Texture2D" uid="uid://b0b803uoec4md" path="res://assets/ui/button_rectangle_depth.png" id="1_surop"]
+[ext_resource type="Script" uid="uid://yt3digimg4w6" path="res://scenes/ui/welcome_screen/button.gd" id="2_qhspo"]
+[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="2_yeav7"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4ak4v"]
+font = ExtResource("2_yeav7")
+font_color = Color(0.078431375, 0.10980392, 0.23137255, 1)
+
+[node name="Button" type="TextureButton" unique_id=1723459190]
+custom_minimum_size = Vector2(192, 64)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture_normal = ExtResource("1_surop")
+script = ExtResource("2_qhspo")
+
+[node name="Label" type="Label" parent="." unique_id=544038152]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_4ak4v")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2

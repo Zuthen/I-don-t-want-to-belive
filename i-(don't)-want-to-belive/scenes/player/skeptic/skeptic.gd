@@ -61,7 +61,6 @@ func _ready():
 		await tree_entered
 	warning_label.visible = false
 	camera_zoom = camera.zoom
-
 	belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
 	alien_seen.connect(_on_alien_seen)
@@ -321,6 +320,10 @@ func _play_captured_animation(ufo_texture_idx: int, target_position):
 	main_tween.set_parallel(false)
 
 	var cleanup_callable = func(was_zoom: bool, was_smooth: bool):
+		if not multiplayer or not multiplayer.has_multiplayer_peer():
+			if is_instance_valid(animation):
+				animation.queue_free()
+			return
 		if is_multiplayer_authority() and is_instance_valid(camera):
 			if "zoom_smoothing_enabled" in camera:
 				camera.zoom_smoothing_enabled = was_zoom
@@ -336,6 +339,8 @@ func _play_captured_animation(ufo_texture_idx: int, target_position):
 
 
 func _capture_animation_cleanup(pixel_position: Vector2):
+	if not multiplayer or not multiplayer.has_multiplayer_peer():
+		return
 	sprite_2d.visible = true
 	movement_blocked = false
 	global_position = pixel_position

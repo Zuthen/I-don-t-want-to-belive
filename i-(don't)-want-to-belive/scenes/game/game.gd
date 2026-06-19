@@ -121,33 +121,28 @@ func _assign_roles(players: Array[GameManager.Preferences]):
 					skeptics.append(skeptic_player)
 
 
-func map_to_spawn_data(skeptic_positions):
+func map_to_spawn_data(skeptic_positions) -> Array:
 	var players_data = []
+	var skeptic_count = 0
 
-	for i in range(skeptics.size()):
-		var skeptic = skeptics[i]
-		var spawn_pos = skeptic_positions[i] if i < skeptic_positions.size() else Vector2i(0, 0)
-
-		var data = {
-			"peer_id": skeptic.peer_id,
-			"type": "skeptic",
-			"spawn_position": spawn_pos,
-			"skin_idx": skeptic.skin_idx,
-		}
-		players_data.append(data)
-
-	for i in range(ufos.size()):
-		var ufo = ufos[i]
-		var rand_x = randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
-		var rand_y = randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
-		var spawn_pos = Vector2i(rand_x, rand_y)
+	for i in range(players.size()):
+		var player_pref = players[i]
 
 		var data = {
-			"peer_id": ufo.peer_id,
-			"type": "ufo",
-			"spawn_position": spawn_pos,
-			"skin_idx": ufo.skin_idx,
+			"peer_id": player_pref.peer_id,
+			"type": player_pref.type,
+			"skin_idx": player_pref.skin_idx,
 		}
+
+		if player_pref.type == "ufo":
+			var rand_x = randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
+			var rand_y = randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
+			data["spawn_position"] = Vector2i(rand_x, rand_y)
+		else:
+			var spawn_pos = skeptic_positions[skeptic_count] if skeptic_count < skeptic_positions.size() else Vector2i(0, 0)
+			data["spawn_position"] = spawn_pos
+			skeptic_count += 1
+
 		players_data.append(data)
 
 	return players_data
