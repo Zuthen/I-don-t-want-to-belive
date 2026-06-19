@@ -32,8 +32,9 @@ func _ready():
 func _on_crashed_ufo_seen(other):
 	var player = other.get_parent()
 	if player is Skeptic:
-		if not crashed_ufo_seen.is_connected(player._on_crashed_ufo_discovered):
-			crashed_ufo_seen.connect(player._on_crashed_ufo_discovered, CONNECT_ONE_SHOT)
+		if player.is_multiplayer_authority():
+			if player.has_method("_on_crashed_ufo_discovered"):
+				player._on_crashed_ufo_discovered(peer_id)
 		crashed_ufo_seen.emit(peer_id)
 
 

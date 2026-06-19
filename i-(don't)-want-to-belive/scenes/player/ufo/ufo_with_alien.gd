@@ -105,6 +105,7 @@ func _update_visibility_for_start():
 func _physics_process(_delta):
 	if not multiplayer or not multiplayer.has_multiplayer_peer():
 		return
+
 	if not is_multiplayer_authority():
 		return
 
@@ -115,10 +116,8 @@ func _physics_process(_delta):
 
 	elif current_state == State.ALIEN:
 		var is_blocked = alien.movement_blocked if "movement_blocked" in alien else false
-		if not is_blocked and is_multiplayer_authority():
-			var sync_direction = move(ALIEN_SPEED, player_input_synchronizer)
-			move_and_slide()
-			alien.animate(sync_direction)
+		if not is_blocked:
+			move(ALIEN_SPEED, player_input_synchronizer)
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -151,8 +150,8 @@ func change_state(new_state: State, ufo_index: int):
 		ufo_crashed.emit()
 		role = Player.Role.ALIEN
 		alien.role = Player.Role.ALIEN
+		visible = true
 
-		# POPRAWKA 1: Podmiana grup węzła, aby skrypt mgły zauważył zmianę tożsamości
 		if is_in_group("ufos"):
 			remove_from_group("ufos")
 		if not is_in_group("aliens"):
@@ -177,16 +176,19 @@ func change_state(new_state: State, ufo_index: int):
 		collision_layer = 1
 		collision_mask = 3
 
-		var tile_map = game.tile_map_layer
-		var current_grid_pos: Vector2i = tile_map.local_to_map(global_position)
+		if is_multiplayer_authority():
+			var tile_map = game.tile_map_layer
+			var current_grid_pos: Vector2i = tile_map.local_to_map(global_position)
 
-		if not game.paths.has(current_grid_pos):
-			var safe_tile = ufo.find_nearest_path(global_position)
-			global_position = tile_map.map_to_local(safe_tile)
-		else:
-			global_position = tile_map.map_to_local(current_grid_pos)
+			if not game.paths.has(current_grid_pos):
+				var safe_tile = ufo.find_nearest_path(global_position)
+				global_position = tile_map.map_to_local(safe_tile)
+			else:
+				global_position = tile_map.map_to_local(current_grid_pos)
 
-		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
+		await get_tree().process_frame
+		get_tree().call_group("aliens", "_update_visibility_for_local_player")
+		get_tree().call_group("ufos", "_update_visibility_for_local_player")
 
 		var fog_layer = game.tile_map_layer
 		if fog_layer:
@@ -203,3 +205,25 @@ func change_state(new_state: State, ufo_index: int):
 				Vector2(alien_camera_zoom, alien_camera_zoom),
 				0.8,
 			).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+func _update_visibility_for_local_player():
+	if not is_inside_tree():
+		return
+
+	if is_multiplayer_authority():
+		visible = true
+		alien.visible = true
+		return
+
+	var my_local_role = MultiplayerFeatures.get_local_player_role()
+
+	if current_state == State.UFO:
+		if my_local_role == Player.Role.SKEPTIC:
+			visible = false
+		else:
+			visible = true
+	elif current_state == State.ALIEN:
+		visible = true
+		alien.visible = true
+		print("[ALIEN] Wymuszam widoczność Obcego na ekranie lokalnego gracza.")
