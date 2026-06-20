@@ -188,7 +188,11 @@ func join_existing_game():
 		private = false
 		var generated_code = create_match_name()
 
-		var msg_content = { "room_code": generated_code, "player_count": 1 }
+		var msg_content = {
+			"room_code": generated_code,
+			"player_count": 1,
+			"version": VersionManager.get_version_string(), # <-- NOWE POLE
+		}
 		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
 		connect_to_named_room(generated_code)
 
@@ -211,15 +215,19 @@ func find_active_room() -> String:
 	for msg in history_result.messages:
 		var content = JSON.parse_string(msg.content)
 		if content and content.has("room_code"):
-			var msg_time = Time.get_unix_time_from_datetime_string(msg.create_time)
+			var room_version = content.get("version", "0.0.0")
+			if room_version != VersionManager.GAME_VERSION:
+				print("[MATCHMAKING] Znaleziono pokój, ale wersja się nie zgadza (", room_version, "). Pomijam.")
+				continue
+				var msg_time = Time.get_unix_time_from_datetime_string(msg.create_time)
 
-			if time - msg_time < 300:
-				var graczy_w_srodku = content.get("player_count", 1)
-				if graczy_w_srodku >= 4:
-					continue
+				if time - msg_time < 300:
+					var graczy_w_srodku = content.get("player_count", 1)
+					if graczy_w_srodku >= 4:
+						continue
 
-				var found_code = content["room_code"]
-				return found_code
+					var found_code = content["room_code"]
+					return found_code
 
 	return ""
 
@@ -251,7 +259,7 @@ func escape_full_room_and_host_new():
 	var generated_code = create_match_name()
 
 	if public_chat_channel:
-		var msg_content = { "room_code": generated_code }
+		var msg_content = { "room_code": generated_code, "version": VersionManager.get_version_string(), "player_count": 1 }
 		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
 
 	connect_to_named_room(generated_code)
