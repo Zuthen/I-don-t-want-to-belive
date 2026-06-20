@@ -13,6 +13,7 @@ extends Control
 @onready var tooltip = $MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton/Tooltip
 @onready var ufo_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider
 @onready var skeptic_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/SkepticSkinSlider
+@onready var autoplay = $MarginContainer/HBoxContainer/VBoxContainer/Autoplay
 
 var ufo_skin_index: int = 0
 var skeptic_skin_index: int = 0
@@ -96,9 +97,10 @@ func _connect():
 		if net.multiplayer_peer != null:
 			var my_id = net.get_unique_id()
 			var host_id = get_multiplayer_authority()
-
-			if my_id != host_id:
+			var host = my_id == host_id
+			if !host:
 				_request_current_ready_count.rpc_id(host_id)
+			autoplay.setup(host)
 
 
 func _set_game_data():
@@ -188,10 +190,13 @@ func _request_current_ready_count():
 
 func _on_all_players_ready():
 	if is_multiplayer_authority():
-		confirm_button.update_label("Rozpocznij grę")
-		confirm_button.set_deferred("visible", true)
-		confirm_button.pressed.disconnect(_on_preferences_set)
-		confirm_button.pressed.connect(_on_start_game)
+		if autoplay.autoplay:
+			_on_start_game()
+		else:
+			confirm_button.update_label("Rozpocznij grę")
+			confirm_button.set_deferred("visible", true)
+			confirm_button.pressed.disconnect(_on_preferences_set)
+			confirm_button.pressed.connect(_on_start_game)
 		GameManager.players_selections = players_requests
 
 
