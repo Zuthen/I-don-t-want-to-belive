@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://j1td5xtbpfc1" path="res://scenes/ui/lobby/skin_slider.tscn" id="6_cyxd6"]
 [ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="9_gj1jc"]
 [ext_resource type="Texture2D" uid="uid://dshxw3x2dr2n6" path="res://assets/ui/icons/share1.png" id="9_vfpwc"]
+[ext_resource type="PackedScene" uid="uid://bi5ram0ollyyb" path="res://scenes/ui/lobby/autoplay.tscn" id="10_bxh51"]
 [ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="10_tprm0"]
 [ext_resource type="PackedScene" uid="uid://8a8u2iqtqs2w" path="res://scenes/ui/lobby/text_with_background.tscn" id="11_gj1jc"]
 
@@ -58,7 +59,7 @@ color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
 [node name="Stars" type="Node" parent="." unique_id=1601477543]
 
 [node name="small" type="Sprite2D" parent="Stars" unique_id=501698829]
-position = Vector2(47.00006, 394.99997)
+position = Vector2(58, 637)
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("2_bxh51")
 
@@ -131,6 +132,9 @@ layout_mode = 2
 [node name="Confirm" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1723459190 instance=ExtResource("9_gj1jc")]
 layout_mode = 2
 label_text = "Potwierdź"
+
+[node name="Autoplay" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=206744738 instance=ExtResource("10_bxh51")]
+layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer" unique_id=800251229]
 layout_mode = 2
