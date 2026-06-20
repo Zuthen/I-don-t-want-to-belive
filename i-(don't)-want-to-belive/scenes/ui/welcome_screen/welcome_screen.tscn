@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://kl4f1idrmk8k" path="res://scenes/ui/icon_button.tscn" id="15_keojs"]
 [ext_resource type="PackedScene" uid="uid://chwvx8p2rsobe" path="res://scenes/ui/welcome_screen/error_dialog.tscn" id="15_xktrh"]
 [ext_resource type="Texture2D" uid="uid://coenw2bmwm82g" path="res://assets/ui/icons/door.png" id="16_jp4pw"]
+[ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="17_jp4pw"]
 
 [sub_resource type="Animation" id="Animation_80at6"]
 length = 4.0
@@ -293,6 +294,12 @@ gravity = Vector3(0, 0, 0)
 scale_min = 0.049999997
 scale_max = 0.089999996
 
+[sub_resource type="LabelSettings" id="LabelSettings_keojs"]
+font = ExtResource("17_jp4pw")
+font_size = 20
+outline_size = 10
+outline_color = Color(0.8932403, 0.34896463, 0.46216196, 1)
+
 [node name="WelcomeScreen" type="Node2D" unique_id=1082575388]
 script = ExtResource("1_ejsg3")
 
@@ -425,3 +432,11 @@ offset_right = 763.0
 offset_bottom = 695.0
 texture = ExtResource("16_jp4pw")
 label_text = "Wyjdź"
+
+[node name="VersionLabel" type="Label" parent="CanvasLayer" unique_id=1793830956]
+offset_left = 12.0
+offset_top = 676.0
+offset_right = 98.0
+offset_bottom = 699.0
+text = "Wersja gry:"
+label_settings = SubResource("LabelSettings_keojs")

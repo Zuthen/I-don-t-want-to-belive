@@ -6,9 +6,11 @@ extends Node2D
 @onready var quick_game = $CanvasLayer/Buttons/QuickGame
 @onready var buttons = $CanvasLayer/Buttons
 @onready var quit_button = $CanvasLayer/QuitButton
+@onready var version_label = $CanvasLayer/VersionLabel
 
 
 func _ready():
+	version_label.text = "v" + VersionManager.GAME_VERSION
 	connect_buttons()
 	NakamaNetworkManager.connection_established.connect(_on_connect)
 
