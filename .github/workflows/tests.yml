@@ -22,11 +22,15 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Setup Godot (Mono Version)
+      - name: Setup Godot (Mono Version with Templates)
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.6.2
           use-mono: true
+          include-templates: true
+
+      - name: Clear NuGet Cache
+        run: dotnet nuget locals all --clear
 
       - name: Import project
         working-directory: i-(don't)-want-to-belive
