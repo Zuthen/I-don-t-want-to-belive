@@ -54,7 +54,7 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
         run: |
-          curl -L -o butler.zip https://itch.ovh
-          unzip butler.zip
+          curl -L -o dl-butler.zip https://itch.ovh
+          unzip dl-butler.zip
           chmod +x butler
           ./butler push build/ Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
