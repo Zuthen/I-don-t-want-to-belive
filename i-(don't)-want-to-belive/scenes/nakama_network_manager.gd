@@ -67,26 +67,47 @@ func _ready():
 
 func connect_to_nakama_server():
 	var server_key = "defaultkey"
-	var server_host = "127.0.0.1"
-	var port = 7350
-	var scheme = "http"
 
-	client = Nakama.create_client(server_key, server_host, port, scheme)
+	# Twój w pełni działający, produkcyjny host:
+	var server_host = "nie-chc-uwierzy.fly.dev"
+
+	# Łączymy się przez bezpieczny port chmury Fly (HTTPS)
+	var port = 443
+	var scheme = "https"
+
+	print("[DEBUG 1] Inicjalizacja klienta Nakama na Fly.io...")
+	# Podajemy 'true' na końcu, co włącza szyfrowanie SSL/TLS w Godocie
+	client = Nakama.create_client(server_key, server_host, port, scheme, 10, true)
+
 	var unique_id = OS.get_unique_id() + str(randi() % 10000)
-	session = await client.authenticate_device_async(unique_id)
+	var vars = { "game_version": VersionManager.get_version() }
+
+	print("[DEBUG 2] Przed authenticate_device_async. ID: ", unique_id)
+	session = await client.authenticate_device_async(unique_id, "", true, vars)
+
+	print("[DEBUG 3] Po authenticate_device_async. Czy jest wyjątek? ", session.is_exception())
 
 	if session.is_exception():
+		print("[NAKAMA][ERROR] Błąd połączenia z Fly.io: ", session.get_exception().message)
 		return
 
+	print("[DEBUG 4] Tworzenie socketu...")
 	socket = Nakama.create_socket_from(client)
+
+	print("[DEBUG 5] Przed socket.connect_async...")
 	await socket.connect_async(session)
+
+	print("[DEBUG 6] Połączenie wieloosobowe z Fly.io nawiązane!")
 	is_connected_to_server = true
 	connection_established.emit()
+
 	multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
 	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
 
 	if not multiplayer.peer_connected.is_connected(_verify_room_limit):
 		multiplayer.peer_connected.connect(_verify_room_limit)
+
+	print("[DEBUG 8] Sukces totalny! Serwer działa w chmurze, przyciski menu są w pełni aktywne.")
 
 
 func _on_bridge_match_joined(_p_match = null):
@@ -191,7 +212,7 @@ func join_existing_game():
 		var msg_content = {
 			"room_code": generated_code,
 			"player_count": 1,
-			"version": VersionManager.get_version_string(), # <-- NOWE POLE
+			"version": VersionManager.get_version(),
 		}
 		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
 		connect_to_named_room(generated_code)
@@ -215,7 +236,7 @@ func find_active_room() -> String:
 	for msg in history_result.messages:
 		var content = JSON.parse_string(msg.content)
 		if content and content.has("room_code"):
-			var room_version = content.get("version", "0.0.0")
+			var room_version = content.get("version", VersionManager.get_version())
 			if room_version != VersionManager.GAME_VERSION:
 				print("[MATCHMAKING] Znaleziono pokój, ale wersja się nie zgadza (", room_version, "). Pomijam.")
 				continue
@@ -259,7 +280,7 @@ func escape_full_room_and_host_new():
 	var generated_code = create_match_name()
 
 	if public_chat_channel:
-		var msg_content = { "room_code": generated_code, "version": VersionManager.get_version_string(), "player_count": 1 }
+		var msg_content = { "room_code": generated_code, "version": VersionManager.get_version(), "player_count": 1 }
 		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
 
 	connect_to_named_room(generated_code)

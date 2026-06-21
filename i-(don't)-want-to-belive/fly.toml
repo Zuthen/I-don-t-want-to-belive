@@ -1,0 +1,36 @@
+app = "nie-chc-uwierzy"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[[files]]
+  guest_path = "/nakama/data/local.yaml"
+  local_path = "production.yaml"
+
+[env]
+  NAKAMA_CLIENT_PORT = "7350"
+  NAKAMA_BIND_ADDRESS = "0.0.0.0"
+  NAKAMA_SERVER_KEY = "defaultkey" 
+
+[[services]]
+  internal_port = 7350
+  processes = ["app"]
+  protocol = "tcp"
+  
+  auto_stop_machines = false
+  auto_start_machines = true
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "edge_http"]
+    port = 443
+
+  [services.concurrency]
+    hard_limit = 50
+    soft_limit = 35
+    type = "connections"

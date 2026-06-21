@@ -107,6 +107,10 @@ capture={
 2d_physics/layer_5="map_borders"
 2d_physics/layer_6="ufo"
 
+[network]
+
+tls/enable_tls_v1.3=false
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
