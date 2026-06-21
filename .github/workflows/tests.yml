@@ -1,36 +1,26 @@
-name: NATIVE BUTLER DEPLOY
+name: AUTOMATED MULTIPLAYER DEPLOY
 
 on:
   push:
     tags:
       - 'v*'
-  pull_request:
 
 jobs:
-  test:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Generate Version File
-        if: startsWith(github.ref, 'refs/tags/v')
         run: echo "${{ github.ref_name }}" > "i-(don't)-want-to-belive/version.txt"
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Setup Godot (Mono Version with Templates)
+      - name: Setup Godot (Standard Version with Templates)
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.6.2
-          use-mono: true
+          use-mono: false
           include-templates: true
-
-      - name: Clear NuGet Cache
-        run: dotnet nuget locals all --clear
 
       - name: Import project
         working-directory: i-(don't)-want-to-belive
@@ -41,3 +31,18 @@ jobs:
         working-directory: i-(don't)-want-to-belive
         run: |
           godot --headless -s res://addons/gut/gut_cmdln.gd -gdir=res://tests -gprefix=test_ -gexit
+
+      - name: Export Project for Windows
+        working-directory: i-(don't)-want-to-belive
+        run: |
+          mkdir -p ../build
+          godot --headless --export-release "Windows Desktop" ../build/game.exe
+
+      - name: Install Butler
+        uses: Zaytri/setup-butler@v1
+
+      - name: Deploy to itch.io via Butler
+        env:
+          BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
+        run: |
+          butler push build/ Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
