@@ -10,7 +10,7 @@ extends Node2D
 
 
 func _ready():
-	version_label.text = "v" + VersionManager.GAME_VERSION
+	version_label.text = "v" + VersionManager.get_version()
 	connect_buttons()
 	NakamaNetworkManager.connection_established.connect(_on_connect)
 

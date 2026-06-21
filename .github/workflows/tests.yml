@@ -41,11 +41,11 @@ jobs:
 
       - name: Deploy to itch.io via Butler
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: josephbmanley/butler-publish-action@v1.0.3
-        env:
-          BUTLER_CREDENTIALS: ${{ secrets.ITCH_IO_API_KEY }}
-          CHANNEL: windows
-          ITCH_GAME: nie-chc-uwierzy
-          ITCH_USER: Zuthen
-          PACKAGE: build/
-          VERSION: ${{ github.ref_name }}
+        uses: Oval-Tutu/publish-to-itch-with-butler@v1
+        with:
+          api-key: ${{ secrets.ITCH_IO_API_KEY }}
+          channel: windows
+          itch_user: Zuthen
+          itch_game: nie-chc-uwierzy
+          package: build/
+          version: ${{ github.ref_name }}
