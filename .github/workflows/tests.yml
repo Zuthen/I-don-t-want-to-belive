@@ -41,23 +41,3 @@ jobs:
         working-directory: i-(don't)-want-to-belive
         run: |
           godot --headless -s res://addons/gut/gut_cmdln.gd -gdir=res://tests -gprefix=test_ -gexit
-
-      - name: Export Project for Windows
-        if: startsWith(github.ref, 'refs/tags/v')
-        working-directory: i-(don't)-want-to-belive
-        run: |
-          mkdir -p ../build
-          godot --headless --export-release "Windows Desktop" ../build/game.exe
-
-      - name: Deploy to itch.io via Native Butler
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
-        run: |
-          # Instalacja oficjalnego Butlera za pomocą skryptu itch.io
-          curl -L -o butler-install.sh https://itch.ovh
-          chmod +x butler-install.sh
-          ./butler-install.sh
-          
-          # Wysyłka gry (skrypt instalacyjny dodaje butlera do lokalnej ścieżki)
-          ~/bin/butler push build/ Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
