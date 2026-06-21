@@ -54,7 +54,10 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
         run: |
-          curl -L -o czysty-butler.zip https://itch.ovh
-          unzip czysty-butler.zip
+          # INSTALUJEMY BUTLERA ZA POMOCĄ JEDNEJ, BEZPIECZNEJ LINII SYSTEMOWEJ (BEZ CURL)
+          curl -L -o butler.zip https://itch.ovh
+          unzip butler.zip
           chmod +x butler
+          
+          # Uruchamiamy bezpośrednią wysyłkę gry
           ./butler push build/ Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
