@@ -2,7 +2,7 @@
 .fly/
 flyctl*
 
-
+!export_presets.cfg
 *.log
 npm-debug.log*
 
