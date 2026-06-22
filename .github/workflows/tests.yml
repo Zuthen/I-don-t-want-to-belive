@@ -21,7 +21,7 @@ jobs:
           version: 4.6.2
           use-mono: false
           include-templates: true
-          download-butler: false
+          download-butler: false 
 
       - name: Import project
         working-directory: i-(don't)-want-to-belive
@@ -43,10 +43,9 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
         run: |
-          # Prawidłowy, oficjalny adres produkcyjny itch.io
-          curl -L -o butler.zip https://itch.ovh
+          # Oficjalny i stabilny adres URL z dokumentacji itch.io
+          curl -L -o butler.zip https://itch.zone
           unzip butler.zip
           chmod +x butler
           
-          # Wysyłanie gry z folderu build utworzonego poziom wyżej względem projektu Godota
           ./butler push ../build Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
