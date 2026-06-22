@@ -21,7 +21,7 @@ jobs:
           version: 4.6.2
           use-mono: false
           include-templates: true
-          download-butler: false # Blokuje błędy i odpytywanie starej domeny itch.ovh
+          download-butler: false
 
       - name: Import project
         working-directory: i-(don't)-want-to-belive
@@ -33,19 +33,3 @@ jobs:
         run: |
           godot --headless -s res://addons/gut/gut_cmdln.gd -gdir=res://tests -gprefix=test_ -gexit
 
-      - name: Export Project for Windows
-        working-directory: i-(don't)-want-to-belive
-        run: |
-          mkdir -p ../build
-          godot --headless --export-release "Windows Desktop" ../build/game.exe
-
-      - name: Deploy to itch.io via Direct Butler
-        env:
-          BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
-        run: |
-          # Pobieramy bezpośrednio skompilowany plik binarny 'butler' dla Linuksa (bez ZIP, bez rozpakowywania)
-          curl -L -o butler https://itch.zone
-          chmod +x butler
-          
-          # Wypychanie buildu gry na serwer itch.io
-          ./butler push ../build Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
