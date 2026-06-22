@@ -38,14 +38,14 @@ jobs:
           mkdir -p ../build
           godot --headless --export-release "Windows Desktop" ../build/game.exe
 
-      - name: Deploy to itch.io via Native System Butler
+      - name: Deploy to itch.io via Native Butler
         env:
           BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
         run: |
-          # Pobieramy i instalujemy oficjalną binarkę Butlera za pomocą czystego skryptu pobierania itch
+
           curl -L -o butler.zip https://itch.ovh
           unzip butler.zip
           chmod +x butler
           
-          # Uruchamiamy wysyłkę skompilowanej gry
-          ./butler push build/ Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
+          ./butler push ../build Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
+
