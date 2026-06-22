@@ -21,7 +21,7 @@ jobs:
           version: 4.6.2
           use-mono: false
           include-templates: true
-          download-butler: false # Blokuje błędy i odpytywanie starej domeny itch.ovh
+          download-butler: false
 
       - name: Import project
         working-directory: i-(don't)-want-to-belive
@@ -39,13 +39,14 @@ jobs:
           mkdir -p ../build
           godot --headless --export-release "Windows Desktop" ../build/game.exe
 
-      - name: Deploy to itch.io via Direct Butler
+      - name: Deploy to itch.io via Embedded Butler
         env:
           BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
+          # TA LINIA JEST KLUCZOWA: Mówi systemowi, że pliki 7z.so i libc7zip.so są w katalogu głównym projektu
+          LD_LIBRARY_PATH: ${{ github.workspace }}
         run: |
-          # Pobieramy bezpośrednio skompilowany plik binarny 'butler' dla Linuksa (bez ZIP, bez rozpakowywania)
-          curl -L -o butler https://itch.zone
-          chmod +x butler
+          # Dajemy uprawnienia plikowi, który znajduje się już w repozytorium
+          chmod +x ./butler
           
-          # Wypychanie buildu gry na serwer itch.io
+          # Wypychamy build gry bezpośrednio na serwer
           ./butler push ../build Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
