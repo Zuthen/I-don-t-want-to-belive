@@ -1,6 +1,6 @@
 extends Node
 
-const GAME_VERSION: String = "0.2.0"
+const GAME_VERSION: String = "1.0.2-mvp"
 
 
 func _ready() -> void:

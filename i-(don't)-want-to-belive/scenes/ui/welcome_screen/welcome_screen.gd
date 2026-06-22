@@ -5,13 +5,16 @@ extends Node2D
 @onready var room_popup = $CanvasLayer/RoomPopup
 @onready var quick_game = $CanvasLayer/Buttons/QuickGame
 @onready var buttons = $CanvasLayer/Buttons
-@onready var quit_button = $CanvasLayer/QuitButton
+@onready var quit_button = $CanvasLayer/HBoxContainer2/QuitButton
 @onready var version_label = $CanvasLayer/VersionLabel
+@onready var settings_button = $CanvasLayer/HBoxContainer2/SettingsButton
+@onready var canvas_layer = $CanvasLayer
 
 
 func _ready():
 	version_label.text = "v" + VersionManager.get_version()
-	connect_buttons()
+	_connect_buttons()
+	_set_music_setting()
 	NakamaNetworkManager.connection_established.connect(_on_connect)
 
 	if NakamaNetworkManager.is_connected_to_server:
@@ -20,11 +23,30 @@ func _ready():
 		buttons.visible = false
 
 
-func connect_buttons():
+func _set_music_setting():
+	var music_volume = ConfigManager.get_setting("audio_music", 0.5)
+	if music_volume <= 0.0:
+		BackgroundMusic.volume_db = -80.0
+	else:
+		BackgroundMusic.volume_db = linear_to_db(music_volume)
+	BackgroundMusic.play()
+
+
+func _connect_buttons():
 	create_game.pressed.connect(_create_game_and_go_to_lobby)
 	join.pressed.connect(_show_popup)
 	quick_game.pressed.connect(_join_existing_game)
 	quit_button.pressed.connect(_quit)
+	settings_button.pressed.connect(_show_settings)
+
+
+func _show_settings():
+	for child in get_tree().root.get_children():
+		if child is Settings:
+			return
+	var settings_scene: PackedScene = load("uid://dsg5768ufuf6v")
+	var settings = settings_scene.instantiate()
+	canvas_layer.add_child(settings)
 
 
 func _on_connect():
