@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://kl4f1idrmk8k" path="res://scenes/ui/icon_button.tscn" id="15_keojs"]
 [ext_resource type="PackedScene" uid="uid://chwvx8p2rsobe" path="res://scenes/ui/welcome_screen/error_dialog.tscn" id="15_xktrh"]
 [ext_resource type="Texture2D" uid="uid://coenw2bmwm82g" path="res://assets/ui/icons/door.png" id="16_jp4pw"]
+[ext_resource type="Texture2D" uid="uid://h57f84ixa0rj" path="res://assets/ui/icons/gear.png" id="16_xsdje"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="17_jp4pw"]
 
 [sub_resource type="Animation" id="Animation_80at6"]
@@ -423,13 +424,34 @@ visible = false
 [node name="ErrorDialog" parent="CanvasLayer" unique_id=200765431 instance=ExtResource("15_xktrh")]
 visible = false
 
-[node name="HBoxContainer" parent="CanvasLayer" unique_id=95362926 instance=ExtResource("15_keojs")]
+[node name="HBoxContainer2" type="VBoxContainer" parent="CanvasLayer" unique_id=149607384]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -84.0
+offset_top = -72.0
+offset_right = -64.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 35
+alignment = 2
 
-[node name="QuitButton" parent="CanvasLayer" unique_id=2111074099 instance=ExtResource("15_keojs")]
-offset_left = 693.0
-offset_top = 655.0
-offset_right = 763.0
-offset_bottom = 695.0
+[node name="SettingsButton" parent="CanvasLayer/HBoxContainer2" unique_id=2111074099 instance=ExtResource("15_keojs")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("16_xsdje")
+label_text = "Ustawienia"
+
+[node name="QuitButton" parent="CanvasLayer/HBoxContainer2" unique_id=678577874 instance=ExtResource("15_keojs")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 texture = ExtResource("16_jp4pw")
 label_text = "Wyjdź"
 

@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://dsg5768ufuf6v"]
+
+[ext_resource type="PackedScene" uid="uid://dyt68j5ivkjnb" path="res://scenes/ui/game_ui/slider.tscn" id="1_8wfqe"]
+[ext_resource type="Script" uid="uid://butg1bs3sjryw" path="res://scenes/ui/settings.gd" id="1_ptynm"]
+[ext_resource type="PackedScene" uid="uid://kl4f1idrmk8k" path="res://scenes/ui/icon_button.tscn" id="2_h175o"]
+[ext_resource type="Texture2D" uid="uid://kbh3j76l3u13" path="res://assets/ui/icons/exitRight.png" id="3_ptynm"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h175o"]
+bg_color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
+
+[node name="Settings" type="PanelContainer" unique_id=81349658]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 47.0
+offset_top = 245.0
+offset_right = -47.0
+offset_bottom = -226.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_h175o")
+script = ExtResource("1_ptynm")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1826209405]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1573649030]
+layout_mode = 2
+theme_override_constants/separation = 22
+alignment = 2
+
+[node name="MusicSlider" parent="MarginContainer/VBoxContainer" unique_id=108517858 instance=ExtResource("1_8wfqe")]
+layout_mode = 2
+option_name = "Muzyka"
+
+[node name="FSXSlider" parent="MarginContainer/VBoxContainer" unique_id=1067340858 instance=ExtResource("1_8wfqe")]
+layout_mode = 2
+option_name = "Efekty dźwiękowe"
+
+[node name="IconButton" parent="MarginContainer/VBoxContainer" unique_id=2111074099 instance=ExtResource("2_h175o")]
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("3_ptynm")
+label_text = "Wyjdź"
