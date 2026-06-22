@@ -21,7 +21,7 @@ jobs:
           version: 4.6.2
           use-mono: false
           include-templates: true
-          download-butler: false 
+          download-butler: false # Blokuje błędy starej domeny itch.ovh
 
       - name: Import project
         working-directory: i-(don't)-want-to-belive
@@ -39,14 +39,12 @@ jobs:
           mkdir -p ../build
           godot --headless --export-release "Windows Desktop" ../build/game.exe
 
-      - name: Deploy to itch.io via Native Butler
+      # AUTOMATYCZNA INSTALACJA BUTLERA BEZ CURL I UNZIP
+      - name: Install Butler via Official Action
+        uses: itchio/setup-butler@v1
+
+      - name: Deploy to itch.io
         env:
           BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
         run: |
-          # Pobieranie Butlera bezpośrednio z wydań na GitHubie zamiast z awaryjnych serwerów itch.io
-          curl -L -o butler.zip https://github.com
-          unzip butler.zip
-          chmod +x butler
-          
-          ./butler push ../build Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
-
+          butler push ../build Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
