@@ -46,5 +46,6 @@ jobs:
           unzip butler.zip
           chmod +x butler
           
+          ./butler push ../build Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
 
-          ./butler push build/ Zuthen/nie-chc-uwierzy:windows --userversion ${{ github.ref_name }}
+
