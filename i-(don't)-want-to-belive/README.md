@@ -29,3 +29,8 @@ Godot Terminal Plugin is a plugin for Godot Engine that provides a terminal-like
 ## License
 
 This project is licensed under the MIT License.
+
+## Exporting game to itch.io
+
+.\butler push . Zuthen/nie-chc-uwierzy:windows --userversion 1.0.0
+
