@@ -82,7 +82,8 @@ func _report_ufo_crash_to_server(dropped_peer_id: int):
 		var skeptics = get_tree().get_nodes_in_group("skeptics")
 
 		for skeptic in skeptics:
-			if "belive_points" in skeptic and skeptic.belive_points >= 3:
+			var available_belive_points = 2 * max_ufos_count - skeptic.seen_ufos.size() - skeptic.seen_aliens.size()
+			if skeptic.belive_points + available_belive_points >= 5:
 				ufo_can_win = true
 				break
 

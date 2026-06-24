@@ -5,4 +5,3 @@
 [node name="BackgroundMusic" type="AudioStreamPlayer" unique_id=945264445]
 stream = ExtResource("1_1fbux")
 volume_db = -20.0
-autoplay = true

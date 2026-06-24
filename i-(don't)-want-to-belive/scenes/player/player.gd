@@ -17,6 +17,7 @@ var role: Role
 func _ready():
 	if not is_inside_tree():
 		await tree_entered
+	set_fsx_volume()
 
 
 func move(speed: float, player_input_synchronizer: PlayerInputSynchronizer) -> Vector2:
@@ -80,6 +81,16 @@ func start_cooldown_timer(time: float, callback: Callable):
 	timer.timeout.connect(callback)
 	timer.timeout.connect(timer.queue_free)
 	timer.start(time)
+
+
+func set_fsx_volume():
+	var sound_node = get_node_or_null("Sound") as AudioStreamPlayer
+	if sound_node:
+		var volume = ConfigManager.get_setting("audio_sfx", 0.5)
+		if volume <= 0.0:
+			sound_node.volume_db = -80.0
+		else:
+			sound_node.volume_db = linear_to_db(volume)
 
 
 func update_synchronizer_visibility_by_role():

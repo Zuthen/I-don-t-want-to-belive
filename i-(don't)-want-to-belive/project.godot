@@ -20,6 +20,7 @@ config/windows_native_icon="res://assets/shipGreen_manned.ico"
 
 [autoload]
 
+ConfigManager="*uid://uw67g8pclfhv"
 MapCreator="*uid://b1ypbtaykhwyw"
 Drawers="*uid://bqmmu5bpq48t7"
 PavementTilesMap="*uid://dp1fr0vbdlnle"
@@ -119,5 +120,7 @@ tls/enable_tls_v1.3=false
 
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
+textures/vram_compression/import_s3tc_bptc=true
+textures/vram_compression/import_etc2_astc=true
 2d/snap/snap_2d_transforms_to_pixel=true
 2d/snap/snap_2d_vertices_to_pixel=true

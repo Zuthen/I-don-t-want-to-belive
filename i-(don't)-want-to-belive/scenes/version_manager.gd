@@ -1,6 +1,6 @@
 extends Node
 
-const GAME_VERSION: String = "1.0.1-mvp"
+const GAME_VERSION: String = "1.0.3-mvp"
 
 
 func _ready() -> void:
@@ -16,4 +16,4 @@ func get_version() -> String:
 		if version_text != "":
 			return version_text
 
-	return "0.1.0-dev"
+	return GAME_VERSION
