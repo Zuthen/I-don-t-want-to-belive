@@ -117,7 +117,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1aexw"]
-size = Vector2(76, 78)
+size = Vector2(76, 111)
 
 [sub_resource type="LabelSettings" id="LabelSettings_p8ene"]
 line_spacing = 0.2
@@ -155,7 +155,7 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CaptureArea" type="CollisionShape2D" parent="CaptureArea" unique_id=278924925]
-position = Vector2(0, 29)
+position = Vector2(0, 12.5)
 shape = SubResource("RectangleShape2D_1aexw")
 
 [node name="CapturedLabel" type="Label" parent="." unique_id=1773935356]
