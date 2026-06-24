@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://dwy1qojae2a6m"]
+
+[ext_resource type="Script" path="res://scenes/ui/game_ui/slider.gd" id="1_y04b4"]
+[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="2_lm0y1"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_5ip5w"]
+font = ExtResource("2_lm0y1")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pg8fy"]
+bg_color = Color(0.40392157, 0.7137255, 0.6156863, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lm0y1"]
+bg_color = Color(0.5686275, 0.99215686, 0.85882354, 1)
+
+[node name="Slider" type="VBoxContainer" unique_id=108517858]
+offset_right = 386.0
+offset_bottom = 78.0
+script = ExtResource("1_y04b4")
+
+[node name="Label" type="Label" parent="." unique_id=2118673541]
+layout_mode = 2
+text = "Muzyka"
+label_settings = SubResource("LabelSettings_5ip5w")
+
+[node name="HSlider" type="HSlider" parent="." unique_id=486561610]
+layout_mode = 2
+theme_override_constants/center_grabber = 0
+theme_override_constants/grabber_offset = -4
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_pg8fy")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_lm0y1")
+value = 20.0
