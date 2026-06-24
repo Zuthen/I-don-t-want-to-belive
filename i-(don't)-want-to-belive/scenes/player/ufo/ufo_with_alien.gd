@@ -18,7 +18,7 @@ const alien_camera_zoom = 6.0
 
 var current_state = State.UFO
 var game: Node2D
-signal ufo_crashed()
+signal ufo_crashed(peer_id: int)
 
 @export var ufo_index_sync: int = 0:
 	set(value):
@@ -147,7 +147,7 @@ func change_state(new_state: State, ufo_index: int):
 		collision_mask = 16
 
 	elif new_state == State.ALIEN:
-		ufo_crashed.emit()
+		var sender_id = get_multiplayer_authority()
 		role = Player.Role.ALIEN
 		alien.role = Player.Role.ALIEN
 		visible = true
@@ -160,7 +160,7 @@ func change_state(new_state: State, ufo_index: int):
 		alien.process_mode = PROCESS_MODE_INHERIT
 		alien.visible = true
 		alien.set_process(true)
-
+		ufo_crashed.emit(sender_id)
 		alien.skin_idx = ufo_index
 		if alien.has_method("_apply_skin_textures"):
 			alien._apply_skin_textures()

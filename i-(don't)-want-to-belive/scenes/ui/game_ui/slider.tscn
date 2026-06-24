@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://dyt68j5ivkjnb"]
+[gd_scene format=3 uid="uid://dwy1qojae2a6m"]
 
-[ext_resource type="Script" uid="uid://bm1xxnpbknguc" path="res://scenes/ui/game_ui/slider.gd" id="1_y04b4"]
+[ext_resource type="Script" path="res://scenes/ui/game_ui/slider.gd" id="1_y04b4"]
 [ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="2_lm0y1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_5ip5w"]

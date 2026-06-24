@@ -171,9 +171,11 @@ func _server_request_preferences(sender_id: int, type: String, skin_idx: int):
 	players_requests.append(preferences)
 
 	ready_players_counter += 1
+	if not is_inside_tree():
+		return
+	_set_players_ready.rpc(ready_players_counter)
 	if ready_players_counter == 4:
 		all_players_ready.emit()
-	_set_players_ready.rpc(ready_players_counter)
 
 
 @rpc("any_peer", "call_local", "reliable")

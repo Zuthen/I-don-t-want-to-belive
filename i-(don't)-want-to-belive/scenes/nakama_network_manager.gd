@@ -120,7 +120,6 @@ func _on_bridge_match_joined(_p_match = null):
 		return
 
 	actual_match_id = multiplayer_bridge.match_id
-
 	match_joined_successfully.emit(match_name, actual_match_id)
 
 
@@ -237,18 +236,21 @@ func find_active_room() -> String:
 		var content = JSON.parse_string(msg.content)
 		if content and content.has("room_code"):
 			var room_version = content.get("version", VersionManager.get_version())
-			if room_version != VersionManager.GAME_VERSION:
+			if room_version != VersionManager.get_version():
 				print("[MATCHMAKING] Znaleziono pokój, ale wersja się nie zgadza (", room_version, "). Pomijam.")
 				continue
-				var msg_time = Time.get_unix_time_from_datetime_string(msg.create_time)
 
-				if time - msg_time < 300:
-					var graczy_w_srodku = content.get("player_count", 1)
-					if graczy_w_srodku >= 4:
-						continue
+			var msg_time = Time.get_unix_time_from_datetime_string(msg.create_time)
 
-					var found_code = content["room_code"]
-					return found_code
+			if time - msg_time < 300:
+				var graczy_w_srodku = content.get("player_count", 1)
+				if graczy_w_srodku >= 4:
+					print("[MATCHMAKING] Pokój ", content["room_code"], " jest pełny (", graczy_w_srodku, "). Szukam dalej.")
+					continue
+
+				var found_code = content["room_code"]
+				print("[MATCHMAKING] Znaleziono wolny pokój! Kod: ", found_code)
+				return found_code
 
 	return ""
 

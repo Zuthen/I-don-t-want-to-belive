@@ -14,6 +14,8 @@ class_name UserInterface
 
 var ufos_sprites
 var hit_points: int = 0
+var crashed_ufos: Array[int] = []
+var max_ufos_count: int = 2
 
 const UFO_WINS := "Prawda 
 	nas jeszcze 
@@ -55,7 +57,7 @@ func _ready():
 				ufo.captured.connect(_on_e_skill_fired)
 			var ufo_with_alien = ufo.get_parent() as UfoWithAlien if ufo else null
 			if ufo_with_alien:
-				ufo_with_alien.ufo_crashed.connect(func(): setup_ui(Player.Role.ALIEN))
+				ufo_with_alien.ufo_crashed.connect(_on_ufo_crashed)
 
 		setup_ui(player.role)
 
@@ -63,6 +65,42 @@ func _ready():
 		for child in get_tree().root.get_children():
 			if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
 				child.queue_free()
+
+
+func _on_ufo_crashed(peer_id):
+	setup_ui(Player.Role.ALIEN)
+	_report_ufo_crash_to_server.rpc_id(1, peer_id)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _report_ufo_crash_to_server(dropped_peer_id: int):
+	if not crashed_ufos.has(dropped_peer_id):
+		crashed_ufos.append(dropped_peer_id)
+
+	if crashed_ufos.size() >= max_ufos_count:
+		var ufo_can_win: bool = false
+		var skeptics = get_tree().get_nodes_in_group("skeptics")
+
+		for skeptic in skeptics:
+			var available_belive_points = 2 * max_ufos_count - skeptic.seen_ufos.size() - skeptic.seen_aliens.size()
+			if skeptic.belive_points + available_belive_points >= 5:
+				ufo_can_win = true
+				break
+
+		if !ufo_can_win:
+			_on_skeptic_win()
+
+
+func _check_ufo_can_win(peer_id: int):
+	crashed_ufos.append(peer_id)
+	var ufo_can_win: bool = false
+	if crashed_ufos.size() == max_ufos_count:
+		var skeptics = get_tree().get_nodes_in_group("skeptics")
+		for skeptic in skeptics:
+			if skeptic.belive_points >= 3:
+				ufo_can_win = true
+	if !ufo_can_win:
+		_on_skeptic_win()
 
 
 func setup_win_section():
