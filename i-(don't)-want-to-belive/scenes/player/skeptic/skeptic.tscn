@@ -968,7 +968,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4b4"]
-size = Vector2(7.3333335, 11.444445)
+size = Vector2(6.666667, 8.666667)
 
 [sub_resource type="LabelSettings" id="LabelSettings_i5h2m"]
 line_spacing = 0.2
@@ -1013,12 +1013,12 @@ collision_layer = 4
 collision_mask = 12
 
 [node name="HitBoxCollision" type="CollisionShape2D" parent="CollisionArea" unique_id=1651569879]
-position = Vector2(0, 2)
+position = Vector2(0, 1.5555558)
 scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_3j4b4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1318819708]
-position = Vector2(0.6666665, 2.5555553)
+position = Vector2(0, 2.444445)
 scale = Vector2(2, 2)
 shape = SubResource("RectangleShape2D_3j4b4")
 
