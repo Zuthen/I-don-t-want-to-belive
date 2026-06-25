@@ -44,7 +44,7 @@ func _show_settings():
 	for child in get_tree().root.get_children():
 		if child is Settings:
 			return
-	var settings_scene: PackedScene = load("uid://dsg5768ufuf6v")
+	var settings_scene: PackedScene = load("uid://cghmhm0yaupfj")
 	var settings = settings_scene.instantiate()
 	canvas_layer.add_child(settings)
 
