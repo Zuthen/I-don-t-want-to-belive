@@ -1,11 +1,16 @@
 extends Node2D
 
-var min_position := Vector2i(0, -30)
-var max_position := Vector2i(59, 29)
-var paths_tiles: = 750
 var tile_size: = 16
-const sector_tile_size: int = 6
+var paths_tiles: int:
+	get:
+		return GameManager.map_paths_tiles
+var sector_tile_size: int:
+	get:
+		return GameManager.map_tiles_size
 var sector_pixel_size: float = tile_size * sector_tile_size
+
+var min_position := Vector2i(0, -sector_tile_size * 5)
+var max_position := Vector2i(sector_tile_size * 10 - 1, sector_tile_size * 5 - 1)
 
 
 class MapArea:

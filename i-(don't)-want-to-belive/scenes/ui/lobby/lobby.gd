@@ -14,6 +14,7 @@ extends Control
 @onready var ufo_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/UfoSkinSlider
 @onready var skeptic_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/SkepticSkinSlider
 @onready var autoplay = $MarginContainer/HBoxContainer/VBoxContainer/Autoplay
+@onready var game_map_settings = $MarginContainer/HBoxContainer/VBoxContainer/GameMapSettings
 
 var ufo_skin_index: int = 0
 var skeptic_skin_index: int = 0
@@ -42,7 +43,8 @@ func _ready():
 		await get_tree().process_frame
 	_set_sliders()
 	_adjust_skins_visibility(role_idx)
-	_set_host_label()
+	tooltip.set_deferred("visible", false)
+	_set_host_section()
 	_set_players_ready(ready_players_counter)
 	_update_players_counter()
 	_set_game_data()
@@ -115,12 +117,16 @@ func _set_game_data():
 		room_name_label.text = "Kod pokoju: " + str(room_name)
 
 
-func _set_host_label():
-	tooltip.set_deferred("visible", false)
+func _set_host_section():
 	if is_multiplayer_authority():
 		host_label.text = "Jesteś hostem"
+		game_map_settings.visible = true
+		game_map_settings.district_spin_box.editable = true
+		game_map_settings.narrow_select.disabled = false
 	else:
 		host_label.set_deferred("visible", false)
+		game_map_settings.district_spin_box.editable = false
+		game_map_settings.narrow_select.disabled = true
 
 
 func _set_warning_text(index: int = 0):
