@@ -6,4 +6,5 @@ class Preferences:
 	var peer_id: int
 
 
+var is_local_fog_ready: bool = false
 var players_selections: Array[Preferences]
