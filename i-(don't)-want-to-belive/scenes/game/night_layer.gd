@@ -14,6 +14,7 @@ const TILE_NEAR_LIGHT = 8
 var last_player_tile := Vector2i(-999, -999)
 var ufo_view_setup := false
 var my_lobby_role: String = ""
+var is_initial_fog_uncovered := false
 
 
 func _ready():
@@ -52,6 +53,7 @@ func _process(_delta):
 		if not ufo_view_setup:
 			ufo_view_setup = true
 			setup_ufo_view()
+			GameManager.is_local_fog_ready = true
 		update_players_visibility(local_player)
 		return
 
@@ -64,6 +66,7 @@ func _process(_delta):
 	if last_player_tile == Vector2i(-999, -999):
 		last_player_tile = current_tile
 		apply_new_fog(last_player_tile)
+		GameManager.is_local_fog_ready = true
 
 	if current_tile != last_player_tile:
 		if last_player_tile != Vector2i(-999, -999):

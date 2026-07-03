@@ -86,8 +86,6 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				if data.has("peer_id"):
 					node.peer_id = data.peer_id
 				return node
-			"icon":
-				return node
 			"ufo", "skeptic":
 				if data.has("skin_idx"):
 					_apply_skin(node, data.skin_idx)
@@ -98,18 +96,20 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 			get_tree().call_group("local_player", "remove_from_group", "local_player")
 			node.add_to_group("local_player")
 
-		# POPRAWKA: Nadajemy autorytet sieciowy NATYCHMIAST.
-		# Dzięki temu funkcja _ready() w postaci nie zwróci błędu o braku autorytetu.
 		node.name = str(data.peer_id)
-		node.set_multiplayer_authority(data.peer_id)
+		node.tree_entered.connect(
+			func():
+				node.set_multiplayer_authority(data.peer_id)
 
-		var sync_node = node.get_node_or_null("PlayerInputSynchronizer")
-		if is_instance_valid(sync_node):
-			sync_node.set_multiplayer_authority(data.peer_id)
+				var sync_node = node.get_node_or_null("PlayerInputSynchronizer")
+				if is_instance_valid(sync_node):
+					sync_node.set_multiplayer_authority(data.peer_id)
 
-		var pos_sync = node.get_node_or_null("MultiplayerSynchronizer")
-		if is_instance_valid(pos_sync):
-			pos_sync.set_multiplayer_authority(data.peer_id)
+				var pos_sync = node.get_node_or_null("MultiplayerSynchronizer")
+				if is_instance_valid(pos_sync):
+					pos_sync.set_multiplayer_authority(data.peer_id),
+			CONNECT_ONE_SHOT,
+		)
 
 		if multiplayer.is_server():
 			call_deferred("_force_refresh_visibility")
@@ -142,7 +142,7 @@ func assign_to_group(data: Dictionary, node: Node):
 
 func get_local_player() -> Player:
 	if not multiplayer or not multiplayer.has_multiplayer_peer():
-		return
+		return null
 	var my_id = multiplayer.get_unique_id()
 	var all_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics")
 

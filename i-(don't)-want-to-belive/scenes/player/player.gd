@@ -12,12 +12,16 @@ signal skeptics_win
 var id: int = 0
 var movement_blocked: = false
 var role: Role
+var is_gameplay_ready: bool = false
 
 
 func _ready():
 	if not is_inside_tree():
 		await tree_entered
 	set_fsx_volume()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	is_gameplay_ready = true
 
 
 func move(speed: float, player_input_synchronizer: PlayerInputSynchronizer) -> Vector2:
