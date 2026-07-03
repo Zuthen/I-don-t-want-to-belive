@@ -59,9 +59,13 @@ func get_coordinates(pos) -> PlayerPosition:
 	var tile_position = tile_map_layer.local_to_map(pos)
 	var x = clampi(tile_position.x, MapSettings.min_position.x, MapSettings.max_position.x)
 	var y = clampi(tile_position.y, MapSettings.min_position.y, MapSettings.max_position.y)
+
 	var sector_x_idx = floori(float(x) / MapSettings.sector_tile_size)
-	var shifted_y = y - MapSettings.min_position.y
-	var row_number = floori(float(shifted_y) / MapSettings.sector_tile_size) + 1
+	var sector_y_idx = floori(float(y) / MapSettings.sector_tile_size)
+
+	sector_x_idx = clampi(sector_x_idx, 0, 9)
+	var row_number = clampi(sector_y_idx, 0, 9) + 1
+
 	var position = PlayerPosition.new()
 	position.letter = get_column_name(sector_x_idx)
 	position.number = row_number

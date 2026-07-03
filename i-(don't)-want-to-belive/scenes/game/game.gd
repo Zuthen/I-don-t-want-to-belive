@@ -184,6 +184,7 @@ func create_map(map_seed: int = 0):
 	var areas = MapCreator.find_areas(generated_paths)
 	var obstacle_regions = MapCreator.find_regions(areas.obstacles)
 	var obstacle_rects: Array[Rect2i] = []
+
 	for region in obstacle_regions:
 		var rects = MapCreator.regions_to_rects(region)
 		obstacle_rects.append_array(MapCreator.merge_small_rectangles(rects))
@@ -222,31 +223,18 @@ func occupy_rect(rect: Rect2i, occupied: Dictionary):
 func generate_map_borders():
 	var edges = MapSettings.get_map_limits()
 
-	var map_width_px = edges.right - edges.left
-	var map_height_px = edges.bottom - edges.top
+	var map_width_px = edges.right - edges.left - 1
+	var map_height_px = edges.bottom - edges.top - 1
 
-	var left_right_size = Vector2(MapSettings.tile_size, map_height_px)
-	var top_bottom_size = Vector2(map_width_px, MapSettings.tile_size)
+	var wall_thickness = 64.0
 
-	var left_position = Vector2(
-		edges.left - (MapSettings.tile_size / 2.0),
-		edges.top + (map_height_px / 2.0),
-	)
+	var left_right_size = Vector2(wall_thickness, map_height_px)
+	var top_bottom_size = Vector2(map_width_px, wall_thickness)
 
-	var right_position = Vector2(
-		edges.right + (MapSettings.tile_size / 2.0),
-		edges.top + (map_height_px / 2.0),
-	)
-
-	var top_position = Vector2(
-		edges.left + (map_width_px / 2.0),
-		edges.top - (MapSettings.tile_size / 2.0),
-	)
-
-	var bottom_position = Vector2(
-		edges.left + (map_width_px / 2.0),
-		edges.bottom + (MapSettings.tile_size / 2.0),
-	)
+	var left_position = Vector2(edges.left - (wall_thickness / 2.0), edges.top + (map_height_px / 2.0))
+	var right_position = Vector2(edges.right + (wall_thickness / 2.0), edges.top + (map_height_px / 2.0))
+	var top_position = Vector2(edges.left + (map_width_px / 2.0), edges.top - (wall_thickness / 2.0))
+	var bottom_position = Vector2(edges.left + (map_width_px / 2.0), edges.bottom + (wall_thickness / 2.0))
 
 	generate_collider(left_right_size, left_position)
 	generate_collider(left_right_size, right_position)

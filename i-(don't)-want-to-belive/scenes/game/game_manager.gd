@@ -17,14 +17,16 @@ var map_paths_tiles: int = 750
 
 
 func get_map_paths_tiles() -> int:
+	var total_cells: float = pow(float(map_tiles_size * 10), 2)
 	var pavement_tiles: int
+
 	match map_config:
 		MapConfig.NARROWLY:
-			pavement_tiles = randi_range(8, 10) * map_tiles_size * 10 # użyliśmy 10 zamiast tile_size, pamiętasz?
+			pavement_tiles = int(total_cells * (randi_range(8, 10) / 100.0))
 		MapConfig.BALANCED:
-			pavement_tiles = randi_range(11, 12) * map_tiles_size * 10
+			pavement_tiles = int(total_cells * (randi_range(11, 12) / 100.0))
 		MapConfig.WIDE:
-			pavement_tiles = randi_range(14, 25) * map_tiles_size * 10
+			pavement_tiles = int(total_cells * (randi_range(14, 25) / 100.0))
 		_:
 			pavement_tiles = 750
-	return pavement_tiles
+	return max(pavement_tiles, 25)
