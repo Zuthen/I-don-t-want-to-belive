@@ -26,8 +26,9 @@ class HorizontalSegment:
 func find_areas(paths: Array[Vector2i]) -> ContinousRegions:
 	var region_paths: Array[Vector2i] = []
 	var region_obstacles: Array[Vector2i] = []
-	for j in range(MapSettings.min_position.y, MapSettings.max_position.y):
-		for i in range(MapSettings.min_position.x, MapSettings.max_position.x):
+
+	for j in range(MapSettings.min_position.y, MapSettings.max_position.y + 1):
+		for i in range(MapSettings.min_position.x, MapSettings.max_position.x + 1):
 			if paths.has(Vector2i(i, j)):
 				region_paths.push_back(Vector2i(i, j))
 			else:

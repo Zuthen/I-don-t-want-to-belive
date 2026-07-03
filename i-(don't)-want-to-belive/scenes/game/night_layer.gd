@@ -85,6 +85,12 @@ func initialize_fog():
 			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
 
+func setup_ufo_view():
+	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
+		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
+			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
+
+
 func update_players_visibility(local_player: Node2D):
 	var my_network_id = multiplayer.get_unique_id()
 	var all_ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
@@ -103,12 +109,6 @@ func update_players_visibility(local_player: Node2D):
 
 		var is_visible_by_fog = (fog_tile_alternative != TILE_DEEP_NIGHT and distance_in_tiles <= vision_radius)
 		player.visible = is_visible_by_fog
-
-
-func setup_ufo_view():
-	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
-		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
-			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
 
 
 func reset_old_fog(center_tile: Vector2i):

@@ -32,7 +32,13 @@ func _ready():
 		players = GameManager.players_selections
 		_assign_roles(players)
 
-		client_build_map_instruction.rpc_id(0, game_map_seed)
+		var map_payload = {
+			"seed": game_map_seed,
+			"paths_tiles": GameManager.map_paths_tiles,
+			"tiles_size": GameManager.map_tiles_size,
+			"config": GameManager.map_config,
+		}
+		client_build_map_instruction.rpc(map_payload)
 
 		var spawner_data = map_to_spawn_data(skeptic_positions)
 		for data in spawner_data:
@@ -47,7 +53,11 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 		players = GameManager.players_selections
 		_assign_roles(players)
 
-		var sync_data: Dictionary = { }
+		var sync_data: Dictionary = {
+			"map_paths_tiles": GameManager.map_paths_tiles,
+			"map_config": GameManager.map_config,
+			"map_tiles_size": GameManager.map_tiles_size,
+		}
 		for p in players:
 			sync_data[str(p.peer_id)] = { "type": p.type, "skin": p.skin_idx }
 		_sync_final_roles_to_all_clients.rpc(sync_data)
@@ -55,6 +65,10 @@ func _check_if_everyone_is_ready_to_spawn(peer_id: int):
 
 @rpc("authority", "call_local", "reliable")
 func _sync_final_roles_to_all_clients(sync_data: Dictionary):
+	if sync_data.has("map_paths_tiles"):
+		GameManager.map_config = sync_data["map_config"] as GameManager.MapConfig
+		GameManager.map_tiles_size = sync_data["map_tiles_size"]
+		GameManager.map_paths_tiles = sync_data["map_paths_tiles"]
 	GameManager.players_selections.clear()
 
 	for peer_str in sync_data:
@@ -68,8 +82,15 @@ func _sync_final_roles_to_all_clients(sync_data: Dictionary):
 
 
 @rpc("authority", "call_remote", "reliable")
-func client_build_map_instruction(map_seed: int):
-	skeptic_positions = create_map(map_seed)
+func client_build_map_instruction(map_payload):
+	if map_payload is Dictionary:
+		GameManager.map_config = map_payload["config"] as GameManager.MapConfig
+		GameManager.map_tiles_size = map_payload["tiles_size"]
+		GameManager.map_paths_tiles = map_payload["paths_tiles"]
+
+		skeptic_positions = create_map(map_payload["seed"])
+	else:
+		skeptic_positions = create_map(map_payload)
 
 	if not multiplayer.is_server():
 		peer_ready.rpc_id(1)
@@ -159,10 +180,11 @@ func create_map(map_seed: int = 0):
 	Drawers.tile_map_layer = tile_map_layer
 	Drawers.details = buildings_details
 
-	var generated_paths = genereate_map(map_seed)
+	var generated_paths = generate_map(map_seed)
 	var areas = MapCreator.find_areas(generated_paths)
 	var obstacle_regions = MapCreator.find_regions(areas.obstacles)
 	var obstacle_rects: Array[Rect2i] = []
+
 	for region in obstacle_regions:
 		var rects = MapCreator.regions_to_rects(region)
 		obstacle_rects.append_array(MapCreator.merge_small_rectangles(rects))
@@ -177,7 +199,7 @@ func create_map(map_seed: int = 0):
 	return find_skeptics_positions(areas.paths, random)
 
 
-func genereate_map(map_seed: int = 0):
+func generate_map(map_seed: int = 0):
 	random = RandomNumberGenerator.new()
 	random.seed = map_seed
 
@@ -201,31 +223,18 @@ func occupy_rect(rect: Rect2i, occupied: Dictionary):
 func generate_map_borders():
 	var edges = MapSettings.get_map_limits()
 
-	var map_width_px = edges.right - edges.left
-	var map_height_px = edges.bottom - edges.top
+	var map_width_px = edges.right - edges.left - 1
+	var map_height_px = edges.bottom - edges.top - 1
 
-	var left_right_size = Vector2(MapSettings.tile_size, map_height_px)
-	var top_bottom_size = Vector2(map_width_px, MapSettings.tile_size)
+	var wall_thickness = 64.0
 
-	var left_position = Vector2(
-		edges.left - (MapSettings.tile_size / 2.0),
-		edges.top + (map_height_px / 2.0),
-	)
+	var left_right_size = Vector2(wall_thickness, map_height_px)
+	var top_bottom_size = Vector2(map_width_px, wall_thickness)
 
-	var right_position = Vector2(
-		edges.right + (MapSettings.tile_size / 2.0),
-		edges.top + (map_height_px / 2.0),
-	)
-
-	var top_position = Vector2(
-		edges.left + (map_width_px / 2.0),
-		edges.top - (MapSettings.tile_size / 2.0),
-	)
-
-	var bottom_position = Vector2(
-		edges.left + (map_width_px / 2.0),
-		edges.bottom + (MapSettings.tile_size / 2.0),
-	)
+	var left_position = Vector2(edges.left - (wall_thickness / 2.0), edges.top + (map_height_px / 2.0))
+	var right_position = Vector2(edges.right + (wall_thickness / 2.0), edges.top + (map_height_px / 2.0))
+	var top_position = Vector2(edges.left + (map_width_px / 2.0), edges.top - (wall_thickness / 2.0))
+	var bottom_position = Vector2(edges.left + (map_width_px / 2.0), edges.bottom + (wall_thickness / 2.0))
 
 	generate_collider(left_right_size, left_position)
 	generate_collider(left_right_size, right_position)

@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://d28qs4ow074mk"]
+
+[ext_resource type="FontFile" uid="uid://c6bbdf1ltbu1b" path="res://assets/fonts/Orbitron-VariableFont_wght.ttf" id="1_84nym"]
+[ext_resource type="Script" uid="uid://b6vbg3yftxsh5" path="res://scenes/ui/lobby/game_map_settings.gd" id="1_rwyr8"]
+
+[sub_resource type="FontFile" id="FontFile_rwyr8"]
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_e45jk"]
+font = ExtResource("1_84nym")
+
+[sub_resource type="Theme" id="Theme_o7clk"]
+default_font = ExtResource("1_84nym")
+
+[sub_resource type="LabelSettings" id="LabelSettings_4kpoo"]
+font = ExtResource("1_84nym")
+
+[node name="GameMapSettings" type="HFlowContainer" unique_id=1151422571]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -544.0
+offset_bottom = -624.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 11
+theme_override_constants/v_separation = 9
+script = ExtResource("1_rwyr8")
+
+[node name="NarrowLabel" type="Label" parent="." unique_id=574324566]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = SubResource("FontFile_rwyr8")
+text = "Ciasnota"
+label_settings = SubResource("LabelSettings_e45jk")
+horizontal_alignment = 1
+
+[node name="NarrowSelect" type="OptionButton" parent="." unique_id=1825299775]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_o7clk")
+selected = 0
+item_count = 3
+popup/item_0/text = "Hongkong"
+popup/item_0/id = 0
+popup/item_1/text = "Paryż"
+popup/item_1/id = 1
+popup/item_2/text = "Nowy Jork"
+popup/item_2/id = 2
+
+[node name="DistrictLabel" type="Label" parent="." unique_id=753600883]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Wielkość obszaru"
+label_settings = SubResource("LabelSettings_4kpoo")
+
+[node name="DistrictSpinBox" type="SpinBox" parent="." unique_id=348520421]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = SubResource("Theme_o7clk")
+min_value = 1.0
+max_value = 20.0
+value = 1.0
+alignment = 2

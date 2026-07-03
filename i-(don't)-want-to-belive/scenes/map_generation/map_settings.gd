@@ -1,10 +1,9 @@
 extends Node2D
 
-var min_position := Vector2i(0, -30)
-var max_position := Vector2i(59, 29)
-var paths_tiles: = 750
 var tile_size: = 16
-const sector_tile_size: int = 6
+var paths_tiles: int:
+	get:
+		return GameManager.map_paths_tiles
 var sector_pixel_size: float = tile_size * sector_tile_size
 
 
@@ -27,10 +26,26 @@ func get_map_area() -> MapArea:
 	return map_area
 
 
-func get_map_limits() -> MapLimits:
-	var limits = MapLimits.new()
-	limits.left = min_position.x * tile_size
-	limits.right = max_position.x * tile_size
-	limits.top = min_position.y * tile_size
-	limits.bottom = max_position.y * tile_size
-	return limits
+var sector_tile_size: int:
+	get:
+		return GameManager.map_tiles_size
+
+var min_position := Vector2i(0, 0)
+
+var max_position: Vector2i:
+	get:
+		var limit = (sector_tile_size * 10) - 1
+		return Vector2i(limit, limit)
+
+var total_axis_tiles: int:
+	get:
+		return sector_tile_size * 10
+
+
+func get_map_limits() -> Dictionary:
+	return {
+		"left": 0,
+		"right": total_axis_tiles * tile_size,
+		"top": 0,
+		"bottom": total_axis_tiles * tile_size,
+	}

@@ -20,6 +20,7 @@ config/windows_native_icon="res://assets/shipGreen_manned.ico"
 
 [autoload]
 
+GameManager="*uid://4qkaicl8hudn"
 ConfigManager="*uid://uw67g8pclfhv"
 MapCreator="*uid://b1ypbtaykhwyw"
 Drawers="*uid://bqmmu5bpq48t7"
@@ -31,7 +32,6 @@ Coordinates="*uid://bjpy7cdpqncfv"
 AliensTextures="*uid://dw5cy02j5kj37"
 Nakama="*uid://dueo0l0rm5aot"
 NakamaNetworkManager="*uid://d1jgj42tmgii0"
-GameManager="*uid://4qkaicl8hudn"
 BackgroundMusic="*uid://dlhqicat4ktt6"
 Sounds="*uid://ccwmjxstlg3jv"
 CursorManager="*uid://ccgain5nd076f"

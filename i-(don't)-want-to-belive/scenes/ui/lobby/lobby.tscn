@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://j1td5xtbpfc1" path="res://scenes/ui/lobby/skin_slider.tscn" id="6_cyxd6"]
 [ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="9_gj1jc"]
 [ext_resource type="Texture2D" uid="uid://dshxw3x2dr2n6" path="res://assets/ui/icons/share1.png" id="9_vfpwc"]
+[ext_resource type="PackedScene" uid="uid://d28qs4ow074mk" path="res://scenes/ui/lobby/game_map_settings.tscn" id="9_x8obw"]
 [ext_resource type="PackedScene" uid="uid://bi5ram0ollyyb" path="res://scenes/ui/lobby/autoplay.tscn" id="10_bxh51"]
 [ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="10_tprm0"]
 [ext_resource type="PackedScene" uid="uid://8a8u2iqtqs2w" path="res://scenes/ui/lobby/text_with_background.tscn" id="11_gj1jc"]
@@ -129,6 +130,10 @@ layout_mode = 2
 modulate = Color(1, 0.81960785, 0.101960786, 1)
 layout_mode = 2
 
+[node name="GameMapSettings" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1151422571 instance=ExtResource("9_x8obw")]
+visible = false
+layout_mode = 2
+
 [node name="Confirm" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1723459190 instance=ExtResource("9_gj1jc")]
 layout_mode = 2
 label_text = "Potwierdź"
@@ -174,15 +179,17 @@ ignore_texture_size = true
 stretch_mode = 5
 
 [node name="Tooltip" type="PanelContainer" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton" unique_id=1097731640]
+z_index = 1
 layout_mode = 0
-offset_left = -30.0
+offset_left = -54.0
 offset_top = 39.0
-offset_right = 74.0
-offset_bottom = 63.0
+offset_right = 43.0
+offset_bottom = 75.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyxd6")
 
 [node name="TooltipLabel" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyButton/Tooltip" unique_id=1456577778]
 layout_mode = 2
+size_flags_vertical = 1
 text = "Kod skopiowany do schowka"
 label_settings = SubResource("LabelSettings_vild7")
 horizontal_alignment = 1
