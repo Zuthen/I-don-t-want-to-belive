@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cvjiggvhnjfsh"]
+
+[ext_resource type="Script" uid="uid://dgtlhmxbdqehj" path="res://scenes/objects/collectible.gd" id="1_tw2o3"]
+[ext_resource type="Texture2D" uid="uid://c3sk0xqwbgb8s" path="res://assets/objects/findings/camera.png" id="2_xm3te"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tw2o3"]
+radius = 4.0
+
+[node name="Collectible" type="Area2D" unique_id=1145810813]
+collision_layer = 9
+collision_mask = 5
+script = ExtResource("1_tw2o3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1630613468]
+shape = SubResource("CircleShape2D_tw2o3")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=378315251]
+scale = Vector2(0.05, 0.05)
+texture = ExtResource("2_xm3te")

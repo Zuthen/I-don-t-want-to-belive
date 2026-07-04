@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://cbur3mmig4oxr" path="res://assets/ui/keboard_buttons/keyboard_e_outline.png" id="9_737vb"]
 [ext_resource type="PackedScene" uid="uid://tgygvek1j0wa" path="res://scenes/ui/game_ui/walkie_talkie_message.tscn" id="11_y3ul1"]
 [ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="12_olnl4"]
+[ext_resource type="PackedScene" uid="uid://c7fud3xvj6so" path="res://scenes/ui/game_ui/backpack.tscn" id="12_xekmr"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
 font = ExtResource("3_737vb")
@@ -26,6 +27,9 @@ font = ExtResource("5_vo76m")
 font_size = 33
 outline_size = 11
 outline_color = Color(0.15, 0.15, 0.15, 1)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_xekmr"]
+color = Color(0.53333336, 0.5372549, 0.7882353, 1)
 
 [node name="UserInterface" type="Control" unique_id=96406378]
 layout_mode = 3
@@ -141,7 +145,7 @@ layout_mode = 0
 offset_left = 704.0
 offset_top = 21.0
 offset_right = 816.0
-offset_bottom = 201.0
+offset_bottom = 682.0
 
 [node name="Q" parent="SkillsPanel" unique_id=688888508 instance=ExtResource("7_xg44s")]
 layout_mode = 2
@@ -150,6 +154,19 @@ layout_mode = 2
 layout_mode = 2
 icon_active_texture = ExtResource("8_kw8g8")
 icon_not_active_texture = ExtResource("9_737vb")
+
+[node name="HSeparator" type="HSeparator" parent="SkillsPanel" unique_id=1417151658]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_styles/separator = SubResource("StyleBoxLine_xekmr")
+
+[node name="Backpack" parent="SkillsPanel" unique_id=845807046 instance=ExtResource("12_xekmr")]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+alignment = 2
 
 [node name="WalkieTalkieMessage" parent="." unique_id=1820157147 instance=ExtResource("11_y3ul1")]
 visible = false

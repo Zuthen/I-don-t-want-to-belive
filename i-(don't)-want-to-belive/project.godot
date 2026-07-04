@@ -36,6 +36,7 @@ BackgroundMusic="*uid://dlhqicat4ktt6"
 Sounds="*uid://ccwmjxstlg3jv"
 CursorManager="*uid://ccgain5nd076f"
 VersionManager="*uid://ce15ql8xp2op8"
+Events="*uid://boxsxxqbhacba"
 
 [debug]
 
