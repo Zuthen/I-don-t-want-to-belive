@@ -55,6 +55,39 @@ func _ready():
 			ship.texture = ufo_sprites.ship
 
 
+func _draw() -> void:
+	if not capture_area_collision or not capture_area_collision.shape:
+		return
+
+	var extents: Vector2 = capture_area_collision.shape.size / 2.0
+
+	var dash_length: float = 4.0
+	var dash_space: float = 4.0
+	var step: float = dash_length + dash_space
+
+	var line_thickness: float = 1.2
+	var main_line_color = Color(0.0, 0.472, 0.0, 0.9) # Zielony
+	var pointer_color = Color(0.91, 0.471, 0.0, 0.902) # Pomarańczowy
+	var orange_boundary: float = extents.x * 0.2
+
+	var current_x: float = -extents.x
+	while current_x < extents.x:
+		var next_x: float = current_x + dash_length
+
+		if next_x > extents.x:
+			next_x = extents.x
+
+		var start_point = Vector2(current_x, extents.y)
+		var end_point = Vector2(next_x, extents.y)
+
+		if abs(current_x) <= orange_boundary:
+			draw_line(start_point, end_point, pointer_color, line_thickness, true)
+		else:
+			draw_line(start_point, end_point, main_line_color, line_thickness, true)
+
+		current_x += step
+
+
 func _process(_delta):
 	if not multiplayer or not multiplayer.has_multiplayer_peer():
 		return
