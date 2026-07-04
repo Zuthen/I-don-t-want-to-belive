@@ -21,14 +21,70 @@ func _init():
 	Engine.get_main_loop().node_added.connect(_on_scene_tree_node_added)
 
 
+func _ready():
+	OS.set_restart_on_exit(false)
+	if OS.is_debug_build():
+		ProjectSettings.set_setting("debug/settings/stdout/ignore_warnings", true)
+
+	await get_tree().process_frame
+	connect_to_nakama_server()
+
+
+func connect_to_nakama_server():
+	var server_key = "defaultkey"
+	var server_host = "nie-chc-uwierzy.fly.dev"
+
+	var port = 443
+	var scheme = "https"
+
+	client = Nakama.create_client(server_key, server_host, port, scheme, 10, true)
+
+	var unique_id = OS.get_unique_id() + str(randi() % 10000)
+	var vars = { "game_version": VersionManager.get_version() }
+
+	session = await client.authenticate_device_async(unique_id, "", true, vars)
+
+	if session.is_exception():
+		return
+
+	socket = Nakama.create_socket_from(client)
+
+	await socket.connect_async(session)
+
+	is_connected_to_server = true
+	connection_established.emit()
+
+	multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
+	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
+
+	if not multiplayer.peer_connected.is_connected(_verify_room_limit):
+		multiplayer.peer_connected.connect(_verify_room_limit)
+
+
+func _on_bridge_match_joined(_p_match = null):
+	var other_players = []
+	if get_tree().get_multiplayer().multiplayer_peer != null:
+		other_players = multiplayer.get_peers()
+
+	if is_host and other_players.size() > 0:
+		await get_tree().create_timer(0.1).timeout
+		host_create_match()
+		return
+
+	actual_match_id = multiplayer_bridge.match_id
+	match_joined_successfully.emit(match_name, actual_match_id)
+
+
 func _on_scene_tree_node_added(node: Node):
 	if not is_instance_valid(node):
 		return
-
 	if node.name == "Control" or (node.get_script() and node.get_script().get_path().ends_with("lobby.gd")):
 		await get_tree().process_frame
 
 		if not is_instance_valid(node):
+			return
+
+		if get_tree().get_multiplayer().multiplayer_peer == null:
 			return
 
 		var peers_list = multiplayer.get_peers()
@@ -54,73 +110,6 @@ func _on_scene_tree_node_added(node: Node):
 				multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
 				get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
 				escape_full_room_and_host_new()
-
-
-func _ready():
-	OS.set_restart_on_exit(false)
-	if OS.is_debug_build():
-		ProjectSettings.set_setting("debug/settings/stdout/ignore_warnings", true)
-
-	await get_tree().process_frame
-	connect_to_nakama_server()
-
-
-func connect_to_nakama_server():
-	var server_key = "defaultkey"
-
-	# Twój w pełni działający, produkcyjny host:
-	var server_host = "nie-chc-uwierzy.fly.dev"
-
-	# Łączymy się przez bezpieczny port chmury Fly (HTTPS)
-	var port = 443
-	var scheme = "https"
-
-	print("[DEBUG 1] Inicjalizacja klienta Nakama na Fly.io...")
-	# Podajemy 'true' na końcu, co włącza szyfrowanie SSL/TLS w Godocie
-	client = Nakama.create_client(server_key, server_host, port, scheme, 10, true)
-
-	var unique_id = OS.get_unique_id() + str(randi() % 10000)
-	var vars = { "game_version": VersionManager.get_version() }
-
-	print("[DEBUG 2] Przed authenticate_device_async. ID: ", unique_id)
-	session = await client.authenticate_device_async(unique_id, "", true, vars)
-
-	print("[DEBUG 3] Po authenticate_device_async. Czy jest wyjątek? ", session.is_exception())
-
-	if session.is_exception():
-		print("[NAKAMA][ERROR] Błąd połączenia z Fly.io: ", session.get_exception().message)
-		return
-
-	print("[DEBUG 4] Tworzenie socketu...")
-	socket = Nakama.create_socket_from(client)
-
-	print("[DEBUG 5] Przed socket.connect_async...")
-	await socket.connect_async(session)
-
-	print("[DEBUG 6] Połączenie wieloosobowe z Fly.io nawiązane!")
-	is_connected_to_server = true
-	connection_established.emit()
-
-	multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
-	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
-
-	if not multiplayer.peer_connected.is_connected(_verify_room_limit):
-		multiplayer.peer_connected.connect(_verify_room_limit)
-
-	print("[DEBUG 8] Sukces totalny! Serwer działa w chmurze, przyciski menu są w pełni aktywne.")
-
-
-func _on_bridge_match_joined(_p_match = null):
-	var other_players = multiplayer.get_peers()
-
-	if is_host and other_players.size() > 0:
-		get_tree().get_multiplayer().multiplayer_peer = null
-		await get_tree().create_timer(0.2).timeout
-		host_create_match()
-		return
-
-	actual_match_id = multiplayer_bridge.match_id
-	match_joined_successfully.emit(match_name, actual_match_id)
 
 
 func _verify_room_limit(_id: int):
@@ -173,22 +162,30 @@ func _host_response(accepted: bool, private: bool):
 			escape_full_room_and_host_new()
 
 
-func create_match_name():
-	var rng = RandomNumberGenerator.new()
-	rng.seed = Time.get_ticks_usec() + OS.get_process_id()
+func create_match_name() -> String:
+	var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var new_code = ""
 
-	var characters = "ABCDEFGHIJKLMNOPRSTQUVWXYZ"
-	var result: String = ""
+	randomize()
 
 	for i in range(6):
-		var random_index = rng.randi() % characters.length()
-		result += characters[random_index]
-	return result
+		var rand_index = randi() % chars.length()
+		new_code += chars[rand_index]
+	return new_code
 
 
 func join_existing_game():
-	if not socket or not multiplayer_bridge:
+	if not socket:
 		return
+
+	if multiplayer_bridge == null:
+		multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
+		get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
+
+	is_host = false
+	private = false
+	actual_match_id = ""
+	match_name = ""
 
 	var random_delay = randf_range(0.05, 0.5)
 	await get_tree().create_timer(random_delay).timeout
@@ -214,45 +211,59 @@ func join_existing_game():
 			"version": VersionManager.get_version(),
 		}
 		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
-		connect_to_named_room(generated_code)
-
+		await connect_to_named_room(generated_code)
 	else:
 		is_host = false
 		private = false
-		connect_to_named_room(target_room_code)
+		await connect_to_named_room(target_room_code)
 
 
 func find_active_room() -> String:
 	if not socket or not public_chat_channel:
 		return ""
-	var history_result = await client.list_channel_messages_async(session, public_chat_channel.id, 10, false)
+
+	var history_result = await client.list_channel_messages_async(session, public_chat_channel.id, 50, false)
 
 	if history_result.is_exception() or not history_result.messages or history_result.messages.size() < 1:
 		return ""
 
 	var time = Time.get_unix_time_from_system()
 
-	for msg in history_result.messages:
+	var messages_chronological = history_result.messages
+	messages_chronological.reverse()
+
+	for msg in messages_chronological:
 		var content = JSON.parse_string(msg.content)
 		if content and content.has("room_code"):
 			var room_version = content.get("version", VersionManager.get_version())
 			if room_version != VersionManager.get_version():
-				print("[MATCHMAKING] Znaleziono pokój, ale wersja się nie zgadza (", room_version, "). Pomijam.")
 				continue
 
 			var msg_time = Time.get_unix_time_from_datetime_string(msg.create_time)
 
 			if time - msg_time < 300:
-				var graczy_w_srodku = content.get("player_count", 1)
-				if graczy_w_srodku >= 4:
-					print("[MATCHMAKING] Pokój ", content["room_code"], " jest pełny (", graczy_w_srodku, "). Szukam dalej.")
+				var waiting_players = content.get("player_count", 1)
+
+				if waiting_players <= 0:
+					continue
+
+				if waiting_players >= 4:
 					continue
 
 				var found_code = content["room_code"]
-				print("[MATCHMAKING] Znaleziono wolny pokój! Kod: ", found_code)
 				return found_code
 
 	return ""
+
+
+func server_report_empty_room(room_code: String) -> void:
+	if socket and public_chat_channel and room_code != "":
+		var msg_content = {
+			"room_code": room_code,
+			"player_count": 0,
+			"version": VersionManager.get_version(),
+		}
+		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
 
 
 func connect_to_named_room(room_name: String):
@@ -268,8 +279,6 @@ func connect_to_named_room(room_name: String):
 
 
 func escape_full_room_and_host_new():
-	print("[Nakama] Opuszczam przepełniony pokój: ", match_name)
-
 	get_tree().get_multiplayer().multiplayer_peer = null
 	await get_tree().create_timer(0.2).timeout
 
@@ -294,6 +303,8 @@ func escape_full_room_and_host_new():
 
 
 func _on_client_connected_to_host_successfully():
+	await get_tree().create_timer(0.1).timeout
+
 	var total_players = multiplayer.get_peers().size() + 1
 
 	if total_players >= 5:
@@ -306,9 +317,9 @@ func _on_client_connected_to_host_successfully():
 
 			private_room_full.emit()
 		else:
-			print("[Nakama Manager] Pokój publiczny pełny. Uruchamiam automatyczną ucieczkę...")
 			escape_full_room_and_host_new()
 		return
+
 	match_joined_successfully.emit(match_name, actual_match_id)
 
 
@@ -369,15 +380,15 @@ func reconnect_after_error_dismissed():
 
 func leave_room():
 	if is_instance_valid(multiplayer_bridge):
-		multiplayer_bridge.leave()
-		print("[NAKAMA] Mostek Multiplayer opuścił stary mecz.")
+		if multiplayer_bridge.has_method("leave"):
+			multiplayer_bridge.leave()
+		elif multiplayer_bridge.has_method("leave_match"):
+			multiplayer_bridge.leave_match()
+
+	get_tree().get_multiplayer().set_multiplayer_peer(null)
+	multiplayer_bridge = null
 
 	actual_match_id = ""
 	match_name = ""
 	is_host = false
 	private = false
-
-	multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
-	get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
-
-	print("[NAKAMA] Nowy potok sieciowy zainicjalizowany pomyślnie. Gotowy na nowe lobby.")

@@ -15,13 +15,16 @@ extends Control
 @onready var skeptic_skin_slider = $MarginContainer/HBoxContainer/VBoxContainer/SkepticSkinSlider
 @onready var autoplay = $MarginContainer/HBoxContainer/VBoxContainer/Autoplay
 @onready var game_map_settings = $MarginContainer/HBoxContainer/VBoxContainer/GameMapSettings
+@onready var leave_button = $MarginContainer/LeaveButton
 
 var ufo_skin_index: int = 0
 var skeptic_skin_index: int = 0
 var role_idx = 1
-var players: = 0
+var players: int = 0
 var players_requests: Array[GameManager.Preferences] = []
 var ready_players_counter: int = 0
+var current_lobby_leader_id: int = 0
+
 var skeptic_skins: Array[Texture2D] = [
 	preload("uid://dhsp46crp15wo"),
 	preload("uid://difqg4xp0cai7"),
@@ -39,16 +42,22 @@ signal all_players_ready
 func _ready():
 	if not is_inside_tree():
 		return
-	if multiplayer.multiplayer_peer == null:
+
+	if multiplayer == null or multiplayer.multiplayer_peer == null:
 		await get_tree().process_frame
+
 	_set_sliders()
 	_adjust_skins_visibility(role_idx)
 	tooltip.set_deferred("visible", false)
+
+	current_lobby_leader_id = 1
 	_set_host_section()
-	_set_players_ready(ready_players_counter)
+
 	_update_players_counter()
 	_set_game_data()
+
 	await _connect()
+
 	about_role.add_theme_constant_override("line_separation", 10)
 	await get_tree().process_frame
 
@@ -56,10 +65,111 @@ func _ready():
 	_set_role_info()
 	_connect_signals()
 
+	get_tree().create_timer(0.15).timeout.connect(
+		func():
+			if multiplayer == null or multiplayer.multiplayer_peer == null:
+				return
 
-func _set_sliders():
-	ufo_skin_slider.init_slider(_ufo_skins(), ufo_skin_index)
-	skeptic_skin_slider.init_slider(skeptic_skins, skeptic_skin_index)
+			while multiplayer != null and multiplayer.multiplayer_peer != null and multiplayer.get_unique_id() == 0:
+				await get_tree().process_frame
+
+			_recalculate_leader_by_id()
+	)
+
+
+func _set_host_section():
+	if multiplayer == null or multiplayer.multiplayer_peer == null:
+		host_label.set_deferred("visible", false)
+		game_map_settings.visible = false
+		game_map_settings.district_spin_box.editable = false
+		game_map_settings.narrow_select.disabled = true
+		return
+
+	var my_id = multiplayer.get_unique_id()
+	if my_id == 0:
+		return
+
+	var is_leader = (my_id == current_lobby_leader_id)
+
+	if is_leader:
+		host_label.text = "Jesteś hostem"
+		host_label.set_deferred("visible", true)
+		game_map_settings.visible = true
+		game_map_settings.district_spin_box.editable = true
+		game_map_settings.narrow_select.disabled = false
+	else:
+		host_label.set_deferred("visible", false)
+		game_map_settings.visible = false
+		game_map_settings.district_spin_box.editable = false
+		game_map_settings.narrow_select.disabled = true
+
+
+func _leave_lobby():
+	if multiplayer:
+		if multiplayer.peer_connected.is_connected(_on_player_count_changed):
+			multiplayer.peer_connected.disconnect(_on_player_count_changed)
+		if multiplayer.peer_disconnected.is_connected(_on_player_count_changed):
+			multiplayer.peer_disconnected.disconnect(_on_player_count_changed)
+
+	var my_id = multiplayer.get_unique_id()
+
+	if my_id == current_lobby_leader_id:
+		var peers = multiplayer.get_peers()
+
+		if peers.size() > 0:
+			peers.sort()
+			var next_host_id = peers[0]
+			_assign_new_leader_id.rpc(next_host_id)
+
+			await get_tree().create_timer(0.15).timeout
+
+	await get_tree().process_frame
+
+	var cleanup_screen = load("uid://cl8gmmdjy0oxx")
+	if cleanup_screen:
+		get_tree().change_scene_to_packed(cleanup_screen)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _assign_new_leader_id(new_leader_id: int):
+	current_lobby_leader_id = new_leader_id
+	_set_host_section()
+
+
+func _on_player_count_changed(peer_id: int):
+	_update_players_counter()
+	_recalculate_leader_by_id()
+	var my_id = multiplayer.get_unique_id()
+	var peers = multiplayer.get_peers()
+
+	if not peers.is_empty() and my_id != current_lobby_leader_id:
+		if current_lobby_leader_id in peers:
+			_request_current_ready_count.rpc_id(current_lobby_leader_id)
+
+
+func _recalculate_leader_by_id():
+	var net = multiplayer
+	if net == null or net.multiplayer_peer == null:
+		current_lobby_leader_id = 1
+		_set_host_section.call_deferred()
+		return
+
+	if net.get_unique_id() == 0:
+		return
+
+	var my_id = net.get_unique_id()
+	var all_peers = net.get_peers()
+
+	var room_members = []
+	room_members.append_array(all_peers)
+	if my_id != 0:
+		room_members.append(my_id)
+
+	if room_members.size() > 0:
+		room_members.sort()
+		current_lobby_leader_id = room_members[0]
+
+		_set_host_section.call_deferred()
 
 
 func _connect_signals():
@@ -69,20 +179,31 @@ func _connect_signals():
 	factions.item_selected.connect(_set_warning_text)
 	ufo_skin_slider.skin_index_changed.connect(func(index): ufo_skin_index = index)
 	skeptic_skin_slider.skin_index_changed.connect(func(index): skeptic_skin_index = index)
+	leave_button.pressed.connect(_leave_lobby)
 
-	var main_loop = Engine.get_main_loop() as SceneTree
-	if main_loop and main_loop.get_multiplayer():
-		var net = main_loop.get_multiplayer()
-		if not net.peer_connected.is_connected(_on_player_count_changed):
-			net.peer_connected.connect(_on_player_count_changed)
-		if not net.peer_disconnected.is_connected(_on_player_count_changed):
-			net.peer_disconnected.connect(_on_player_count_changed)
+	if not multiplayer.peer_connected.is_connected(_on_player_count_changed):
+		multiplayer.peer_connected.connect(_on_player_count_changed)
+	if not multiplayer.peer_disconnected.is_connected(_on_player_count_changed):
+		multiplayer.peer_disconnected.connect(_on_player_count_changed)
+
+
+func _on_nakama_match_fully_ready(_match_name, _match_id):
+	_recalculate_leader_by_id()
+
+
+func _set_sliders():
+	ufo_skin_slider.init_slider(_ufo_skins(), ufo_skin_index)
+	skeptic_skin_slider.init_slider(skeptic_skins, skeptic_skin_index)
 
 
 func _update_players_counter():
 	var main_loop = Engine.get_main_loop() as SceneTree
 	if main_loop and main_loop.get_multiplayer():
 		var net = main_loop.get_multiplayer()
+		if net.multiplayer_peer == null:
+			players_label.text = "1/4 graczy"
+			return
+
 		var total_players = net.get_peers().size() + 1
 		if total_players >= 5:
 			total_players = 4
@@ -99,9 +220,12 @@ func _connect():
 		if net.multiplayer_peer != null:
 			var my_id = net.get_unique_id()
 			var host_id = get_multiplayer_authority()
-			var host = my_id == host_id
+			var host = (my_id == host_id)
+
 			if !host:
-				_request_current_ready_count.rpc_id(host_id)
+				if net.get_peers().has(host_id):
+					_request_current_ready_count.rpc_id(host_id)
+
 			autoplay.setup(host)
 
 
@@ -115,18 +239,6 @@ func _set_game_data():
 
 		var room_name = NakamaNetworkManager.match_name
 		room_name_label.text = "Kod pokoju: " + str(room_name)
-
-
-func _set_host_section():
-	if is_multiplayer_authority():
-		host_label.text = "Jesteś hostem"
-		game_map_settings.visible = true
-		game_map_settings.district_spin_box.editable = true
-		game_map_settings.narrow_select.disabled = false
-	else:
-		host_label.set_deferred("visible", false)
-		game_map_settings.district_spin_box.editable = false
-		game_map_settings.narrow_select.disabled = true
 
 
 func _set_warning_text(index: int = 0):
@@ -148,8 +260,21 @@ func _adjust_skins_visibility(value):
 		ufo_skin_slider.set_deferred("visible", false)
 
 
-func _on_player_count_changed(_id: int):
-	_update_players_counter()
+func _migrate_host_on_signal() -> void:
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if not main_loop or not main_loop.get_multiplayer():
+		return
+
+	var net = main_loop.get_multiplayer()
+	var peers = net.get_peers()
+
+	if peers.size() > 0:
+		peers.sort()
+		var next_host_id = peers[0]
+
+		set_multiplayer_authority(next_host_id)
+		if is_multiplayer_authority():
+			_set_host_section()
 
 
 func _on_preferences_set():
@@ -179,7 +304,12 @@ func _server_request_preferences(sender_id: int, type: String, skin_idx: int):
 	ready_players_counter += 1
 	if not is_inside_tree():
 		return
-	_set_players_ready.rpc(ready_players_counter)
+
+	if multiplayer.get_peers().is_empty():
+		_set_players_ready(ready_players_counter)
+	else:
+		_set_players_ready.rpc(ready_players_counter)
+
 	if ready_players_counter == 4:
 		all_players_ready.emit()
 

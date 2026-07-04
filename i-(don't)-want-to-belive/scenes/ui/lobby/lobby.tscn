@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" uid="uid://bi5ram0ollyyb" path="res://scenes/ui/lobby/autoplay.tscn" id="10_bxh51"]
 [ext_resource type="Texture2D" uid="uid://cm3d8ffgr6esu" path="res://assets/objects/planets/planet03.png" id="10_tprm0"]
 [ext_resource type="PackedScene" uid="uid://8a8u2iqtqs2w" path="res://scenes/ui/lobby/text_with_background.tscn" id="11_gj1jc"]
+[ext_resource type="PackedScene" uid="uid://kl4f1idrmk8k" path="res://scenes/ui/icon_button.tscn" id="14_c8ugs"]
+[ext_resource type="Texture2D" uid="uid://kbh3j76l3u13" path="res://assets/ui/icons/exitRight.png" id="15_qhjwk"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bthuv"]
 font = ExtResource("1_5t5el")
@@ -216,6 +218,16 @@ text = "/4 gotowi"
 horizontal_alignment = 2
 vertical_alignment = 2
 
+[node name="LeaveButton" parent="MarginContainer" unique_id=2111074099 instance=ExtResource("14_c8ugs")]
+clip_contents = true
+custom_minimum_size = Vector2(250, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+texture = ExtResource("15_qhjwk")
+label_text = "Opuść grę"
+
 [node name="MatchId" type="Label" parent="MarginContainer" unique_id=1180636423]
+visible = false
 layout_mode = 2
 size_flags_vertical = 8

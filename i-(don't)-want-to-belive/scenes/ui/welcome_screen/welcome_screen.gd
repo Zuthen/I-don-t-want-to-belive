@@ -12,6 +12,8 @@ extends Node2D
 
 
 func _ready():
+	if multiplayer.multiplayer_peer != null:
+		multiplayer.multiplayer_peer = null
 	version_label.text = "v" + VersionManager.get_version()
 	_connect_buttons()
 	_set_music_setting()
