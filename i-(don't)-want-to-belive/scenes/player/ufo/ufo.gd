@@ -56,7 +56,7 @@ func _ready():
 
 
 func _draw() -> void:
-	if not capture_area_collision or not capture_area_collision.shape:
+	if not is_multiplayer_authority():
 		return
 
 	var extents: Vector2 = capture_area_collision.shape.size / 2.0
