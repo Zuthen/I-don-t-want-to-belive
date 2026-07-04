@@ -1,7 +1,5 @@
 extends VBoxContainer
 
-@onready var backpack = $"."
-
 var backpack_item_scene = preload("uid://dsg7kyngde3tw")
 
 

@@ -8,8 +8,6 @@ class_name Collectible
 var texture: Texture2D
 var on_collect: Callable
 
-signal collected(texture: Texture2D)
-
 
 func _ready():
 	sprite_2d.texture = texture

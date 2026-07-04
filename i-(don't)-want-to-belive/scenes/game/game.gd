@@ -32,22 +32,27 @@ func _ready():
 		skeptic_positions = create_map(game_map_seed)
 		players = GameManager.players_selections
 		_assign_roles(players)
+		_spawn_world(game_map_seed)
 
-		var map_payload = {
-			"seed": game_map_seed,
-			"paths_tiles": GameManager.map_paths_tiles,
-			"tiles_size": GameManager.map_tiles_size,
-			"config": GameManager.map_config,
-		}
-		client_build_map_instruction.rpc(map_payload)
 
-		var spawner_data = map_to_spawn_data(skeptic_positions)
-		for data in spawner_data:
-			multiplayer_spawner.spawn(data)
-		var collectibles_data = collectable_spawn_data(collectables_positions, random)
-		if collectibles_data.size() > 0:
-			for data in collectibles_data:
-				multiplayer_spawner.spawn(data)
+func _spawn_world(game_map_seed: int):
+	var map_payload = {
+		"seed": game_map_seed,
+		"paths_tiles": GameManager.map_paths_tiles,
+		"tiles_size": GameManager.map_tiles_size,
+		"config": GameManager.map_config,
+	}
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	client_build_map_instruction.rpc(map_payload)
+	var spawner_data = map_to_spawn_data(skeptic_positions)
+	var collectibles_data = collectable_spawn_data(collectables_positions, random)
+
+	spawner_data.append_array(collectibles_data)
+
+	for data in spawner_data:
+		multiplayer_spawner.spawn(data)
 
 
 func _check_if_everyone_is_ready_to_spawn(peer_id: int):
