@@ -103,12 +103,14 @@ capture={
 
 [layer_names]
 
+2d_physics/layer_1="world"
 2d_physics/layer_2="voices"
 2d_physics/layer_3="skeptic"
 2d_physics/layer_4="ufo_powers"
 2d_physics/layer_5="map_borders"
 2d_physics/layer_6="ufo"
 2d_physics/layer_7="collectible"
+2d_physics/layer_8="wreck"
 
 [network]
 

@@ -222,6 +222,10 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2sb7k"]
 size = Vector2(61, 38)
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2satv"]
+radius = 7.0
+height = 24.0
+
 [node name="CrashedUfo" type="Node2D" unique_id=1610113169]
 z_index = 1
 y_sort_enabled = true
@@ -246,9 +250,18 @@ scale = Vector2(0.1, 0.1)
 texture = ExtResource("3_r4ww1")
 
 [node name="Vision" type="Area2D" parent="." unique_id=1575180385]
+visible = false
 collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Vision" unique_id=1135587434]
 visible = false
 shape = SubResource("RectangleShape2D_2sb7k")
+
+[node name="RepairArea" type="Area2D" parent="." unique_id=29065032]
+collision_layer = 0
+collision_mask = 128
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RepairArea" unique_id=573346289]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_2satv")
