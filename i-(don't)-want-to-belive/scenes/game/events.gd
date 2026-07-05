@@ -1,3 +1,3 @@
 extends Node
 
-signal item_collected(texture: Texture2D)
+signal item_collected(texture: Texture2D, name: String)

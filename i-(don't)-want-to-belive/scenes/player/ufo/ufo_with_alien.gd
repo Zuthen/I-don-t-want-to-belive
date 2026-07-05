@@ -226,4 +226,3 @@ func _update_visibility_for_local_player():
 	elif current_state == State.ALIEN:
 		visible = true
 		alien.visible = true
-		print("[ALIEN] Wymuszam widoczność Obcego na ekranie lokalnego gracza.")

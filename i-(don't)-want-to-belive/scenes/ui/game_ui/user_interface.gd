@@ -16,6 +16,7 @@ var ufos_sprites
 var hit_points: int = 0
 var crashed_ufos: Array[int] = []
 var max_ufos_count: int = 2
+var player: Player = null
 
 const UFO_WINS := "Prawda 
 	nas jeszcze 
@@ -34,8 +35,6 @@ func _ready():
 		q.set_icon_text("")
 	if is_instance_valid(e):
 		e.set_icon_text("")
-
-	var player: Player = null
 
 	for i in range(60):
 		player = MultiplayerFeatures.get_local_player()
@@ -58,6 +57,9 @@ func _ready():
 			var ufo_with_alien = ufo.get_parent() as UfoWithAlien if ufo else null
 			if ufo_with_alien:
 				ufo_with_alien.ufo_crashed.connect(_on_ufo_crashed)
+				var alien = ufo_with_alien.get_node_or_null("Alien") as Alien
+				alien.can_repair.connect(_enable_repair)
+				alien.cannot_repair.connect(_disable_repair)
 
 		setup_ui(player.role)
 
@@ -154,6 +156,16 @@ func setup_ui(role: Player.Role):
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
+
+
+func _enable_repair():
+	e.visible = true
+	e.set_icon_text("Napraw ufo")
+
+
+func _disable_repair():
+	e.visible = false
+	e.set_icon_text("")
 
 
 func _on_ufo_wins():

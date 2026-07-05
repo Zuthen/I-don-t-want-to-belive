@@ -13,7 +13,7 @@ script = ExtResource("1_1xyhe")
 
 [node name="BackpackIcon" type="TextureRect" parent="." unique_id=244349639]
 modulate = Color(0.53333336, 0.5372549, 0.7882353, 1)
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
 size_flags_horizontal = 4
 texture = ExtResource("1_l1vuj")

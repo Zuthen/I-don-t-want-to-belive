@@ -23,10 +23,26 @@ func _ready():
 	if ufo_texture_idx != null and UfosTextures.ufo_textures.size() > ufo_texture_idx:
 		sprite_2d.texture = UfosTextures.ufo_textures[ufo_texture_idx].ship_crashed
 	collision_shape_setup()
+	vision.body_entered.connect(_enable_ufo_repair)
+	vision.body_exited.connect(_disable_ufo_repair)
 	explosion.play("crash")
 	await explosion.animation_finished
 	explosion.play("idle")
 	vision.area_entered.connect(_on_crashed_ufo_seen)
+
+
+func _enable_ufo_repair(body):
+	var my_id = multiplayer.get_unique_id()
+	if body is Alien and body.id == my_id:
+		body.near_wreck = true
+		body.can_repair.emit()
+
+
+func _disable_ufo_repair(body):
+	var my_id = multiplayer.get_unique_id()
+	if body is Alien and body.id == my_id:
+		body.near_wreck = false
+		body.cannot_repair.emit()
 
 
 func _on_crashed_ufo_seen(other):

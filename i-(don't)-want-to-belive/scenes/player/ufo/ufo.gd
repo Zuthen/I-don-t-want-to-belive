@@ -58,34 +58,41 @@ func _ready():
 func _draw() -> void:
 	if not is_multiplayer_authority():
 		return
-
 	var extents: Vector2 = capture_area_collision.shape.size / 2.0
+	var dash_width: float = 8.0
+	var dash_height: float = 2.5
+	var target_y: float = extents.y + capture_area_collision.position.y - dash_height / 2.0
 
-	var dash_length: float = 4.0
-	var dash_space: float = 4.0
-	var step: float = dash_length + dash_space
+	var start_point = Vector2(-extents.x, target_y)
+	var end_point = Vector2(extents.x, target_y)
 
-	var line_thickness: float = 1.2
-	var main_line_color = Color(0.0, 0.472, 0.0, 0.9) # Zielony
-	var pointer_color = Color(0.91, 0.471, 0.0, 0.902) # Pomarańczowy
-	var orange_boundary: float = extents.x * 0.2
+	var line_vector: Vector2 = end_point - start_point
+	var line_angle: float = line_vector.angle()
 
-	var current_x: float = -extents.x
-	while current_x < extents.x:
-		var next_x: float = current_x + dash_length
+	var ufo_laser_texture = UfosTextures.ufo_textures[skin_idx].laser1
 
-		if next_x > extents.x:
-			next_x = extents.x
+	var direction: Vector2 = line_vector.normalized()
+	var adjusted_start: Vector2 = start_point + direction * (dash_width / 2.0)
+	var adjusted_end: Vector2 = end_point - direction * (dash_width / 2.0)
 
-		var start_point = Vector2(current_x, extents.y)
-		var end_point = Vector2(next_x, extents.y)
+	var desired_dash_count: int = 5
+	var dash_count: int = max(2, desired_dash_count)
 
-		if abs(current_x) <= orange_boundary:
-			draw_line(start_point, end_point, pointer_color, line_thickness, true)
-		else:
-			draw_line(start_point, end_point, main_line_color, line_thickness, true)
+	for i in range(dash_count):
+		var t: float = float(i) / float(dash_count - 1)
+		var current_pos: Vector2 = adjusted_start.lerp(adjusted_end, t)
 
-		current_x += step
+		var current_angle: float = line_angle + (PI / 2.0)
+		draw_set_transform(current_pos, current_angle, Vector2.ONE)
+
+		var dash_rect = Rect2(
+			Vector2(-dash_height / 2.0, -dash_width / 2.0),
+			Vector2(dash_height, dash_width),
+		)
+
+		draw_texture_rect(ufo_laser_texture, dash_rect, false, Color.WHITE)
+
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 func _process(_delta):

@@ -150,12 +150,11 @@ texture = ExtResource("5_grf6f")
 [node name="Coordinates" parent="." unique_id=1593133795 instance=ExtResource("4_elve6")]
 
 [node name="CaptureArea" type="Area2D" parent="." unique_id=309654053]
-position = Vector2(0, 26)
 collision_layer = 0
 collision_mask = 4
 
 [node name="CaptureArea" type="CollisionShape2D" parent="CaptureArea" unique_id=278924925]
-position = Vector2(0, 1.5)
+position = Vector2(0, 28)
 shape = SubResource("RectangleShape2D_1aexw")
 
 [node name="CapturedLabel" type="Label" parent="." unique_id=1773935356]
@@ -169,3 +168,6 @@ label_settings = SubResource("LabelSettings_p8ene")
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1709602337]
+zoom = Vector2(4, 4)

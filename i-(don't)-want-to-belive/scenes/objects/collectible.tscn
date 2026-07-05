@@ -7,8 +7,8 @@
 radius = 4.0
 
 [node name="Collectible" type="Area2D" unique_id=1145810813]
-collision_layer = 9
-collision_mask = 5
+collision_layer = 0
+collision_mask = 64
 script = ExtResource("1_tw2o3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1630613468]

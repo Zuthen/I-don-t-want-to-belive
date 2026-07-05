@@ -63,10 +63,11 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				return node
 			"collectable":
 				node = collectible_scene.instantiate()
-				node.name = "Collectible_" + str(randi())
+				node.name = "Collectable_" + str(randi())
 
 				if data.get("name") == "repair_tool":
 					node.texture = load("uid://mucvykffmbay")
+					node.item_name = "repair_tool"
 				if data.has("spawn_position"):
 					var local_pos = tile_map.map_to_local(data.spawn_position)
 					node.tree_entered.connect(func(): node.global_position = local_pos, CONNECT_ONE_SHOT)

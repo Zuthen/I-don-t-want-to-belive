@@ -189,6 +189,9 @@ _data = {
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ib4rs"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ehrl8"]
+size = Vector2(20, 26.666668)
+
 [node name="Alien" type="CharacterBody2D" unique_id=402508521]
 z_index = 2
 scale = Vector2(0.45, 0.45)
@@ -205,6 +208,7 @@ libraries/ = SubResource("AnimationLibrary_ehrl8")
 autoplay = &"move down"
 
 [node name="VoiceReceiver" parent="." unique_id=789243774 instance=ExtResource("4_srrot")]
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=312119236]
 scale = Vector2(-0.25, 0.25)
@@ -216,8 +220,8 @@ enabled = false
 zoom = Vector2(6, 6)
 
 [node name="CollisionArea" type="Area2D" parent="." unique_id=1507387659]
-collision_layer = 0
-collision_mask = 4
+collision_layer = 4
+collision_mask = 12
 
 [node name="HitBoxCollision" type="CollisionShape2D" parent="CollisionArea" unique_id=1651569879]
 position = Vector2(0, 3.2222228)
@@ -259,3 +263,12 @@ position = Vector2(0, 12)
 scale = Vector2(0.45, 0.45)
 
 [node name="Coordinates" parent="." unique_id=1593133795 instance=ExtResource("5_wcstr")]
+
+[node name="Collector" type="Area2D" parent="." unique_id=576790863]
+position = Vector2(0, 2.7777781)
+collision_layer = 64
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collector" unique_id=676801086]
+position = Vector2(0, 1.666666)
+shape = SubResource("RectangleShape2D_ehrl8")

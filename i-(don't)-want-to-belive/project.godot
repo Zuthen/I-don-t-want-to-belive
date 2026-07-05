@@ -108,6 +108,7 @@ capture={
 2d_physics/layer_4="ufo_powers"
 2d_physics/layer_5="map_borders"
 2d_physics/layer_6="ufo"
+2d_physics/layer_7="collectible"
 
 [network]
 

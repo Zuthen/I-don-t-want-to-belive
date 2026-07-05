@@ -15,6 +15,8 @@ const speed = 105.0
 var direction_sprite := "down"
 var peer_id: int
 var textures: AliensTextures
+var can_repair_ufo = false
+var near_wreck = false
 
 var current_skin: AliensTextures.AlienTextures = null
 
@@ -29,15 +31,31 @@ var skin_idx: int = 0:
 		if is_node_ready():
 			_apply_skin_textures()
 
+signal can_repair
+signal cannot_repair
+
 
 func _ready():
 	collision_area.area_entered.connect(on_skeptic_seen_alien)
+	Events.item_collected.connect(_assign_item_action)
 	await get_tree().process_frame
 	_apply_skin_textures()
 
 	peer_id = get_multiplayer_authority()
 	if is_multiplayer_authority():
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
+
+
+func _assign_item_action(_texture, item_name):
+	print("co za nazwa w alienie", item_name)
+	match item_name:
+		"repair_tool":
+			print("Wziąłem!!!")
+			can_repair_ufo = true
+
+
+func _repair_my_ufo():
+	pass
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -70,6 +88,9 @@ func _process(_delta):
 
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
 		call_skeptic_network.rpc()
+
+	if can_repair_ufo and near_wreck and Input.is_action_just_pressed("repair_ufo"):
+		_repair_my_ufo()
 
 
 @rpc("call_local", "any_peer", "reliable")
