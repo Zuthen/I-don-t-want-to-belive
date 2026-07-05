@@ -7,6 +7,7 @@ extends Player
 @onready var sprite_2d = $Sprite2D
 @onready var coordinates = $Coordinates
 @onready var collision_area = $CollisionArea
+@onready var collector = $Collector
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
@@ -33,6 +34,7 @@ var skin_idx: int = 0:
 
 signal can_repair
 signal cannot_repair
+signal repairing(time: float)
 
 
 func _ready():
@@ -54,8 +56,23 @@ func _assign_item_action(_texture, item_name):
 			can_repair_ufo = true
 
 
-func _repair_my_ufo():
-	pass
+func _repair_ufo():
+	var animation_time = animation_player.get_animation("ufo repair").length
+	animation_player.play("ufo repair")
+	repairing.emit(animation_time)
+	if is_multiplayer_authority():
+		movement_blocked = true
+		var timer = Timer.new()
+		timer.one_shot = true
+		add_child(timer)
+		timer.timeout.connect(
+			func():
+				movement_blocked = false
+				var current_input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+				animate(current_input_direction)
+		)
+		timer.timeout.connect(timer.queue_free)
+		timer.start(animation_time)
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -90,7 +107,7 @@ func _process(_delta):
 		call_skeptic_network.rpc()
 
 	if can_repair_ufo and near_wreck and Input.is_action_just_pressed("repair_ufo"):
-		_repair_my_ufo()
+		_repair_ufo()
 
 
 @rpc("call_local", "any_peer", "reliable")
@@ -137,6 +154,14 @@ func set_animations(animations_sprites: AliensTextures.AlienTextures):
 	if track_up != -1:
 		anim_up.track_set_key_value(track_up, 0, animations_sprites.climb_a)
 		anim_up.track_set_key_value(track_up, 1, animations_sprites.climb_b)
+
+	var anim_repair = animation_player.get_animation("ufo repair")
+	var track = anim_repair.find_track(track_path, Animation.TYPE_VALUE)
+	var keys_size = anim_repair.track_get_key_count(track)
+	if track != -1:
+		for i in range(0, keys_size - 1, 2):
+			anim_repair.track_set_key_value(track, i, animations_sprites.climb_a)
+			anim_repair.track_set_key_value(track, i + 1, animations_sprites.climb_b)
 
 	var anim_left = animation_player.get_animation("move left")
 	var track_left = anim_left.find_track(track_path, Animation.TYPE_VALUE)

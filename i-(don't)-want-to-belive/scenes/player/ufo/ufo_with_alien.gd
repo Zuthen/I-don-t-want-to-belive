@@ -120,91 +120,100 @@ func _physics_process(_delta):
 			move(ALIEN_SPEED, player_input_synchronizer)
 
 
+func _set_ufo_state():
+	if is_in_group("aliens"):
+		remove_from_group("aliens")
+	if not is_in_group("ufos"):
+		add_to_group("ufos")
+	ufo.visible = true
+	ufo.set_process(true)
+
+	alien.visible = false
+	alien.process_mode = PROCESS_MODE_DISABLED
+	alien.set_process(false)
+	alien.collector.set_deferred("disabled", true)
+
+	if "coordinates" in alien and alien.coordinates:
+		alien.coordinates.visible = false
+
+	ufo_collider.set_deferred("disabled", false)
+	alien_collider.set_deferred("disabled", true)
+	collision_layer = 0
+	collision_mask = 16
+
+
+func _set_alien_state(ufo_index: int):
+	var sender_id = get_multiplayer_authority()
+	role = Player.Role.ALIEN
+	alien.role = Player.Role.ALIEN
+	visible = true
+
+	if is_in_group("ufos"):
+		remove_from_group("ufos")
+	if not is_in_group("aliens"):
+		add_to_group("aliens")
+
+	alien.process_mode = PROCESS_MODE_INHERIT
+	alien.collector.set_deferred("disabled", false)
+	alien.visible = true
+	alien.set_process(true)
+	ufo_crashed.emit(sender_id)
+	alien.skin_idx = ufo_index
+	if alien.has_method("_apply_skin_textures"):
+		alien._apply_skin_textures()
+
+	if "coordinates" in alien and alien.coordinates:
+		alien.coordinates.visible = true
+
+	ufo.visible = false
+	ufo.set_process(false)
+
+	ufo_collider.set_deferred("disabled", true)
+	alien_collider.set_deferred("disabled", false)
+	collision_layer = 1
+	collision_mask = 3
+
+	if is_multiplayer_authority():
+		var tile_map = game.tile_map_layer
+		var current_grid_pos: Vector2i = tile_map.local_to_map(global_position)
+
+		if not game.paths.has(current_grid_pos):
+			var safe_tile = ufo.find_nearest_path(global_position)
+			global_position = tile_map.map_to_local(safe_tile)
+		else:
+			global_position = tile_map.map_to_local(current_grid_pos)
+
+	await get_tree().process_frame
+	get_tree().call_group("aliens", "_update_visibility_for_local_player")
+	get_tree().call_group("ufos", "_update_visibility_for_local_player")
+
+	var fog_layer = game.tile_map_layer
+	if fog_layer:
+		if "last_player_tile" in fog_layer:
+			fog_layer.last_player_tile = Vector2i(-999, -999)
+		if "ufo_view_setup" in fog_layer:
+			fog_layer.ufo_view_setup = false
+
+	if is_multiplayer_authority() and is_instance_valid(camera):
+		var camera_tween = create_tween()
+		camera_tween.tween_property(
+			camera,
+			"zoom",
+			Vector2(alien_camera_zoom, alien_camera_zoom),
+			0.8,
+		).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
 @rpc("any_peer", "call_local", "reliable")
 func change_state(new_state: State, ufo_index: int):
 	current_state = new_state
 	ufo_index_sync = ufo_index
 
 	if new_state == State.UFO:
-		if is_in_group("aliens"):
-			remove_from_group("aliens")
-		if not is_in_group("ufos"):
-			add_to_group("ufos")
-
-		ufo.visible = true
-		ufo.set_process(true)
-
-		alien.visible = false
-		alien.process_mode = PROCESS_MODE_DISABLED
-		alien.set_process(false)
-
-		if "coordinates" in alien and alien.coordinates:
-			alien.coordinates.visible = false
-
-		ufo_collider.set_deferred("disabled", false)
-		alien_collider.set_deferred("disabled", true)
-		collision_layer = 0
-		collision_mask = 16
+		_set_ufo_state()
 
 	elif new_state == State.ALIEN:
-		var sender_id = get_multiplayer_authority()
-		role = Player.Role.ALIEN
-		alien.role = Player.Role.ALIEN
-		visible = true
-
-		if is_in_group("ufos"):
-			remove_from_group("ufos")
-		if not is_in_group("aliens"):
-			add_to_group("aliens")
-
-		alien.process_mode = PROCESS_MODE_INHERIT
-		alien.visible = true
-		alien.set_process(true)
-		ufo_crashed.emit(sender_id)
-		alien.skin_idx = ufo_index
-		if alien.has_method("_apply_skin_textures"):
-			alien._apply_skin_textures()
-
-		if "coordinates" in alien and alien.coordinates:
-			alien.coordinates.visible = true
-
-		ufo.visible = false
-		ufo.set_process(false)
-
-		ufo_collider.set_deferred("disabled", true)
-		alien_collider.set_deferred("disabled", false)
-		collision_layer = 1
-		collision_mask = 3
-
-		if is_multiplayer_authority():
-			var tile_map = game.tile_map_layer
-			var current_grid_pos: Vector2i = tile_map.local_to_map(global_position)
-
-			if not game.paths.has(current_grid_pos):
-				var safe_tile = ufo.find_nearest_path(global_position)
-				global_position = tile_map.map_to_local(safe_tile)
-			else:
-				global_position = tile_map.map_to_local(current_grid_pos)
-
-		await get_tree().process_frame
-		get_tree().call_group("aliens", "_update_visibility_for_local_player")
-		get_tree().call_group("ufos", "_update_visibility_for_local_player")
-
-		var fog_layer = game.tile_map_layer
-		if fog_layer:
-			if "last_player_tile" in fog_layer:
-				fog_layer.last_player_tile = Vector2i(-999, -999)
-			if "ufo_view_setup" in fog_layer:
-				fog_layer.ufo_view_setup = false
-
-		if is_multiplayer_authority() and is_instance_valid(camera):
-			var camera_tween = create_tween()
-			camera_tween.tween_property(
-				camera,
-				"zoom",
-				Vector2(alien_camera_zoom, alien_camera_zoom),
-				0.8,
-			).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		_set_alien_state(ufo_index)
 
 
 func _update_visibility_for_local_player():

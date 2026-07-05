@@ -19,7 +19,7 @@ var game: Node2D
 var skin_idx: int = 3
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
-const capture_timeout_seconds: float = 1.0
+const capture_timeout_seconds: float = 60.0
 const capture_label_time: float = 1.5
 
 signal laser_shoot(time: float)
