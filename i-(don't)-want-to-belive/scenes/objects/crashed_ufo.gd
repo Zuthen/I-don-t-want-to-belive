@@ -33,19 +33,33 @@ func _ready():
 
 
 func _enable_ufo_repair(body):
-	print("I can see you")
 	var my_id = multiplayer.get_unique_id()
-	if body is Alien and body.id == my_id:
-		body.near_wreck = true
-		body.can_repair.emit()
+	var ufo_with_alien = _find_ufo_with_alien_node(body)
+	if ufo_with_alien is UfoWithAlien and ufo_with_alien.id == my_id:
+		var alien = ufo_with_alien.get_node("Alien") as Alien
+		alien.near_wreck = true
+		if alien.can_repair_ufo:
+			alien.can_repair.emit()
+
+
+func _find_ufo_with_alien_node(body) -> Node:
+	var current_node = body
+	var main_player_root: Node = null
+	while current_node != null and current_node != get_tree().root:
+		if "id" in current_node and current_node.id != 0:
+			main_player_root = current_node
+			break
+		current_node = current_node.get_parent()
+	return main_player_root
 
 
 func _disable_ufo_repair(body):
-	print("i can't see you")
 	var my_id = multiplayer.get_unique_id()
-	if body is Alien and body.id == my_id:
-		body.near_wreck = false
-		body.cannot_repair.emit()
+	var ufo_with_alien = _find_ufo_with_alien_node(body)
+	if ufo_with_alien is UfoWithAlien and ufo_with_alien.id == my_id:
+		var alien = ufo_with_alien.get_node("Alien")
+		alien.near_wreck = false
+		alien.cannot_repair.emit()
 
 
 func _on_crashed_ufo_seen(other):
