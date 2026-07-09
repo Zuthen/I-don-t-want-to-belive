@@ -12,6 +12,7 @@ extends Player
 @onready var warning_label = $WarningLabel
 @onready var sound = $Sound
 @onready var voice_receiver = $VoiceReceiver
+@onready var ui = $UserInterface
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
@@ -169,12 +170,7 @@ func walkie_talkie_message():
 
 @rpc("any_peer", "call_local", "reliable")
 func send_walkie_talkie_message(message: String):
-	var ui = get_node_or_null("UserInterface")
-	if not ui:
-		ui = get_tree().root.find_child("UserInterface", true, false)
-
-	if is_instance_valid(ui) and ui.has_method("receive_walkie_talkie_message"):
-		ui.receive_walkie_talkie_message(message)
+	ui.receive_walkie_talkie_message(message)
 
 
 func _reset_voice_emmitter():

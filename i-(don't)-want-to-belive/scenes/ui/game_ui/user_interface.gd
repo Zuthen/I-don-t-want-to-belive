@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 class_name UserInterface
 
@@ -16,6 +16,7 @@ var ufos_sprites
 var hit_points: int = 0
 var crashed_ufos: Array[int] = []
 var max_ufos_count: int = 2
+var player: Player
 
 const UFO_WINS := "Prawda 
 	nas jeszcze 
@@ -35,7 +36,7 @@ func _ready():
 	if is_instance_valid(e):
 		e.set_icon_text("")
 
-	var player: Player = null
+	player = get_parent()
 
 	for i in range(60):
 		player = MultiplayerFeatures.get_local_player()
@@ -44,21 +45,7 @@ func _ready():
 		await get_tree().create_timer(0.05).timeout
 
 	if player != null:
-		player.player_role_assigned.connect(_on_player_role_assigned)
-		player.ufo_wins.connect(_on_ufo_wins)
-		player.skeptics_win.connect(_on_skeptic_win)
-		if player.role == Player.Role.SKEPTIC:
-			player.belive_points_changed.connect(_on_belive_points_changed)
-			player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
-		elif player.role == Player.Role.UFO:
-			var ufo = player.get_node_or_null("Ufo")
-			if ufo:
-				ufo.laser_shoot.connect(_on_q_skill_fired)
-				ufo.captured.connect(_on_e_skill_fired)
-			var ufo_with_alien = ufo.get_parent() as UfoWithAlien if ufo else null
-			if ufo_with_alien:
-				ufo_with_alien.ufo_crashed.connect(_on_ufo_crashed)
-
+		_connect_signals(player)
 		setup_ui(player.role)
 
 		await get_tree().create_timer(0.15).timeout
@@ -67,8 +54,59 @@ func _ready():
 				child.queue_free()
 
 
+func _connect_signals(player: Player):
+	_disconnect_skill_signals(player)
+	if not player.player_role_assigned.is_connected(_on_player_role_assigned):
+		player.player_role_assigned.connect(_on_player_role_assigned)
+	if not player.ufo_wins.is_connected(_on_ufo_wins):
+		player.ufo_wins.connect(_on_ufo_wins)
+	if not player.skeptics_win.is_connected(_on_skeptic_win):
+		player.skeptics_win.connect(_on_skeptic_win)
+	if player.role == Player.Role.SKEPTIC:
+		player.belive_points_changed.connect(_on_belive_points_changed)
+		player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
+	elif player.role == Player.Role.UFO:
+		player.ufo_crashed.connect(_on_ufo_crashed)
+		var ufo = player.get_node_or_null("Ufo")
+		if ufo:
+			ufo.laser_shoot.connect(_on_q_skill_fired)
+			ufo.captured.connect(_on_e_skill_fired)
+	elif player.role == Player.Role.ALIEN:
+		var alien = player.get_node_or_null("Alien")
+		if alien:
+			alien.can_repair.connect(_on_alien_can_repair)
+			alien.cannot_repair.connect(_on_alien_cannot_repair)
+			alien.repairing.connect(_on_e_skill_fired)
+
+
+func _disconnect_skill_signals(player: Player):
+	var ufo = player.get_node_or_null("Ufo")
+	if ufo:
+		if ufo.laser_shoot.is_connected(_on_q_skill_fired):
+			ufo.laser_shoot.disconnect(_on_q_skill_fired)
+		if ufo.captured.is_connected(_on_e_skill_fired):
+			ufo.captured.disconnect(_on_e_skill_fired)
+
+	var alien = player.get_node_or_null("Alien")
+	if alien:
+		if alien.repairing.is_connected(_on_e_skill_fired):
+			alien.repairing.disconnect(_on_e_skill_fired)
+
+
+func _on_alien_can_repair():
+	print("Napraw")
+	e.set_icon_text("Napraw")
+	e.visible = true
+
+
+func _on_alien_cannot_repair():
+	e.visible = false
+
+
 func _on_ufo_crashed(peer_id):
+	e.reset_cooldown()
 	setup_ui(Player.Role.ALIEN)
+	_connect_signals(player)
 	_report_ufo_crash_to_server.rpc_id(1, peer_id)
 
 

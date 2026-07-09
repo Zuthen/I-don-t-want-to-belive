@@ -47,5 +47,14 @@ func start_cooldown(time: float = cooldown_time) -> void:
 	set_process(true)
 
 
+func reset_cooldown() -> void:
+	time_left_label.text = ""
+	is_on_cooldown = false
+	time_left = 0.0
+	cool_down_progress_circle.value = 0
+	set_process(false)
+	icon.texture = icon_active_texture
+
+
 func set_icon_text(text: String):
 	label.text = text

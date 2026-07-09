@@ -15,7 +15,6 @@ var voice_emitter_active := false
 const speed = 105.0
 var direction_sprite := "down"
 var peer_id: int
-var textures: AliensTextures
 var can_repair_ufo = false
 var near_wreck = false
 
@@ -49,10 +48,9 @@ func _ready():
 
 
 func _assign_item_action(_texture, item_name):
-	print("co za nazwa w alienie", item_name)
+	print("co za nazwa w alienie ", item_name)
 	match item_name:
 		"repair_tool":
-			print("Wziąłem!!!")
 			can_repair_ufo = true
 
 
@@ -68,8 +66,9 @@ func _repair_ufo():
 		timer.timeout.connect(
 			func():
 				movement_blocked = false
-				var current_input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-				animate(current_input_direction)
+				var synchronizer = get_parent().get_node_or_null("PlayerInputSynchronizer")
+				if is_instance_valid(synchronizer):
+					animate(synchronizer.movement_vector)
 		)
 		timer.timeout.connect(timer.queue_free)
 		timer.start(animation_time)

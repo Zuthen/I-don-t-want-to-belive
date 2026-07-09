@@ -77,6 +77,7 @@
 [ext_resource type="Texture2D" uid="uid://c3w1532qvfkvo" path="res://assets/characters/old/tile_0241.png" id="72_u02f8"]
 [ext_resource type="Texture2D" uid="uid://q87e06rdcvgi" path="res://assets/characters/green/tile_0052.png" id="73_7nsdt"]
 [ext_resource type="Texture2D" uid="uid://dqs6d1iqarutx" path="res://assets/characters/green/tile_0079.png" id="74_b6hkh"]
+[ext_resource type="PackedScene" uid="uid://cjks5cw6xyieq" path="res://scenes/ui/game_ui/user_interface.tscn" id="78_7sb2d"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_gsmgp"]
 properties/0/path = NodePath(".:global_position")
@@ -1074,3 +1075,5 @@ label_settings = SubResource("LabelSettings_i5h2m")
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
+
+[node name="UserInterface" parent="." unique_id=1358639179 instance=ExtResource("78_7sb2d")]
