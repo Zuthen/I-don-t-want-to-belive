@@ -6,15 +6,12 @@ enum State { UFO, ALIEN }
 
 @onready var ufo = $Ufo
 @onready var alien = $Alien
-@onready var camera = $Camera2D
 @onready var player_input_synchronizer = $PlayerInputSynchronizer
 @onready var alien_collider = $AlienCollider
 @onready var ufo_collider = $UfoCollider
 
 const UFO_SPEED = 150.0
 const ALIEN_SPEED = 105.0
-const ufo_camera_zoom = 3.0
-const alien_camera_zoom = 6.0
 
 var current_state = State.UFO
 var game: Node2D
@@ -54,6 +51,7 @@ func _deferred_set_network_authority(value: int):
 
 
 func _ready():
+	Events.ufo_fixed.connect(_on_ufo_fixed)
 	game = get_parent()
 	current_state = State.UFO
 
@@ -73,12 +71,17 @@ func _ready():
 	if input_multiplayer_authority != 0:
 		_deferred_set_network_authority(input_multiplayer_authority)
 
-	if is_multiplayer_authority():
-		set_camera(camera, ufo_camera_zoom)
-
 	_update_visibility_for_start()
 	collision_layer = 0
 	collision_mask = 16
+	_set_ufo_state()
+
+
+func _on_ufo_fixed(new_position: Vector2):
+	print("UFO FIXED, I'm ufo again")
+	print(new_position)
+	global_position = new_position
+	change_state.rpc(State.UFO, ufo_index_sync)
 
 
 func _update_visibility_for_start():
@@ -121,12 +124,20 @@ func _physics_process(_delta):
 
 
 func _set_ufo_state():
+	alien.visible = false
 	if is_in_group("aliens"):
 		remove_from_group("aliens")
 	if not is_in_group("ufos"):
 		add_to_group("ufos")
 	ufo.visible = true
 	ufo.set_process(true)
+
+	if is_multiplayer_authority():
+		if alien.camera:
+			alien.camera.enabled = false
+		ufo.camera.enabled = true
+		ufo.camera.make_current()
+		set_camera(ufo.camera)
 
 	alien.visible = false
 	alien.process_mode = PROCESS_MODE_DISABLED
@@ -140,10 +151,13 @@ func _set_ufo_state():
 	alien_collider.set_deferred("disabled", true)
 	collision_layer = 0
 	collision_mask = 16
+	get_tree().call_group("ufos", "_update_visibility_for_local_player")
 
 
 func _set_alien_state(ufo_index: int):
+	alien.visible = true
 	var sender_id = get_multiplayer_authority()
+
 	role = Player.Role.ALIEN
 	alien.role = Player.Role.ALIEN
 	visible = true
@@ -184,6 +198,14 @@ func _set_alien_state(ufo_index: int):
 			global_position = tile_map.map_to_local(current_grid_pos)
 
 	await get_tree().process_frame
+
+	if is_multiplayer_authority():
+		if ufo.camera:
+			ufo.camera.enabled = false
+		alien.camera.enabled = true
+		alien.camera.make_current()
+		set_camera(alien.camera)
+
 	get_tree().call_group("aliens", "_update_visibility_for_local_player")
 	get_tree().call_group("ufos", "_update_visibility_for_local_player")
 
@@ -193,15 +215,6 @@ func _set_alien_state(ufo_index: int):
 			fog_layer.last_player_tile = Vector2i(-999, -999)
 		if "ufo_view_setup" in fog_layer:
 			fog_layer.ufo_view_setup = false
-
-	if is_multiplayer_authority() and is_instance_valid(camera):
-		var camera_tween = create_tween()
-		camera_tween.tween_property(
-			camera,
-			"zoom",
-			Vector2(alien_camera_zoom, alien_camera_zoom),
-			0.8,
-		).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 
 @rpc("any_peer", "call_local", "reliable")

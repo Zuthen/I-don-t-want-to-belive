@@ -8,6 +8,7 @@ extends Player
 @onready var captured_label = $CapturedLabel
 @onready var coordinates = $Coordinates
 @onready var sound = $Sound
+@onready var camera = $Camera2D
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures

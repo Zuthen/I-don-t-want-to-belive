@@ -37,7 +37,6 @@ func _ready():
 		e.set_icon_text("")
 
 	player = get_parent()
-
 	for i in range(60):
 		player = MultiplayerFeatures.get_local_player()
 		if player != null:
@@ -52,6 +51,7 @@ func _ready():
 		for child in get_tree().root.get_children():
 			if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
 				child.queue_free()
+	Events.ufo_fixed.connect(func(_position): _connect_signals(player))
 
 
 func _connect_signals(player: Player):
@@ -74,9 +74,12 @@ func _connect_signals(player: Player):
 	elif player.role == Player.Role.ALIEN:
 		var alien = player.get_node_or_null("Alien")
 		if alien:
-			alien.can_repair.connect(_on_alien_can_repair)
-			alien.cannot_repair.connect(_on_alien_cannot_repair)
-			alien.repairing.connect(_on_e_skill_fired)
+			if not alien.can_repair.is_connected(_on_alien_can_repair):
+				alien.can_repair.connect(_on_alien_can_repair)
+			if not alien.cannot_repair.is_connected(_on_alien_cannot_repair):
+				alien.cannot_repair.connect(_on_alien_cannot_repair)
+			if not alien.repairing.is_connected(_on_e_skill_fired):
+				alien.repairing.connect(_on_e_skill_fired)
 
 
 func _disconnect_skill_signals(player: Player):

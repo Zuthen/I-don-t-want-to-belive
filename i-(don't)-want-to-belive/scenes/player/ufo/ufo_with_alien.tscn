@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://m52fuwcrlo2k"]
 
-[ext_resource type="PackedScene" uid="uid://cba40e72olvj2" path="res://scenes/player/ufo_type_camera.tscn" id="1_a3cyp"]
 [ext_resource type="Script" uid="uid://cod63glujacrx" path="res://scenes/player/ufo/ufo_with_alien.gd" id="1_wdfhs"]
 [ext_resource type="PackedScene" uid="uid://hc74yy2qdg3f" path="res://scenes/player/ufo/ufo.tscn" id="2_wdfhs"]
 [ext_resource type="PackedScene" uid="uid://de382n7ge1rld" path="res://scenes/player/skeptic/player_input_synchronizer.tscn" id="4_yytsy"]
+[ext_resource type="PackedScene" uid="uid://cjks5cw6xyieq" path="res://scenes/ui/game_ui/user_interface.tscn" id="5_iht10"]
 [ext_resource type="PackedScene" uid="uid://157ip2c8a5yg" path="res://scenes/player/aliens/alien.tscn" id="5_wdfhs"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_dgwal"]
@@ -29,8 +29,6 @@ script = ExtResource("1_wdfhs")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1422856021]
 replication_config = SubResource("SceneReplicationConfig_dgwal")
 
-[node name="Camera2D" parent="." unique_id=1105090035 instance=ExtResource("1_a3cyp")]
-
 [node name="Ufo" parent="." unique_id=709787266 instance=ExtResource("2_wdfhs")]
 
 [node name="Alien" parent="." unique_id=402508521 instance=ExtResource("5_wdfhs")]
@@ -46,3 +44,5 @@ disabled = true
 
 [node name="UfoCollider" type="CollisionShape2D" parent="." unique_id=1463083260]
 shape = SubResource("CapsuleShape2D_wdfhs")
+
+[node name="UserInterface" parent="." unique_id=96406378 instance=ExtResource("5_iht10")]

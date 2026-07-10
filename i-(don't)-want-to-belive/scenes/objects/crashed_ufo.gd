@@ -5,7 +5,7 @@ class_name CrashedUfo
 @onready var sprite_2d = $Sprite2D
 @onready var vision = $Vision
 @onready var collision_shape = $Vision/CollisionShape2D
-@onready var explosion = $Explosion
+@onready var animator = $Animator
 @onready var particle = $Particle
 @onready var repair_area = $RepairArea
 
@@ -24,12 +24,18 @@ func _ready():
 	if ufo_texture_idx != null and UfosTextures.ufo_textures.size() > ufo_texture_idx:
 		sprite_2d.texture = UfosTextures.ufo_textures[ufo_texture_idx].ship_crashed
 	collision_shape_setup()
+	_set_animations()
+	_connect_signals()
+	animator.play("crash")
+	await animator.animation_finished
+	animator.play("idle")
+
+
+func _connect_signals():
 	repair_area.area_entered.connect(_enable_ufo_repair)
 	repair_area.area_exited.connect(_disable_ufo_repair)
-	explosion.play("crash")
-	await explosion.animation_finished
-	explosion.play("idle")
 	vision.area_entered.connect(_on_crashed_ufo_seen)
+	Events.alien_fixed_ufo.connect(_on_fixed)
 
 
 func _enable_ufo_repair(body):
@@ -76,3 +82,25 @@ func collision_shape_setup():
 	var box_shape = collision_shape.shape as RectangleShape2D
 	if box_shape:
 		box_shape.size = Vector2(MapSettings.tile_size * 10, MapSettings.tile_size * 10)
+
+
+func _on_fixed(alien_peer_id):
+	animator.play("fixed")
+
+
+func send_ufo_fixed_signal():
+	var track_path = "Sprite2D:position"
+	var fixed_animation = animator.get_animation("fixed")
+	var track = fixed_animation.find_track(track_path, Animation.TYPE_VALUE)
+
+	var local_position = fixed_animation.track_get_key_value(track, 1)
+	var new_position = sprite_2d.to_global(local_position)
+	Events.ufo_fixed.emit(new_position)
+
+
+func _set_animations():
+	var track_path = "Sprite2D:texture"
+	var fixed_animation = animator.get_animation("fixed")
+	var track = fixed_animation.find_track(track_path, Animation.TYPE_VALUE)
+	if track != -1:
+		fixed_animation.track_set_key_value(track, 0, UfosTextures.ufo_textures[ufo_texture_idx].ship)

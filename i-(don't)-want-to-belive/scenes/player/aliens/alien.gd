@@ -8,6 +8,7 @@ extends Player
 @onready var coordinates = $Coordinates
 @onready var collision_area = $CollisionArea
 @onready var collector = $Collector
+@onready var camera = $Camera2D
 
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
@@ -34,6 +35,7 @@ var skin_idx: int = 0:
 signal can_repair
 signal cannot_repair
 signal repairing(time: float)
+signal ufo_repaired
 
 
 func _ready():
@@ -48,7 +50,6 @@ func _ready():
 
 
 func _assign_item_action(_texture, item_name):
-	print("co za nazwa w alienie ", item_name)
 	match item_name:
 		"repair_tool":
 			can_repair_ufo = true
@@ -70,7 +71,11 @@ func _repair_ufo():
 				if is_instance_valid(synchronizer):
 					animate(synchronizer.movement_vector)
 		)
-		timer.timeout.connect(timer.queue_free)
+		timer.timeout.connect(
+			func():
+				timer.queue_free()
+				Events.alien_fixed_ufo.emit(peer_id)
+		)
 		timer.start(animation_time)
 
 
