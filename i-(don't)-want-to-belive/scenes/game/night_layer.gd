@@ -100,6 +100,7 @@ func setup_ufo_view():
 func update_players_visibility(local_player: Node2D):
 	var my_network_id = multiplayer.get_unique_id()
 	var all_ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
+	var items = get_tree().get_nodes_in_group("collectable_items")
 	var is_local_ufo = local_player.is_in_group("ufos") and not local_player.is_in_group("aliens")
 
 	if is_local_ufo:
@@ -108,8 +109,9 @@ func update_players_visibility(local_player: Node2D):
 			if player_net_id == my_network_id or player.is_multiplayer_authority():
 				player.visible = true
 				continue
-
 			player.visible = false
+		for collectable in items:
+			collectable.visible = false
 		return
 
 	var local_tile = buildings_layer.local_to_map(local_player.global_position)
@@ -127,6 +129,14 @@ func update_players_visibility(local_player: Node2D):
 
 		var is_visible_by_fog = (fog_tile_alternative != TILE_DEEP_NIGHT and distance_in_tiles <= vision_radius)
 		player.visible = is_visible_by_fog
+
+	for collectable in items:
+		var item_tile = buildings_layer.local_to_map(collectable.global_position)
+		var distance_in_tiles = local_tile.distance_to(item_tile)
+		var fog_tile_alternative = get_cell_alternative_tile(item_tile)
+
+		var is_item_visible = (fog_tile_alternative != TILE_DEEP_NIGHT and distance_in_tiles <= vision_radius)
+		collectable.visible = is_item_visible
 
 
 func reset_old_fog(center_tile: Vector2i):

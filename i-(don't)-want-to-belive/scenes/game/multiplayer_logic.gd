@@ -71,6 +71,7 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				if data.has("spawn_position"):
 					var local_pos = tile_map.map_to_local(data.spawn_position)
 					node.tree_entered.connect(func(): node.global_position = local_pos, CONNECT_ONE_SHOT)
+				node.add_to_group("collectable_items")
 				return node
 			_:
 				return null
