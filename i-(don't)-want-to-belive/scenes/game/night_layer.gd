@@ -53,15 +53,22 @@ func _process(_delta):
 	var is_ufo = local_player.is_in_group("ufos")
 
 	if is_ufo and not is_alien:
-		if not ufo_view_setup:
-			ufo_view_setup = true
-			last_player_tile = Vector2i(-999, -999)
-			setup_ufo_view()
-			GameManager.is_local_fog_ready = true
-
-		update_players_visibility(local_player)
+		_setup_ufo_view(local_player)
 		return
 
+	_setup_ground_entities_view(local_player)
+
+
+func _setup_ufo_view(local_player):
+	if not ufo_view_setup:
+		ufo_view_setup = true
+		last_player_tile = Vector2i(-999, -999)
+		setup_ufo_view()
+		GameManager.is_local_fog_ready = true
+	update_players_visibility(local_player)
+
+
+func _setup_ground_entities_view(local_player):
 	if ufo_view_setup:
 		ufo_view_setup = false
 		initialize_fog()
