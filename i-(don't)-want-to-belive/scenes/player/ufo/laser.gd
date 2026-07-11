@@ -16,13 +16,6 @@ var textures: UfosTextures.UfoTextures
 var peer_id: int = 0
 
 
-# Wewnątrz laser.gd
-func _physics_process(_delta):
-	# Loguje pozycję lasera raz na 60 klatek, żeby zobaczyć czy w ogóle leci w stronę gracza
-	if Engine.get_frames_drawn() % 60 == 0:
-		print("[LOG FIZYKI LASERA] Żyję w świecie! Moja globalna pozycja to: ", global_position)
-
-
 func _ready():
 	textures = UfosTextures.ufo_textures[color_idx]
 	var original_anim = animation_player.get_animation("laser pointing")

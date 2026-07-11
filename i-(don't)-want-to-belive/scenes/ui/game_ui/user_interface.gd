@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 
 class_name UserInterface
 
@@ -16,6 +16,7 @@ var ufos_sprites
 var hit_points: int = 0
 var crashed_ufos: Array[int] = []
 var max_ufos_count: int = 2
+var player: Player
 
 const UFO_WINS := "Prawda 
 	nas jeszcze 
@@ -35,8 +36,7 @@ func _ready():
 	if is_instance_valid(e):
 		e.set_icon_text("")
 
-	var player: Player = null
-
+	player = get_parent()
 	for i in range(60):
 		player = MultiplayerFeatures.get_local_player()
 		if player != null:
@@ -44,31 +44,79 @@ func _ready():
 		await get_tree().create_timer(0.05).timeout
 
 	if player != null:
-		player.player_role_assigned.connect(_on_player_role_assigned)
-		player.ufo_wins.connect(_on_ufo_wins)
-		player.skeptics_win.connect(_on_skeptic_win)
-		if player.role == Player.Role.SKEPTIC:
-			player.belive_points_changed.connect(_on_belive_points_changed)
-			player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
-		elif player.role == Player.Role.UFO:
-			var ufo = player.get_node_or_null("Ufo")
-			if ufo:
-				ufo.laser_shoot.connect(_on_q_skill_fired)
-				ufo.captured.connect(_on_e_skill_fired)
-			var ufo_with_alien = ufo.get_parent() as UfoWithAlien if ufo else null
-			if ufo_with_alien:
-				ufo_with_alien.ufo_crashed.connect(_on_ufo_crashed)
-
+		_connect_signals(player)
 		setup_ui(player.role)
 
 		await get_tree().create_timer(0.15).timeout
 		for child in get_tree().root.get_children():
 			if child.name == "LoadingScreen" or (child.get_script() and child.get_script().get_path().ends_with("loading_screen.gd")):
 				child.queue_free()
+	Events.ufo_fixed.connect(
+		func(_position):
+			if player:
+				player.role = Player.Role.UFO
+			_connect_signals(player)
+			setup_ui(Player.Role.UFO)
+	)
+
+
+func _connect_signals(player: Player):
+	_disconnect_skill_signals(player)
+	_connect_sinal_if_not_connected(player.ufo_wins, _on_ufo_wins)
+	_connect_sinal_if_not_connected(player.skeptics_win, _on_skeptic_win)
+	if player.role == Player.Role.SKEPTIC:
+		player.belive_points_changed.connect(_on_belive_points_changed)
+		player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
+	elif player.role == Player.Role.UFO:
+		_connect_sinal_if_not_connected(player.ufo_crashed, _on_ufo_crashed)
+		var ufo = player.get_node_or_null("Ufo")
+		if ufo:
+			ufo.laser_shoot.connect(_on_q_skill_fired)
+			ufo.captured.connect(_on_e_skill_fired)
+	elif player.role == Player.Role.ALIEN:
+		var alien = player.get_node_or_null("Alien")
+		if alien:
+			_connect_sinal_if_not_connected(alien.can_repair, _on_alien_can_repair)
+			_connect_sinal_if_not_connected(alien.cannot_repair, _on_alien_cannot_repair)
+			_connect_sinal_if_not_connected(alien.repairing, _on_e_skill_fired)
+
+
+func _disconnect_skill_signals(player: Player):
+	var ufo = player.get_node_or_null("Ufo")
+	if ufo:
+		if ufo.laser_shoot.is_connected(_on_q_skill_fired):
+			ufo.laser_shoot.disconnect(_on_q_skill_fired)
+		if ufo.captured.is_connected(_on_e_skill_fired):
+			ufo.captured.disconnect(_on_e_skill_fired)
+
+	var alien = player.get_node_or_null("Alien")
+	if alien:
+		if alien.repairing.is_connected(_on_e_skill_fired):
+			alien.repairing.disconnect(_on_e_skill_fired)
+
+
+func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callable):
+	if not signal_to_connect.is_connected(callable):
+		signal_to_connect.connect(callable)
+
+
+func _on_alien_can_repair():
+	if player and player.role != Player.Role.ALIEN:
+		return
+	e.set_icon_text("Napraw")
+	e.visible = true
+
+
+func _on_alien_cannot_repair():
+	if player and player.role != Player.Role.ALIEN:
+		return
+	e.visible = false
 
 
 func _on_ufo_crashed(peer_id):
+	e.reset_cooldown()
 	setup_ui(Player.Role.ALIEN)
+	_connect_signals(player)
 	_report_ufo_crash_to_server.rpc_id(1, peer_id)
 
 
@@ -132,11 +180,6 @@ func _network_broadcast_game_over():
 		get_tree().change_scene_to_packed(cleanup_screen)
 
 
-func _on_player_role_assigned():
-	var player = get_parent() as Player
-	setup_ui(player.role)
-
-
 func setup_ui(role: Player.Role):
 	for ufo in ufos_sprites:
 		ufo.visible = false
@@ -144,6 +187,7 @@ func setup_ui(role: Player.Role):
 		Player.Role.UFO:
 			q.set_icon_text("Wystrzel laser")
 			e.set_icon_text("Pochwyć")
+			e.visible = true
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		Player.Role.SKEPTIC:

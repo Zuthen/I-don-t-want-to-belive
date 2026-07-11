@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c7fud3xvj6so"]
+
+[ext_resource type="Script" uid="uid://bgmlu8ui34hg1" path="res://scenes/ui/game_ui/backpack.gd" id="1_1xyhe"]
+[ext_resource type="Texture2D" uid="uid://bgn34525kfomu" path="res://assets/objects/findings/backpack.png" id="1_l1vuj"]
+
+[node name="Backpack" type="VBoxContainer" unique_id=1666698182]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1xyhe")
+
+[node name="BackpackIcon" type="TextureRect" parent="." unique_id=244349639]
+modulate = Color(0.53333336, 0.5372549, 0.7882353, 1)
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("1_l1vuj")
+expand_mode = 1
+stretch_mode = 5

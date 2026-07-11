@@ -8,6 +8,7 @@ extends Player
 @onready var captured_label = $CapturedLabel
 @onready var coordinates = $Coordinates
 @onready var sound = $Sound
+@onready var camera = $Camera2D
 
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var ufo_sprites: UfosTextures.UfoTextures
@@ -19,7 +20,7 @@ var game: Node2D
 var skin_idx: int = 3
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
-const capture_timeout_seconds: float = 1.0
+const capture_timeout_seconds: float = 60.0
 const capture_label_time: float = 1.5
 
 signal laser_shoot(time: float)
@@ -53,6 +54,46 @@ func _ready():
 		ufo_sprites = UfosTextures.ufo_textures[skin_idx]
 		if ship and ufo_sprites and "ship" in ufo_sprites:
 			ship.texture = ufo_sprites.ship
+
+
+func _draw() -> void:
+	if not is_multiplayer_authority():
+		return
+	var extents: Vector2 = capture_area_collision.shape.size / 2.0
+	var dash_width: float = 8.0
+	var dash_height: float = 2.5
+	var target_y: float = extents.y + capture_area_collision.position.y - dash_height / 2.0
+
+	var start_point = Vector2(-extents.x, target_y)
+	var end_point = Vector2(extents.x, target_y)
+
+	var line_vector: Vector2 = end_point - start_point
+	var line_angle: float = line_vector.angle()
+
+	var ufo_laser_texture = UfosTextures.ufo_textures[skin_idx].laser1
+
+	var direction: Vector2 = line_vector.normalized()
+	var adjusted_start: Vector2 = start_point + direction * (dash_width / 2.0)
+	var adjusted_end: Vector2 = end_point - direction * (dash_width / 2.0)
+
+	var desired_dash_count: int = 5
+	var dash_count: int = max(2, desired_dash_count)
+
+	for i in range(dash_count):
+		var t: float = float(i) / float(dash_count - 1)
+		var current_pos: Vector2 = adjusted_start.lerp(adjusted_end, t)
+
+		var current_angle: float = line_angle + (PI / 2.0)
+		draw_set_transform(current_pos, current_angle, Vector2.ONE)
+
+		var dash_rect = Rect2(
+			Vector2(-dash_height / 2.0, -dash_width / 2.0),
+			Vector2(dash_height, dash_width),
+		)
+
+		draw_texture_rect(ufo_laser_texture, dash_rect, false, Color.WHITE)
+
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 func _process(_delta):

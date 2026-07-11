@@ -1,0 +1,23 @@
+extends VBoxContainer
+
+var backpack_item_scene = preload("uid://dsg7kyngde3tw")
+
+
+func _ready():
+	Events.item_collected.connect(_item_collected)
+	Events.ufo_fixed.connect(_remove_repair_tool)
+
+
+func _remove_repair_tool(_new_position):
+	var all_items = get_children()
+	for item in all_items:
+		if item is BackpackItem and item.item_name == "repair_tool":
+			item.queue_free()
+			break
+
+
+func _item_collected(texture: Texture2D, item_name: String):
+	var backpack_item = backpack_item_scene.instantiate()
+	backpack_item.item_name = item_name
+	backpack_item.texture = texture
+	add_child(backpack_item)

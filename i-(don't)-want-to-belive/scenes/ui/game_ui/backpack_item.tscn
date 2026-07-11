@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dsg7kyngde3tw"]
+
+[ext_resource type="Texture2D" uid="uid://bq5ok1etalft8" path="res://assets/ui/panel_glass.png" id="1_7w8dl"]
+[ext_resource type="Script" uid="uid://dilk8kbqa4m1t" path="res://scenes/ui/game_ui/backpack_item.gd" id="2_873sp"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_873sp"]
+texture = ExtResource("1_7w8dl")
+modulate_color = Color(0.53333336, 0.5372549, 0.7882353, 1)
+
+[node name="BackpackItem" type="PanelContainer" unique_id=196489517]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -756.0
+offset_bottom = -636.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxTexture_873sp")
+script = ExtResource("2_873sp")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=328263766]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5

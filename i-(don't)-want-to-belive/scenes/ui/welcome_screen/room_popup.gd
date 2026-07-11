@@ -39,7 +39,6 @@ func _on_about_to_popup():
 func _on_connect_pressed():
 	var room_name = code_input.text.strip_edges()
 	if room_name == "":
-		print("Nazwa pokoju nie może być pusta!")
 		popup_centered()
 		return
 

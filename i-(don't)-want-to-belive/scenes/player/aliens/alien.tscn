@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://157ip2c8a5yg"]
 
 [ext_resource type="Script" uid="uid://w3x4h125dksp" path="res://scenes/player/aliens/alien.gd" id="1_patnu"]
+[ext_resource type="Texture2D" uid="uid://dvgejs317ruv6" path="res://assets/objects/platformIndustrial_067.png" id="3_bwueq"]
 [ext_resource type="Texture2D" uid="uid://cxm5spva2vcoh" path="res://assets/characters/aliens/character_beige_front.png" id="3_u533k"]
 [ext_resource type="PackedScene" uid="uid://bddac54674vhl" path="res://scenes/player/skeptic/voice_receiver.tscn" id="4_srrot"]
 [ext_resource type="Texture2D" uid="uid://c3i0c5yn8ys7w" path="res://assets/characters/aliens/character_beige_jump.png" id="4_u533k"]
@@ -11,6 +12,8 @@
 [ext_resource type="Texture2D" uid="uid://b7st2ep8qp6uc" path="res://assets/characters/aliens/character_beige_climb_b.png" id="7_l3473"]
 [ext_resource type="Texture2D" uid="uid://drlhe6wm2g1b2" path="res://assets/characters/aliens/character_beige_idle.png" id="7_ysgd6"]
 [ext_resource type="Texture2D" uid="uid://btqefcbfju63x" path="res://assets/characters/aliens/character_beige_walk_b.png" id="8_bwueq"]
+[ext_resource type="Texture2D" uid="uid://bakgxe7gsg38q" path="res://assets/characters/aliens/character_yellow_climb_a.png" id="11_0quh7"]
+[ext_resource type="Texture2D" uid="uid://ch7walxmk0ixo" path="res://assets/characters/aliens/character_yellow_climb_b.png" id="12_l3p6o"]
 
 [sub_resource type="Animation" id="Animation_wcstr"]
 length = 0.001
@@ -37,6 +40,42 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector2(-0.25, 0.25)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimatedWheel:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_bwueq")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("AnimatedWheel:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [6.2831855]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("AnimatedWheel:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
 }
 
 [sub_resource type="Animation" id="Animation_ysgd6"]
@@ -177,6 +216,59 @@ tracks/0/keys = {
 "values": [ExtResource("6_wcstr"), ExtResource("7_l3473")]
 }
 
+[sub_resource type="Animation" id="Animation_45hnj"]
+resource_name = "ufo repair"
+length = 3.0
+step = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2, 2.5, 3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("11_0quh7"), ExtResource("12_l3p6o"), ExtResource("12_l3p6o"), ExtResource("12_l3p6o"), ExtResource("12_l3p6o"), ExtResource("12_l3p6o"), ExtResource("12_l3p6o")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedWheel:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.02),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_bwueq")]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimatedWheel:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.283185307179586]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("AnimatedWheel:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.018509308, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ehrl8"]
 _data = {
 &"RESET": SubResource("Animation_wcstr"),
@@ -184,10 +276,14 @@ _data = {
 &"move down": SubResource("Animation_l3473"),
 &"move left": SubResource("Animation_0quh7"),
 &"move right": SubResource("Animation_ib4rs"),
-&"move up": SubResource("Animation_ehrl8")
+&"move up": SubResource("Animation_ehrl8"),
+&"ufo repair": SubResource("Animation_45hnj")
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ib4rs"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ehrl8"]
+size = Vector2(20, 26.666668)
 
 [node name="Alien" type="CharacterBody2D" unique_id=402508521]
 z_index = 2
@@ -205,6 +301,7 @@ libraries/ = SubResource("AnimationLibrary_ehrl8")
 autoplay = &"move down"
 
 [node name="VoiceReceiver" parent="." unique_id=789243774 instance=ExtResource("4_srrot")]
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=312119236]
 scale = Vector2(-0.25, 0.25)
@@ -216,8 +313,9 @@ enabled = false
 zoom = Vector2(6, 6)
 
 [node name="CollisionArea" type="Area2D" parent="." unique_id=1507387659]
-collision_layer = 0
-collision_mask = 4
+visible = false
+collision_layer = 5
+collision_mask = 13
 
 [node name="HitBoxCollision" type="CollisionShape2D" parent="CollisionArea" unique_id=1651569879]
 position = Vector2(0, 3.2222228)
@@ -259,3 +357,20 @@ position = Vector2(0, 12)
 scale = Vector2(0.45, 0.45)
 
 [node name="Coordinates" parent="." unique_id=1593133795 instance=ExtResource("5_wcstr")]
+
+[node name="Collector" type="Area2D" parent="." unique_id=576790863]
+position = Vector2(0, 2.7777781)
+collision_layer = 196
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collector" unique_id=676801086]
+position = Vector2(0, 1.666666)
+shape = SubResource("RectangleShape2D_ehrl8")
+
+[node name="AnimatedWheel" type="Sprite2D" parent="." unique_id=1906068216]
+visible = false
+z_index = 2
+position = Vector2(0, -20.000002)
+rotation = 6.2831855
+scale = Vector2(0.13, 0.13)
+texture = ExtResource("3_bwueq")

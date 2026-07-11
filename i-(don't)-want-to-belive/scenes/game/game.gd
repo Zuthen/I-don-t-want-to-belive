@@ -9,6 +9,7 @@ var city_atlas_obstacles_coords = Vector2i(22, 8)
 var paths: Array[Vector2i] = []
 var obstacles
 var skeptic_positions = []
+var collectables_positions = []
 var next_spawn_index: int = 0
 var random: RandomNumberGenerator
 var players: Array[GameManager.Preferences]
@@ -31,18 +32,27 @@ func _ready():
 		skeptic_positions = create_map(game_map_seed)
 		players = GameManager.players_selections
 		_assign_roles(players)
+		_spawn_world(game_map_seed)
 
-		var map_payload = {
-			"seed": game_map_seed,
-			"paths_tiles": GameManager.map_paths_tiles,
-			"tiles_size": GameManager.map_tiles_size,
-			"config": GameManager.map_config,
-		}
-		client_build_map_instruction.rpc(map_payload)
 
-		var spawner_data = map_to_spawn_data(skeptic_positions)
-		for data in spawner_data:
-			multiplayer_spawner.spawn(data)
+func _spawn_world(game_map_seed: int):
+	var map_payload = {
+		"seed": game_map_seed,
+		"paths_tiles": GameManager.map_paths_tiles,
+		"tiles_size": GameManager.map_tiles_size,
+		"config": GameManager.map_config,
+	}
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	client_build_map_instruction.rpc(map_payload)
+	var spawner_data = map_to_spawn_data(skeptic_positions)
+	var collectibles_data = collectable_spawn_data(collectables_positions, random)
+
+	spawner_data.append_array(collectibles_data)
+
+	for data in spawner_data:
+		multiplayer_spawner.spawn(data)
 
 
 func _check_if_everyone_is_ready_to_spawn(peer_id: int):
@@ -142,6 +152,19 @@ func _assign_roles(players: Array[GameManager.Preferences]):
 					skeptics.append(skeptic_player)
 
 
+func collectable_spawn_data(collectables_spawn_positions: Array[Vector2i], random: RandomNumberGenerator):
+	var collectibles_data = []
+	if collectables_positions.size() > 0:
+		var repair_tool_position_idx = random.randi() % collectables_spawn_positions.size()
+		var repair_tool_spawn_data = {
+			"type": "collectable",
+			"name": "repair_tool",
+			"spawn_position": collectables_spawn_positions[repair_tool_position_idx],
+		}
+		collectibles_data.append(repair_tool_spawn_data)
+	return collectibles_data
+
+
 func map_to_spawn_data(skeptic_positions) -> Array:
 	var players_data = []
 	var skeptic_count = 0
@@ -196,6 +219,7 @@ func create_map(map_seed: int = 0):
 	random.seed = map_seed
 	generate_map_borders()
 	paths = areas.paths
+	collectables_positions = find_collectables_placements(areas.paths)
 	return find_skeptics_positions(areas.paths, random)
 
 
@@ -326,6 +350,49 @@ func find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberG
 			return [a, b]
 
 	return [paths_array[0], paths_array[paths_array.size() - 1]]
+
+
+func find_collectables_placements(paths_array: Array[Vector2i]) -> Array[Vector2i]:
+	if paths_array.is_empty():
+		return []
+	var dead_ends: Array[Vector2i] = []
+	var one_ways: Array[Vector2i] = []
+	var two_ways: Array[Vector2i] = []
+	for path in paths_array:
+		var ways = check_ways(path, paths_array)
+		if ways == 1:
+			dead_ends.append(path)
+		elif ways == 2:
+			one_ways.append(path)
+		elif ways == 3:
+			two_ways.append(path)
+	if dead_ends.size() > 0:
+		return dead_ends
+	elif one_ways.size() > 0:
+		return one_ways
+	return two_ways
+
+
+class CollectablesPlacement:
+	var dead_ends: Array[Vector2i]
+	var one_way: Array[Vector2i]
+	var two_ways: Array[Vector2i]
+
+
+func check_ways(path: Vector2i, paths: Array[Vector2i]) -> int:
+	var neighbors_count = 0
+	var neighbors: Array[Vector2i] = [
+		Vector2i(path.x - 1, path.y),
+		Vector2i(path.x + 1, path.y),
+		Vector2i(path.x, path.y - 1),
+		Vector2i(path.x, path.y + 1),
+	]
+
+	for neighbor in neighbors:
+		if paths.has(neighbor):
+			neighbors_count += 1
+
+	return neighbors_count
 
 
 func find_new_skeptic_position(paths_array: Array[Vector2i], current_position) -> Vector2i:

@@ -136,7 +136,7 @@ func _assign_new_leader_id(new_leader_id: int):
 	_set_host_section()
 
 
-func _on_player_count_changed(peer_id: int):
+func _on_player_count_changed(_peer_id: int):
 	_update_players_counter()
 	_recalculate_leader_by_id()
 	var my_id = multiplayer.get_unique_id()
