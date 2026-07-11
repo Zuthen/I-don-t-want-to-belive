@@ -1,5 +1,7 @@
 extends TileMapLayer
 
+class_name NightLayer
+
 @export var buildings_layer: TileMapLayer
 @export var vision_radius: int = 2
 
@@ -46,14 +48,17 @@ func _process(_delta):
 	var local_player = get_local_player()
 	if not local_player:
 		return
+
 	var is_alien = local_player.is_in_group("aliens")
 	var is_ufo = local_player.is_in_group("ufos")
 
 	if is_ufo and not is_alien:
 		if not ufo_view_setup:
 			ufo_view_setup = true
+			last_player_tile = Vector2i(-999, -999)
 			setup_ufo_view()
 			GameManager.is_local_fog_ready = true
+
 		update_players_visibility(local_player)
 		return
 
@@ -63,6 +68,7 @@ func _process(_delta):
 		last_player_tile = Vector2i(-999, -999)
 
 	var current_tile = buildings_layer.local_to_map(local_player.global_position)
+
 	if last_player_tile == Vector2i(-999, -999):
 		last_player_tile = current_tile
 		apply_new_fog(last_player_tile)

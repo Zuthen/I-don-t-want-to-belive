@@ -78,8 +78,6 @@ func _ready():
 
 
 func _on_ufo_fixed(new_position: Vector2):
-	print("UFO FIXED, I'm ufo again")
-	print(new_position)
 	global_position = new_position
 	change_state.rpc(State.UFO, ufo_index_sync)
 

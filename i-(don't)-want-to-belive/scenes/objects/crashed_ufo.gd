@@ -84,7 +84,7 @@ func collision_shape_setup():
 		box_shape.size = Vector2(MapSettings.tile_size * 10, MapSettings.tile_size * 10)
 
 
-func _on_fixed(alien_peer_id):
+func _on_fixed(_alien_peer_id):
 	animator.play("fixed")
 
 

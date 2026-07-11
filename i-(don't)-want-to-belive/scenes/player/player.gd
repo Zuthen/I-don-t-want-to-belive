@@ -6,7 +6,6 @@ var tile: Vector2
 enum Role { NONE, UFO, SKEPTIC, ALIEN }
 
 @warning_ignore_start("unused_signal")
-signal player_role_assigned
 signal ufo_wins
 signal skeptics_win
 var id: int = 0
