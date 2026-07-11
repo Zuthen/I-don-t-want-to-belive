@@ -100,6 +100,18 @@ func setup_ufo_view():
 func update_players_visibility(local_player: Node2D):
 	var my_network_id = multiplayer.get_unique_id()
 	var all_ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
+	var is_local_ufo = local_player.is_in_group("ufos") and not local_player.is_in_group("aliens")
+
+	if is_local_ufo:
+		for player in all_ground_players:
+			var player_net_id = player.id if "id" in player else player.get_multiplayer_authority()
+			if player_net_id == my_network_id or player.is_multiplayer_authority():
+				player.visible = true
+				continue
+
+			player.visible = false
+		return
+
 	var local_tile = buildings_layer.local_to_map(local_player.global_position)
 
 	for player in all_ground_players:

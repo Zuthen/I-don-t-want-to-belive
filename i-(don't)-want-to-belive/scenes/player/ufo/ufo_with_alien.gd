@@ -154,6 +154,18 @@ func _set_ufo_state():
 	collision_mask = 16
 	get_tree().call_group("ufos", "_update_visibility_for_local_player")
 
+	if is_multiplayer_authority():
+		var fog_layer = game.get_node_or_null("NightLayer")
+		if not fog_layer:
+			for child in game.get_children():
+				if child is NightLayer:
+					fog_layer = child
+					break
+
+		if fog_layer:
+			fog_layer.ufo_view_setup = false
+			fog_layer.last_player_tile = Vector2i(-999, -999)
+
 
 func _set_alien_state(ufo_index: int):
 	alien.visible = true
