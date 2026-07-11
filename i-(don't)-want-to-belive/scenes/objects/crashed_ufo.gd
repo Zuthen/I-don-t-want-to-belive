@@ -104,3 +104,14 @@ func _set_animations():
 	var track = fixed_animation.find_track(track_path, Animation.TYPE_VALUE)
 	if track != -1:
 		fixed_animation.track_set_key_value(track, 0, UfosTextures.ufo_textures[ufo_texture_idx].ship)
+
+
+func _on_fixed_animation_complete():
+	_request_server_to_destroy.rpc_id(1)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _request_server_to_destroy():
+	if multiplayer.is_server():
+		visible = false
+		queue_free()

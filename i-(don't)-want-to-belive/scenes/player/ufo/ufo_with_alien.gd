@@ -78,7 +78,10 @@ func _ready():
 
 
 func _on_ufo_fixed(new_position: Vector2):
-	global_position = new_position
+	var destination_position = new_position
+	if destination_position.y < MapSettings.min_position.y:
+		destination_position = Vector2(new_position.x, MapSettings.min_position.y)
+	global_position = destination_position
 	change_state.rpc(State.UFO, ufo_index_sync)
 
 
