@@ -80,7 +80,7 @@ func _configure_icon_state():
 		sprite_2d.texture = icon_texture
 
 
-func get_local_character() -> Node:
+func get_local_character() -> Player:
 	var all_nodes = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 	var my_id = multiplayer.get_unique_id()
 	for node in all_nodes:

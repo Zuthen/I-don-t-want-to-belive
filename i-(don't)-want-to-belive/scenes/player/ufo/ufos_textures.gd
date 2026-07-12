@@ -9,8 +9,8 @@ var ufo_textures: Array[UfoTextures] = []
 
 func _ready():
 	dir = DirAccess.open(FOLDER_PATH)
-	sprites = get_all_ufos_sprites()
-	map_to_ufo_texture(sprites)
+	sprites = _get_all_ufos_sprites()
+	_map_to_ufo_texture(sprites)
 
 
 class UfoTextures:
@@ -24,7 +24,7 @@ class UfoTextures:
 	var ship_crashed: Texture2D
 
 
-func get_all_ufos_sprites() -> Array[String]:
+func _get_all_ufos_sprites() -> Array[String]:
 	var result_paths: Array[String] = []
 
 	if dir:
@@ -41,7 +41,7 @@ func get_all_ufos_sprites() -> Array[String]:
 	return result_paths
 
 
-func map_to_ufo_texture(files_list: Array[String]):
+func _map_to_ufo_texture(files_list: Array[String]):
 	var colors: Array[String] = []
 
 	for path in files_list:

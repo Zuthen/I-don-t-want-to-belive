@@ -3,10 +3,6 @@ extends Node
 const GAME_VERSION: String = "1.1.0"
 
 
-func _ready() -> void:
-	pass
-
-
 func get_version() -> String:
 	var path = "res://version.txt"
 

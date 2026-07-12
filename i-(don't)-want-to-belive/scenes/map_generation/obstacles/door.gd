@@ -38,7 +38,7 @@ class PlacedDoor:
 		length = size
 
 
-static func create():
+static func create() -> Door:
 	var door = Door.new()
 	door.single.assign(
 		[

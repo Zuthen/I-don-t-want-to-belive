@@ -170,4 +170,4 @@ vertical_alignment = 1
 autowrap_mode = 2
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1709602337]
-zoom = Vector2(4, 4)
+zoom = Vector2(3, 3)

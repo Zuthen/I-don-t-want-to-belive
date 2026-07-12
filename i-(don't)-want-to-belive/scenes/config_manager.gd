@@ -9,7 +9,7 @@ var settings = {
 
 
 func _ready():
-	load_settings()
+	_load_settings()
 
 
 func set_setting(key: String, value: float):
@@ -28,7 +28,7 @@ func save_settings():
 	config.save(SAVE_PATH)
 
 
-func load_settings():
+func _load_settings():
 	var config = ConfigFile.new()
 	var error = config.load(SAVE_PATH)
 

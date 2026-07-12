@@ -23,8 +23,8 @@ func _process(_delta):
 		return
 
 	if is_multiplayer_authority():
-		gather_input()
+		_gather_input()
 
 
-func gather_input():
+func _gather_input():
 	movement_vector = Input.get_vector("walk_left", "walk_right", "walk_up", "walk_down")

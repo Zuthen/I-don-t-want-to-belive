@@ -17,7 +17,7 @@ var is_gameplay_ready: bool = false
 func _ready():
 	if not is_inside_tree():
 		await tree_entered
-	set_fsx_volume()
+	_set_fsx_volume()
 	await get_tree().process_frame
 	await get_tree().process_frame
 	is_gameplay_ready = true
@@ -90,7 +90,7 @@ func start_cooldown_timer(time: float, callback: Callable):
 	timer.start(time)
 
 
-func set_fsx_volume():
+func _set_fsx_volume():
 	var sound_node = get_node_or_null("Sound") as AudioStreamPlayer
 	if sound_node:
 		var volume = ConfigManager.get_setting("audio_sfx", 0.5)
@@ -105,13 +105,3 @@ func update_synchronizer_visibility_by_role():
 		visible = true
 	else:
 		pass
-
-
-@rpc("any_peer", "call_local", "reliable")
-func receive_network_message(message: String):
-	var ui = get_node_or_null("UserInterface")
-	if is_instance_valid(ui) and ui.is_inside_tree():
-		var sender_id = multiplayer.get_remote_sender_id()
-		var my_id = multiplayer.get_unique_id()
-		var label_type = "Nadana wiadomość:" if sender_id == my_id else "Odebrana wiadomość:"
-		ui.walkie_talkie_message.setup(label_type, message)

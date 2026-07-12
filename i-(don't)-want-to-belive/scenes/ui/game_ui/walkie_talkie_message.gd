@@ -14,7 +14,7 @@ signal show_message
 
 func _ready():
 	show_message.connect(func(): visible = true)
-	set_text()
+	_set_text()
 	timer.timeout.connect(_quit)
 
 
@@ -29,7 +29,7 @@ func setup(new_message: String, new_coordinates: String):
 	timer.start()
 
 
-func set_text():
+func _set_text():
 	coordinates.text = coordinates_text
 	text.text = message
 

@@ -15,7 +15,7 @@ signal value_changed(new_value: float)
 
 
 func _ready():
-	setup_grabber()
+	_setup_grabber()
 	label.text = option_name
 
 	slider.min_value = 0.0
@@ -30,7 +30,7 @@ func _on_internal_slider_changed(new_value: float):
 	value_changed.emit(new_value)
 
 
-func setup_grabber():
+func _setup_grabber():
 	var ufo_sprite: Texture2D = load("uid://3w21pkq8n8b0")
 	var texture = ufo_sprite.get_image()
 	texture.resize(20, 20, Image.INTERPOLATE_NEAREST)

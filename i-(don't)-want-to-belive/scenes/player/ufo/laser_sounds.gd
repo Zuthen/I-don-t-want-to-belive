@@ -7,10 +7,10 @@ const SOUNDS_PATH = "res://assets/sounds/"
 
 
 func _ready():
-	get_all_laser_sounds()
+	_get_all_laser_sounds()
 
 
-func get_all_laser_sounds():
+func _get_all_laser_sounds():
 	if not DirAccess.dir_exists_absolute(SOUNDS_PATH):
 		return
 

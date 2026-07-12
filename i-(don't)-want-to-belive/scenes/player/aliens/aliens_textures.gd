@@ -9,8 +9,8 @@ var alien_textures: Array[AlienTextures] = []
 
 
 func _ready():
-	sprites = get_all_aliens_sprites()
-	map_to_alien_texture(sprites)
+	sprites = _get_all_aliens_sprites()
+	_map_to_alien_texture(sprites)
 
 
 class AlienTextures:
@@ -26,7 +26,7 @@ class AlienTextures:
 	var walk_b: Texture2D
 
 
-func get_all_aliens_sprites() -> Array[String]:
+func _get_all_aliens_sprites() -> Array[String]:
 	var result_paths: Array[String] = []
 
 	if dir:
@@ -43,7 +43,7 @@ func get_all_aliens_sprites() -> Array[String]:
 	return result_paths
 
 
-func map_to_alien_texture(files_list: Array[String]):
+func _map_to_alien_texture(files_list: Array[String]):
 	var colors: Array[String] = []
 	for path in files_list:
 		var file_name = path.get_file()

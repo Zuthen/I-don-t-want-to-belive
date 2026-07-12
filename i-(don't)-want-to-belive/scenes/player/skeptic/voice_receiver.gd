@@ -26,8 +26,3 @@ func _listen(area: Area2D):
 		var my_id = multiplayer.get_unique_id()
 		var sender_id = player.id if "id" in player else player.get_multiplayer_authority()
 		skeptic_player.request_icon_spawn_on_server.rpc(center, sender_id, my_id, "call")
-
-
-func _hide_icon(icon: Node):
-	if icon != null:
-		icon.visible = false

@@ -2,9 +2,9 @@ extends CanvasLayer
 
 @onready var tile_map_layer = get_node_or_null("/root/Game/BuildingsAndPaths")
 
-const TILE_PIXEL_SIZE: float = 16.0
-const SECTOR_TILE_SIZE = 6
-const SECTOR_PIXEL_SIZE: float = TILE_PIXEL_SIZE * SECTOR_TILE_SIZE
+var TILE_PIXEL_SIZE: float = MapSettings.tile_size
+var SECTOR_TILE_SIZE = GameManager.map_tiles_size
+var SECTOR_PIXEL_SIZE: float = MapSettings.tile_size * MapSettings.sector_tile_size
 
 var target_player: Node2D
 var player_camera: Camera2D
@@ -39,10 +39,10 @@ func _process(_delta):
 
 	if current_tile != last_player_tile:
 		last_player_tile = current_tile
-		update_sector_labels()
+		_update_sector_labels()
 
 
-func update_sector_labels():
+func _update_sector_labels():
 	var player_position: Player.PlayerPosition = target_player.get_coordinates(target_player.global_position)
 	letter_label.text = player_position.letter
 	number_label.text = str(player_position.number)

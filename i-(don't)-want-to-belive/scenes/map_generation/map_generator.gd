@@ -5,29 +5,11 @@ class_name MapGenerator
 var random: RandomNumberGenerator
 var paths: Array[Vector2i] = []
 var map_layer: TileMapLayer
+var region_math: RegionMath
 
 
-class ContinousRegions:
-	var paths: Array[Vector2i]
-	var obstacles: Array[Vector2i]
-
-
-	func _init(
-			paths_vectors: Array[Vector2i],
-			obstacles_vectors: Array[Vector2i],
-	):
-		paths = paths_vectors
-		obstacles = obstacles_vectors
-
-
-class HorizontalSegment:
-	var start: Vector2i
-	var end: Vector2i
-
-
-	func _init(s: Vector2i, e: Vector2i):
-		start = s
-		end = e
+func _init():
+	region_math = RegionMath.new()
 
 
 class DrawData:
@@ -45,334 +27,32 @@ func set_tile_map_layer(new_map_layer: TileMapLayer):
 
 
 func create_map(paths: Array[Vector2i]) -> DrawData:
-	var areas = find_areas(paths)
-	var obstacle_regions = find_regions(areas.obstacles)
-	var obstacle_rects: Array[Rect2i] = []
-
-	for region in obstacle_regions:
-		var rects = regions_to_rects(region)
-		obstacle_rects.append_array(merge_small_rectangles(rects))
-
+	var areas = region_math.find_areas(paths)
+	var obstacle_regions = region_math.find_regions(areas.obstacles)
+	var obstacle_rects: Array[Rect2i] = region_math.map_regions_to_obstacle_rects(obstacle_regions)
 	return DrawData.new(areas.paths, obstacle_rects)
 
 
-func find_areas(paths: Array[Vector2i]) -> ContinousRegions:
-	var region_paths: Array[Vector2i] = []
-	var region_obstacles: Array[Vector2i] = []
-
-	for j in range(MapSettings.min_position.y, MapSettings.max_position.y + 1):
-		for i in range(MapSettings.min_position.x, MapSettings.max_position.x + 1):
-			if paths.has(Vector2i(i, j)):
-				region_paths.push_back(Vector2i(i, j))
-			else:
-				region_obstacles.push_back(Vector2i(i, j))
-	return ContinousRegions.new(region_paths, region_obstacles)
-
-
-func rectangles(tiles: Array[Vector2i]) -> Array[Rect2i]:
-	var horizontal = build_horizontal_segments(tiles)
-	var merged = merge_vertical(horizontal)
-	return resolve_rectangles(merged)
-
-
-func create_left_borders(area: Rect2i) -> Array[Rect2i]:
-	var how_many = randi() % 9 + 1
-
-	var rectangles: Array[Rect2i] = []
-	var current_y = area.position.y
-	var remaining_height = area.size.y
-	var base_height = max(1, int(float(area.size.y) / how_many))
-
-	for i in range(how_many):
-		var position_x = area.position.x + (randi() % 2)
-		var size_y = base_height
-		if i == how_many - 1:
-			size_y = remaining_height
-		else:
-			size_y = min(base_height, remaining_height)
-		var size_x = randi() % 2 + 1
-
-		rectangles.append(
-			Rect2i(
-				Vector2i(position_x, current_y),
-				Vector2i(size_x, size_y),
-			),
-		)
-
-		current_y += size_y
-		remaining_height -= size_y
-	return rectangles
-
-
-func build_horizontal_segments(tiles: Array[Vector2i]) -> Array[HorizontalSegment]:
-	var segments: Array[HorizontalSegment] = []
-
-	if tiles.is_empty():
-		return segments
-
-	var start = tiles[0]
-	var end = tiles[0]
-
-	for i in range(tiles.size() - 1):
-		var current = tiles[i]
-		var next = tiles[i + 1]
-
-		var is_continuous = (
-			current.y == next.y
-			and current.x + 1 == next.x
-		)
-
-		if is_continuous:
-			end = next
-		else:
-			segments.append(HorizontalSegment.new(start, end))
-			start = next
-			end = next
-
-	segments.append(HorizontalSegment.new(start, end))
-
-	return segments
-
-
-func merge_vertical(segments: Array[HorizontalSegment]) -> Array[Rect2i]:
-	var result: Array[Rect2i] = []
-	var used := { }
-
-	for seg in segments:
-		if used.has(seg):
-			continue
-
-		var start = seg.start
-		var end = seg.end
-
-		var width = end.x - start.x + 1
-		var height = 1
-
-		var current_y = start.y
-
-		while true:
-			var found = false
-
-			for other in segments:
-				if used.has(other):
-					continue
-
-				if (
-					other.start.x == start.x
-					and other.end.x == end.x
-					and other.start.y == current_y + 1
-				):
-					height += 1
-					current_y += 1
-					used[other] = true
-					found = true
-					break
-
-			if not found:
-				break
-
-		result.append(
-			Rect2i(
-				start,
-				Vector2i(width, height),
-			),
-		)
-
-	return result
-
-
-func resolve_rectangles(rects: Array[Rect2i]) -> Array[Rect2i]:
-	var occupied := { }
-	var result: Array[Rect2i] = []
-
-	rects.sort_custom(
-		func(a, b):
-			return a.size.x * a.size.y > b.size.x * b.size.y
-	)
-
-	for rect in rects:
-		var valid_tiles: Array[Vector2i] = []
-
-		for y in range(rect.position.y, rect.position.y + rect.size.y):
-			for x in range(rect.position.x, rect.position.x + rect.size.x):
-				var p = Vector2i(x, y)
-
-				if !occupied.has(p):
-					valid_tiles.append(p)
-
-		if valid_tiles.is_empty():
-			continue
-
-		var horizontal = build_horizontal_segments(valid_tiles)
-		var merged = merge_vertical(horizontal)
-
-		for r in merged:
-			result.append(r)
-
-			for y in range(r.position.y, r.position.y + r.size.y):
-				for x in range(r.position.x, r.position.x + r.size.x):
-					occupied[Vector2i(x, y)] = true
-
-	return result
-
-
-func find_regions(tiles: Array[Vector2i]) -> Array:
-	var tile_lookup := { }
-	for t in tiles:
-		tile_lookup[t] = true
-
-	var visited := { }
-	var regions := []
-
-	for t in tiles:
-		if visited.has(t):
-			continue
-
-		var stack = [t]
-		var region: Array[Vector2i] = []
-		while not stack.is_empty():
-			var p = stack.pop_back()
-			if visited.has(p):
-				continue
-
-			visited[p] = true
-			region.append(p)
-
-			for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
-				var n = p + d
-				if tile_lookup.has(n) and not visited.has(n):
-					stack.append(n)
-
-		regions.append(region)
-
-	return regions
-
-
-func merge_small_rectangles(rects: Array[Rect2i]) -> Array[Rect2i]:
-	var changed = true
-
-	while changed:
-		changed = false
-
-		for i in range(rects.size()):
-			var a = rects[i]
-
-			if a.size.x * a.size.y > 2:
-				continue
-
-			for j in range(rects.size()):
-				if i == j:
-					continue
-
-				var b = rects[j]
-				if (
-					a.position.y == b.position.y
-					and a.size.y == b.size.y
-					and (
-						a.end.x == b.position.x
-						or b.end.x == a.position.x
-					)
-				):
-					var merged = a.merge(b)
-
-					rects.remove_at(max(i, j))
-					rects.remove_at(min(i, j))
-
-					rects.append(merged)
-
-					changed = true
-					break
-
-			if changed:
-				break
-
-	return rects
-
-
-func get_neighbors(p: Vector2i) -> Array[Vector2i]:
-	return [
-		p + Vector2i.LEFT,
-		p + Vector2i.RIGHT,
-		p + Vector2i.UP,
-		p + Vector2i.DOWN,
-	]
-
-
-func regions_to_rects(region: Array[Vector2i]) -> Array[Rect2i]:
-	var tiles := { }
-	for t in region:
-		tiles[t] = true
-
-	var rects: Array[Rect2i] = []
-
-	while not tiles.is_empty():
-		var best_rect: Rect2i
-		var best_area := 0
-
-		for start in tiles.keys():
-			var max_width := 0
-
-			while tiles.has(start + Vector2i(max_width, 0)):
-				max_width += 1
-
-			for width in range(1, max_width + 1):
-				var height := 0
-				var can_expand := true
-
-				while can_expand:
-					for x in range(width):
-						var p = start + Vector2i(x, height)
-
-						if not tiles.has(p):
-							can_expand = false
-							break
-
-					if can_expand:
-						height += 1
-
-				var area = width * height
-
-				if area > best_area:
-					best_area = area
-					best_rect = Rect2i(
-						start,
-						Vector2i(width, height),
-					)
-
-		rects.append(best_rect)
-
-		for y in range(best_rect.size.y):
-			for x in range(best_rect.size.x):
-				tiles.erase(
-					best_rect.position + Vector2i(x, y),
-				)
-
-	return rects
-
-
-func generate_map(map_seed: int = 0):
+func generate_map(map_seed: int = 0) -> Array[Vector2i]:
 	random = RandomNumberGenerator.new()
 	random.seed = map_seed
 
 	var rand_x = random.randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
 	var rand_y = random.randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
 	var start: Vector2i = Vector2i(rand_x, rand_y)
-	var next: Array[Vector2i] = find_next_path(start, Vector2i.ZERO, random)
+	var next: Array[Vector2i] = _find_next_path(start, Vector2i.ZERO, random)
 
 	for i in range(MapSettings.paths_tiles):
-		var way = find_next_path(next[0], next[1], random)
+		var way = _find_next_path(next[0], next[1], random)
 		next = way
 	return paths
 
 
 func generate_map_borders():
 	var edges = MapSettings.get_map_limits()
-
 	var map_width_px = edges.right - edges.left - 1
 	var map_height_px = edges.bottom - edges.top - 1
-
 	var wall_thickness = 64.0
-
 	var left_right_size = Vector2(wall_thickness, map_height_px)
 	var top_bottom_size = Vector2(map_width_px, wall_thickness)
 
@@ -381,13 +61,13 @@ func generate_map_borders():
 	var top_position = Vector2(edges.left + (map_width_px / 2.0), edges.top - (wall_thickness / 2.0))
 	var bottom_position = Vector2(edges.left + (map_width_px / 2.0), edges.bottom + (wall_thickness / 2.0))
 
-	generate_collider(left_right_size, left_position)
-	generate_collider(left_right_size, right_position)
-	generate_collider(top_bottom_size, top_position)
-	generate_collider(top_bottom_size, bottom_position)
+	_generate_collider(left_right_size, left_position)
+	_generate_collider(left_right_size, right_position)
+	_generate_collider(top_bottom_size, top_position)
+	_generate_collider(top_bottom_size, bottom_position)
 
 
-func generate_collider(size: Vector2, position: Vector2):
+func _generate_collider(size: Vector2, position: Vector2):
 	var collider_shape = RectangleShape2D.new()
 	collider_shape.size = size
 
@@ -403,11 +83,11 @@ func generate_collider(size: Vector2, position: Vector2):
 	map_layer.add_child(border)
 
 
-func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumberGenerator) -> Array[Vector2i]:
+func _find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumberGenerator) -> Array[Vector2i]:
 	var valid_dirs: Dictionary[String, Vector2i] = { }
 	var valid_ways: Dictionary[String, Vector2i] = { }
-	var destinations = directions(2)
-	var ways_to_destinations = directions(1)
+	var destinations = _directions(2)
+	var ways_to_destinations = _directions(1)
 
 	for key in destinations:
 		var dest_vec = destinations[key]
@@ -432,7 +112,7 @@ func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumber
 	if valid_dirs.is_empty():
 		var random_index = random.randi() % paths.size()
 		var new_path = paths[random_index]
-		return find_next_path(new_path, previous, random)
+		return _find_next_path(new_path, previous, random)
 
 	var keys = valid_dirs.keys()
 	var random_key_index = random.randi() % keys.size()
@@ -444,7 +124,7 @@ func find_next_path(position: Vector2i, previous: Vector2i, random: RandomNumber
 	return [position + valid_dirs[key], position + valid_ways[key]]
 
 
-func directions(step: int) -> Dictionary:
+func _directions(step: int) -> Dictionary:
 	return {
 		"up": Vector2i(0, -step),
 		"down": Vector2i(0, step),
