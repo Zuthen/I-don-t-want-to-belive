@@ -201,10 +201,25 @@ func find_paths_in_radius(pos_pixels: Vector2, radius: int) -> Array[Vector2i]:
 
 
 func _get_new_captured_skeptic_position() -> Vector2i:
-	var all_paths = game.paths
 	var start_position = game.tile_map_layer.local_to_map(global_position)
-	var new_skeptic_position = game.find_new_skeptic_position(all_paths, start_position)
+	var new_skeptic_position = _find_new_skeptic_position(game.map_paths, start_position)
 	return new_skeptic_position
+
+
+func _find_new_skeptic_position(paths_array: Array[Vector2i], current_position) -> Vector2i:
+	var dynamic_min_distance: float = sqrt(MapSettings.paths_tiles) * 0.85
+	for i in range(MapSettings.paths_tiles / 2.0):
+		var random_index = randi() % paths_array.size()
+
+		if current_position == paths_array[random_index]:
+			continue
+
+		var new_position = paths_array[random_index]
+
+		if current_position.distance_to(new_position) >= dynamic_min_distance:
+			return new_position
+
+	return paths_array[0]
 
 
 func _change_skeptic_position(player, position: Vector2i):

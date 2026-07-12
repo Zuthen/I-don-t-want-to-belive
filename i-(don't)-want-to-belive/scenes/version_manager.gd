@@ -4,7 +4,7 @@ const GAME_VERSION: String = "1.1.0"
 
 
 func _ready() -> void:
-	print("[VERSION] Uruchomiono grę w wersji: ", GAME_VERSION)
+	pass
 
 
 func get_version() -> String:
