@@ -201,9 +201,8 @@ func find_paths_in_radius(pos_pixels: Vector2, radius: int) -> Array[Vector2i]:
 
 
 func _get_new_captured_skeptic_position() -> Vector2i:
-	var all_paths = game.paths
 	var start_position = game.tile_map_layer.local_to_map(global_position)
-	var new_skeptic_position = _find_new_skeptic_position(all_paths, start_position)
+	var new_skeptic_position = _find_new_skeptic_position(game.map_paths, start_position)
 	return new_skeptic_position
 
 
