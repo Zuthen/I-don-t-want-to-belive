@@ -35,5 +35,5 @@ This project is licensed under the MIT License.
 - .\butler push build/mac Zuthen/nie-chc-uwierzy:mac --userversion 1.0.0
 
 ## Publish git version
-- git tag -a v1.0.0 -m "Wersion 1.0.0 - mvp"
+- git tag -a v1.0.0 -m "Version 1.0.0 - mvp"
 - git push origin v1.0.0

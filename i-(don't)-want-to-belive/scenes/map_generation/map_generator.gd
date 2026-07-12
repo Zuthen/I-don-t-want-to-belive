@@ -23,6 +23,28 @@ class HorizontalSegment:
 		end = e
 
 
+class DrawData:
+	var paths: Array[Vector2i]
+	var obstacle_rects: Array[Rect2i]
+
+
+	func _init(p: Array[Vector2i], o: Array[Rect2i]):
+		paths = p
+		obstacle_rects = o
+
+
+func create_map(paths: Array[Vector2i]) -> DrawData:
+	var areas = MapCreator.find_areas(paths) # <--- areas.paths
+	var obstacle_regions = MapCreator.find_regions(areas.obstacles)
+	var obstacle_rects: Array[Rect2i] = [] # <--- całe
+
+	for region in obstacle_regions:
+		var rects = MapCreator.regions_to_rects(region)
+		obstacle_rects.append_array(MapCreator.merge_small_rectangles(rects))
+
+	return DrawData.new(areas.paths, obstacle_rects)
+
+
 func find_areas(paths: Array[Vector2i]) -> ContinousRegions:
 	var region_paths: Array[Vector2i] = []
 	var region_obstacles: Array[Vector2i] = []
@@ -232,8 +254,6 @@ func merge_small_rectangles(rects: Array[Rect2i]) -> Array[Rect2i]:
 					continue
 
 				var b = rects[j]
-
-				# SAME HEIGHT + TOUCHING HORIZONTALLY
 				if (
 					a.position.y == b.position.y
 					and a.size.y == b.size.y
