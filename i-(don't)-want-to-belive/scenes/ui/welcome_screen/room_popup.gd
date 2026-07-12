@@ -91,9 +91,9 @@ func _on_network_match_joined(_match_name: String, _match_id: String):
 
 func cast_to_upper_case(text: String):
 	var caret = code_input.caret_column
-	line_edit_text_all_caps(text, caret)
+	_line_edit_text_all_caps(text, caret)
 
 
-func line_edit_text_all_caps(text: String, caret: int):
+func _line_edit_text_all_caps(text: String, caret: int):
 	code_input.text = text.to_upper()
 	code_input.caret_column = caret

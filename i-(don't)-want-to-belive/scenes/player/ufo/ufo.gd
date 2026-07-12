@@ -104,7 +104,7 @@ func _process(_delta):
 		return
 
 	if Input.is_action_just_pressed("laser_point") and not laser_shoot_blocked:
-		fire_laser()
+		_fire_laser()
 
 	if Input.is_action_just_pressed("capture") and not capture_blocked:
 		_capture()
@@ -160,7 +160,7 @@ func find_nearest_path(pos_pixels: Vector2) -> Vector2i:
 	var possible_paths = []
 	var search_radius_tiles = 1
 	while possible_paths.size() == 0 and search_radius_tiles < 50:
-		possible_paths = find_paths_in_radius(pos_pixels, search_radius_tiles)
+		possible_paths = _find_paths_in_radius(pos_pixels, search_radius_tiles)
 		search_radius_tiles += 1
 
 	if possible_paths.is_empty():
@@ -169,7 +169,7 @@ func find_nearest_path(pos_pixels: Vector2) -> Vector2i:
 	return Vector2i(possible_paths.pick_random())
 
 
-func find_paths_in_radius(pos_pixels: Vector2, radius: int) -> Array[Vector2i]:
+func _find_paths_in_radius(pos_pixels: Vector2, radius: int) -> Array[Vector2i]:
 	var tile_position = game.tile_map_layer.local_to_map(pos_pixels)
 	var possibilities: Array[Vector2i] = []
 
@@ -222,10 +222,6 @@ func _find_new_skeptic_position(paths_array: Array[Vector2i], current_position) 
 	return paths_array[0]
 
 
-func _change_skeptic_position(player, position: Vector2i):
-	player.position = game.tile_map_layer.map_to_local(position)
-
-
 func _on_capture(other):
 	var player = other.get_parent()
 	if player is Skeptic:
@@ -233,7 +229,7 @@ func _on_capture(other):
 		start_cooldown_timer(capture_label_time, func(): captured_label.visible = !captured_label.visible)
 		var skeptic_path = player.get_path()
 		var new_skeptic_position = _get_new_captured_skeptic_position()
-		server_request_capture.rpc(skeptic_path, new_skeptic_position)
+		_server_request_capture.rpc(skeptic_path, new_skeptic_position)
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -265,7 +261,7 @@ func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 
 
 @rpc("any_peer", "call_local", "reliable")
-func server_request_capture(node_path: NodePath, position: Vector2i):
+func _server_request_capture(node_path: NodePath, position: Vector2i):
 	if not multiplayer.is_server():
 		return
 	var player = get_node_or_null(node_path)
@@ -273,18 +269,18 @@ func server_request_capture(node_path: NodePath, position: Vector2i):
 		player.trigger_captured_effects_network.rpc(skin_idx, position)
 
 
-func fire_laser():
+func _fire_laser():
 	var laser_sound = Sounds.laser_sounds.pick_random()
 	sound.stream = laser_sound
 	sound.play()
 	laser_shoot.emit(laser_shoot_timeout_seconds)
-	server_spawn_laser.rpc(global_position)
+	_server_spawn_laser.rpc(global_position)
 	start_cooldown_timer(laser_shoot_timeout_seconds, func(): laser_shoot_blocked = !laser_shoot_blocked)
 	start_cooldown_timer(ufo_laser_shoot_animation_time, func(): movement_blocked = !movement_blocked)
 
 
 @rpc("any_peer", "call_local", "reliable")
-func server_spawn_laser(position: Vector2):
+func _server_spawn_laser(position: Vector2):
 	if multiplayer.is_server():
 		var laser_data = {
 			"type": "laser",
@@ -293,15 +289,3 @@ func server_spawn_laser(position: Vector2):
 			"peer_id": multiplayer.get_unique_id(),
 		}
 		game.multiplayer_spawner.spawn(laser_data)
-
-
-func spawn_laser(position: Vector2):
-	server_spawn_laser(position)
-
-
-func _get_animation_time():
-	var temp_laser = laser_scene.instantiate()
-	get_tree().root.add_child(temp_laser)
-	var time = temp_laser.get_animation_time()
-	temp_laser.queue_free()
-	return time

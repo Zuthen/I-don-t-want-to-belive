@@ -57,6 +57,7 @@ func _deferred_set_network_authority(value: int):
 		$MultiplayerSynchronizer.set_multiplayer_authority(value)
 
 
+# kandydat do ofunkcjowania
 func _ready():
 	if not is_inside_tree():
 		await tree_entered
@@ -114,17 +115,6 @@ func _update_visibility_for_local_player():
 		sprite_2d.visible = true
 
 
-func callable_initialize_visibility():
-	_update_visibility_for_local_player()
-	if has_node("MultiplayerSynchronizer"):
-		var synchronizer = $MultiplayerSynchronizer
-		synchronizer.set_visibility_for(0, false)
-		synchronizer.set_visibility_for(multiplayer.get_unique_id(), true)
-		synchronizer.set_visibility_for(1, true)
-	if is_multiplayer_authority():
-		get_tree().call_group("ufos", "set_visible", false)
-
-
 func _process(_delta):
 	if not multiplayer or not multiplayer.has_multiplayer_peer():
 		return
@@ -133,10 +123,10 @@ func _process(_delta):
 		return
 
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
-		call_other_skeptic_network.rpc()
+		_call_other_skeptic_network.rpc()
 
 	if Input.is_action_just_pressed("send_walkie_talkie_message") and can_send_coordinates:
-		walkie_talkie_message()
+		_walkie_talkie_message()
 		start_cooldown_timer(walkie_talkie_timeout_seconds, func(): can_send_coordinates = !can_send_coordinates)
 
 
@@ -144,18 +134,18 @@ func _physics_process(_delta):
 	if not multiplayer or not multiplayer.has_multiplayer_peer():
 		return
 	var sync_direction = move(speed, player_input_synchronizer)
-	animate(sync_direction)
+	_animate(sync_direction)
 
 
 @rpc("call_local", "any_peer", "reliable")
-func call_other_skeptic_network():
+func _call_other_skeptic_network():
 	voice_emitter_active = true
 	var voice_emitter = voice_emitter_scene.instantiate()
 	add_child(voice_emitter)
 	voice_emitter.timer.timeout.connect(_reset_voice_emmitter)
 
 
-func walkie_talkie_message():
+func _walkie_talkie_message():
 	var coordinates = get_coordinates(global_position)
 	var message: String = ""
 
@@ -168,17 +158,8 @@ func walkie_talkie_message():
 	MultiplayerFeatures.broadcast_walkie_talkie.rpc(message)
 
 
-@rpc("any_peer", "call_local", "reliable")
-func send_walkie_talkie_message(message: String):
-	ui.receive_walkie_talkie_message(message)
-
-
 func _reset_voice_emmitter():
 	voice_emitter_active = false
-
-
-func call_other_skeptic():
-	call_other_skeptic_network()
 
 
 func _on_belive_points_changed(hit_points: int):
@@ -238,11 +219,6 @@ func request_icon_spawn_on_server(target_position: Vector2, sender_id: int, targ
 					MultiplayerFeatures.server_icon_cooldowns.erase(target_id),
 			CONNECT_ONE_SHOT,
 		)
-
-
-func _hide_emote():
-	if is_instance_valid(voice_receiver) and is_instance_valid(voice_receiver.emote_placeholder):
-		voice_receiver.emote_placeholder.visible = false
 
 
 func _on_skeptic_find_other_skeptic(area: Area2D):
@@ -417,7 +393,7 @@ func _on_alien_seen(alien_peer_id: int):
 		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
 
 
-func animate(direction: Vector2):
+func _animate(direction: Vector2):
 	if not is_inside_tree() or animation_player == null:
 		return
 	var directions = {

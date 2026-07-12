@@ -16,6 +16,11 @@ func _ready():
 	check_box.toggled.connect(_on_checkbox_toggled)
 
 
+func _on_checkbox_toggled(button_pressed: bool):
+	if host:
+		_set_autoplay.rpc(button_pressed)
+
+
 func setup(is_host: bool):
 	host = is_host
 	if host:
@@ -28,11 +33,6 @@ func setup(is_host: bool):
 
 func get_autoplay_setting():
 	return autoplay
-
-
-func _on_checkbox_toggled(button_pressed: bool):
-	if host:
-		_set_autoplay.rpc(button_pressed)
 
 
 @rpc("any_peer", "call_local", "reliable")

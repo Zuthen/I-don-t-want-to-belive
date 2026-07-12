@@ -33,7 +33,7 @@ func create_map(paths: Array[Vector2i]) -> DrawData:
 	return DrawData.new(areas.paths, obstacle_rects)
 
 
-func generate_map(map_seed: int = 0):
+func generate_map(map_seed: int = 0) -> Array[Vector2i]:
 	random = RandomNumberGenerator.new()
 	random.seed = map_seed
 

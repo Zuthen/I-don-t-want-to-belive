@@ -36,11 +36,11 @@ static func get_neighbors(position: Vector2i, paths: Array[Vector2i]) -> Pavemen
 	return borders
 
 
-static func is_cross_road(borders: PavementBorders):
+static func is_cross_road(borders: PavementBorders) -> bool:
 	return !borders.top && !borders.bottom && !borders.right && !borders.left
 
 
-static func has_all_bottom_borders(borders: PavementBorders):
+static func has_all_bottom_borders(borders: PavementBorders) -> bool:
 	return borders.bottom && borders.bottom_left && borders.bottom_right
 
 
@@ -48,19 +48,19 @@ static func has_all_top_borders(borders: PavementBorders):
 	return borders.top && borders.top_left && borders.top_right
 
 
-static func has_all_left_borders(borders: PavementBorders):
+static func has_all_left_borders(borders: PavementBorders) -> bool:
 	return borders.left && borders.bottom_left && borders.top_left
 
 
-static func has_all_right_borders(borders: PavementBorders):
+static func has_all_right_borders(borders: PavementBorders) -> bool:
 	return borders.right && borders.top_right && borders.bottom_right
 
 
-static func no_vertical(borders: PavementBorders):
+static func no_vertical(borders: PavementBorders) -> bool:
 	return !borders.top && !borders.bottom
 
 
-static func no_horizontal(borders: PavementBorders):
+static func no_horizontal(borders: PavementBorders) -> bool:
 	return !borders.left && !borders.right
 
 

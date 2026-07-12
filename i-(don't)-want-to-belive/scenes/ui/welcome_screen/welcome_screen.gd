@@ -70,8 +70,3 @@ func _create_game_and_go_to_lobby():
 func _join_existing_game():
 	quick_game.disabled = true
 	await NakamaNetworkManager.join_existing_game()
-
-
-func _go_to_lobby():
-	var lobby_scene = load("uid://dg7q16m0w6dnx") as PackedScene
-	get_tree().change_scene_to_packed(lobby_scene)

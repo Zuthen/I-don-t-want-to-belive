@@ -26,7 +26,7 @@ func _ready():
 		push_error("Set buildings layer")
 		return
 
-	initialize_fog()
+	_initialize_fog()
 
 	var my_network_id = multiplayer.get_unique_id()
 	for pref in GameManager.players_selections:
@@ -37,7 +37,7 @@ func _ready():
 	await get_tree().process_frame
 
 	if my_lobby_role == "":
-		var local_player = get_local_player()
+		var local_player = MultiplayerFeatures.get_local_player()
 		if local_player and local_player.is_in_group("ufos"):
 			my_lobby_role = "ufo"
 		else:
@@ -45,7 +45,7 @@ func _ready():
 
 
 func _process(_delta):
-	var local_player = get_local_player()
+	var local_player = MultiplayerFeatures.get_local_player()
 	if not local_player:
 		return
 
@@ -63,48 +63,47 @@ func _setup_ufo_view(local_player):
 	if not ufo_view_setup:
 		ufo_view_setup = true
 		last_player_tile = Vector2i(-999, -999)
-		setup_ufo_view()
-		GameManager.is_local_fog_ready = true
-	update_players_visibility(local_player)
+		var cells_to_update: Array[Vector2i] = []
+		for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
+			for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
+				cells_to_update.append(Vector2i(x, y))
+		for cell in cells_to_update:
+			set_cell(cell, ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
+			GameManager.is_local_fog_ready = true
+	_update_players_visibility(local_player)
 
 
 func _setup_ground_entities_view(local_player):
 	if ufo_view_setup:
 		ufo_view_setup = false
-		initialize_fog()
+		_initialize_fog()
 		last_player_tile = Vector2i(-999, -999)
 
 	var current_tile = buildings_layer.local_to_map(local_player.global_position)
 
 	if last_player_tile == Vector2i(-999, -999):
 		last_player_tile = current_tile
-		apply_new_fog(last_player_tile)
+		_apply_new_fog(last_player_tile)
 		GameManager.is_local_fog_ready = true
 
 	if current_tile != last_player_tile:
 		if last_player_tile != Vector2i(-999, -999):
-			reset_old_fog(last_player_tile)
+			_reset_old_fog(last_player_tile)
 
 		last_player_tile = current_tile
-		apply_new_fog(current_tile)
+		_apply_new_fog(current_tile)
 
-	update_players_visibility(local_player)
+	_update_players_visibility(local_player)
 
 
-func initialize_fog():
+func _initialize_fog():
 	clear()
 	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
 		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
 			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
 
-func setup_ufo_view():
-	for x in range(MapSettings.min_position.x - 15, MapSettings.max_position.x + 15):
-		for y in range(MapSettings.min_position.y - 15, MapSettings.max_position.y + 15):
-			set_cell(Vector2i(x, y), ATLAS_SOURCE_ID, black_tile_coords, TILE_HALF_SHADOW)
-
-
-func update_players_visibility(local_player: Node2D):
+func _update_players_visibility(local_player: Node2D):
 	var my_network_id = multiplayer.get_unique_id()
 	var all_ground_players = get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
 	var items = get_tree().get_nodes_in_group("collectable_items")
@@ -146,7 +145,7 @@ func update_players_visibility(local_player: Node2D):
 		collectable.visible = is_item_visible
 
 
-func reset_old_fog(center_tile: Vector2i):
+func _reset_old_fog(center_tile: Vector2i):
 	for x in range(-vision_radius, vision_radius + 1):
 		for y in range(-vision_radius, vision_radius + 1):
 			var target_tile = center_tile + Vector2i(x, y)
@@ -154,31 +153,9 @@ func reset_old_fog(center_tile: Vector2i):
 				set_cell(target_tile, ATLAS_SOURCE_ID, black_tile_coords, TILE_DEEP_NIGHT)
 
 
-func apply_new_fog(center_tile: Vector2i):
+func _apply_new_fog(center_tile: Vector2i):
 	for x in range(-vision_radius, vision_radius + 1):
 		for y in range(-vision_radius, vision_radius + 1):
 			var target_tile = center_tile + Vector2i(x, y)
 			if vision_radius == 1 or center_tile.distance_to(target_tile) <= vision_radius:
 				set_cell(target_tile, ATLAS_SOURCE_ID, black_tile_coords, TILE_NEAR_LIGHT)
-
-
-func get_local_player() -> Node2D:
-	if not multiplayer or not multiplayer.has_multiplayer_peer():
-		return null
-
-	var my_id = multiplayer.get_unique_id()
-	var all_actual_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
-
-	for node in all_actual_players:
-		if not node is Node2D:
-			continue
-		if "id" in node and node.id == my_id:
-			return node
-		if node.name == str(my_id):
-			return node
-
-	var local_group = get_tree().get_nodes_in_group("local_player")
-	if not local_group.is_empty() and local_group[0] is Node2D:
-		return local_group[0]
-
-	return null

@@ -103,7 +103,7 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				if data.has("skin_idx"):
 					_apply_skin(node, data.skin_idx)
 
-		assign_to_group(data, node)
+		_assign_to_group(data, node)
 
 		if data.peer_id == multiplayer.get_unique_id():
 			get_tree().call_group("local_player", "remove_from_group", "local_player")
@@ -147,7 +147,7 @@ func _apply_skin(node: Node, skin_idx: int):
 		node.animation_sprite_idx = skin_idx
 
 
-func assign_to_group(data: Dictionary, node: Node):
+func _assign_to_group(data: Dictionary, node: Node):
 	if data.has("type"):
 		var group_name = data.type + "s"
 		node.add_to_group(group_name)
@@ -157,12 +157,20 @@ func get_local_player() -> Player:
 	if not multiplayer or not multiplayer.has_multiplayer_peer():
 		return null
 	var my_id = multiplayer.get_unique_id()
-	var all_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics")
+	var all_players = _get_all_players()
 
 	for player in all_players:
 		if player is Player and player.id == my_id:
 			return player
 	return null
+
+
+func _get_all_players() -> Array[Node]:
+	var all_players: Array[Node] = []
+	all_players.append_array(get_tree().get_nodes_in_group("ufos"))
+	all_players.append_array(get_tree().get_nodes_in_group("skeptics"))
+	all_players.append_array(get_tree().get_nodes_in_group("aliens"))
+	return all_players
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -181,25 +189,6 @@ func _on_network_node_spawned(_node: Node):
 	await get_tree().process_frame
 	await get_tree().process_frame
 	_force_refresh_visibility()
-
-
-func get_role_by_peer_id(peer_id: int) -> Player.Role:
-	if "players_selections" in GameManager:
-		for pref in GameManager.players_selections:
-			if pref.peer_id == peer_id:
-				if pref.type.to_lower() == "alien":
-					return Player.Role.ALIEN
-				elif pref.type.to_lower() == "ufo":
-					return Player.Role.UFO
-				else:
-					return Player.Role.SKEPTIC
-
-	var all_actual_players = get_tree().get_nodes_in_group("ufos") + get_tree().get_nodes_in_group("skeptics") + get_tree().get_nodes_in_group("aliens")
-	for p in all_actual_players:
-		if "id" in p and p.id == peer_id:
-			return p.role
-
-	return Player.Role.SKEPTIC
 
 
 func get_local_player_role() -> Player.Role:

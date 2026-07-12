@@ -23,12 +23,12 @@ func _ready():
 	animation_player.get_animation_library("").add_animation("laser pointing", pointing_animation)
 	animation_player.animation_finished.connect(_on_pointing_finished)
 	laser_range.area_entered.connect(_on_skeptic_see_laser)
-	set_textures(textures)
+	_set_textures(textures)
 	if animation_player:
 		animation_player.play("laser pointing")
 
 
-func set_textures(textures: UfosTextures.UfoTextures):
+func _set_textures(textures: UfosTextures.UfoTextures):
 	laser_top.texture = textures.laser1
 	laser_middle.texture = textures.laser2
 	laser_pointer.texture = textures.laser_pointing

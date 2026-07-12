@@ -29,7 +29,7 @@ takie latają!"
 func _ready():
 	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
-	setup_win_section()
+	_setup_win_section()
 	main_menu_button.pressed.connect(_go_to_main_menu)
 	if is_instance_valid(q):
 		q.set_icon_text("")
@@ -45,7 +45,7 @@ func _ready():
 
 	if player != null:
 		_connect_signals(player)
-		setup_ui(player.role)
+		_setup_ui(player.role)
 
 		await get_tree().create_timer(0.15).timeout
 		for child in get_tree().root.get_children():
@@ -56,7 +56,7 @@ func _ready():
 			if player:
 				player.role = Player.Role.UFO
 			_connect_signals(player)
-			setup_ui(Player.Role.UFO)
+			_setup_ui(Player.Role.UFO)
 	)
 
 
@@ -115,7 +115,7 @@ func _on_alien_cannot_repair():
 
 func _on_ufo_crashed(peer_id):
 	e.reset_cooldown()
-	setup_ui(Player.Role.ALIEN)
+	_setup_ui(Player.Role.ALIEN)
 	_connect_signals(player)
 	_report_ufo_crash_to_server.rpc_id(1, peer_id)
 
@@ -139,19 +139,7 @@ func _report_ufo_crash_to_server(dropped_peer_id: int):
 			_on_skeptic_win()
 
 
-func _check_ufo_can_win(peer_id: int):
-	crashed_ufos.append(peer_id)
-	var ufo_can_win: bool = false
-	if crashed_ufos.size() == max_ufos_count:
-		var skeptics = get_tree().get_nodes_in_group("skeptics")
-		for skeptic in skeptics:
-			if skeptic.belive_points >= 3:
-				ufo_can_win = true
-	if !ufo_can_win:
-		_on_skeptic_win()
-
-
-func setup_win_section():
+func _setup_win_section():
 	win_info.visible = false
 	main_menu_button.disabled = true
 
@@ -180,7 +168,7 @@ func _network_broadcast_game_over():
 		get_tree().change_scene_to_packed(cleanup_screen)
 
 
-func setup_ui(role: Player.Role):
+func _setup_ui(role: Player.Role):
 	for ufo in ufos_sprites:
 		ufo.visible = false
 	match role:
@@ -201,11 +189,11 @@ func setup_ui(role: Player.Role):
 
 
 func _on_ufo_wins():
-	show_ufo_victory_screen.rpc_id(0)
+	_show_ufo_victory_screen.rpc_id(0)
 
 
 func _on_skeptic_win():
-	show_skeptics_victory_screen.rpc_id(0)
+	_show_skeptics_victory_screen.rpc_id(0)
 
 
 func _on_q_skill_fired(time):
@@ -217,7 +205,7 @@ func _on_e_skill_fired(time):
 
 
 @rpc("any_peer", "call_local", "reliable")
-func show_ufo_victory_screen():
+func _show_ufo_victory_screen():
 	win_label.text = UFO_WINS
 	faction_label.text = "Wygrywają ufoki"
 	win_info.visible = true
@@ -225,7 +213,7 @@ func show_ufo_victory_screen():
 
 
 @rpc("any_peer", "call_local", "reliable")
-func show_skeptics_victory_screen():
+func _show_skeptics_victory_screen():
 	win_label.text = SKEPTICS_WIN
 	faction_label.text = "Wygrywają sceptycy"
 	win_info.visible = true
@@ -238,20 +226,3 @@ func _on_belive_points_changed(amount):
 		hit_points = ufos_sprites.size()
 	for i in range(hit_points):
 		ufos_sprites[i].visible = (i < hit_points)
-
-
-@rpc("any_peer", "call_local", "reliable")
-func receive_walkie_talkie_message(msg_content: String):
-	if not is_instance_valid(walkie_talkie_message):
-		return
-
-	var sender_id = multiplayer.get_remote_sender_id()
-	var my_id = multiplayer.get_unique_id()
-
-	var label_type = ""
-	if sender_id == my_id:
-		label_type = "Nadana wiadomość:"
-	else:
-		label_type = "Odebrana wiadomość:"
-
-	walkie_talkie_message.setup(label_type, msg_content)

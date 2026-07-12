@@ -187,10 +187,6 @@ func _connect_signals():
 		multiplayer.peer_disconnected.connect(_on_player_count_changed)
 
 
-func _on_nakama_match_fully_ready(_match_name, _match_id):
-	_recalculate_leader_by_id()
-
-
 func _set_sliders():
 	ufo_skin_slider.init_slider(_ufo_skins(), ufo_skin_index)
 	skeptic_skin_slider.init_slider(skeptic_skins, skeptic_skin_index)
@@ -258,23 +254,6 @@ func _adjust_skins_visibility(value):
 	elif value == 0:
 		skeptic_skin_slider.set_deferred("visible", true)
 		ufo_skin_slider.set_deferred("visible", false)
-
-
-func _migrate_host_on_signal() -> void:
-	var main_loop = Engine.get_main_loop() as SceneTree
-	if not main_loop or not main_loop.get_multiplayer():
-		return
-
-	var net = main_loop.get_multiplayer()
-	var peers = net.get_peers()
-
-	if peers.size() > 0:
-		peers.sort()
-		var next_host_id = peers[0]
-
-		set_multiplayer_authority(next_host_id)
-		if is_multiplayer_authority():
-			_set_host_section()
 
 
 func _on_preferences_set():

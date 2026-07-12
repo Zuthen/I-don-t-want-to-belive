@@ -48,9 +48,9 @@ func _enable_ufo_repair(body):
 			alien.can_repair.emit()
 
 
-func _find_ufo_with_alien_node(body) -> Node:
+func _find_ufo_with_alien_node(body) -> Player:
 	var current_node = body
-	var main_player_root: Node = null
+	var main_player_root: Player = null
 	while current_node != null and current_node != get_tree().root:
 		if "id" in current_node and current_node.id != 0:
 			main_player_root = current_node

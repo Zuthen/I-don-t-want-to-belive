@@ -32,14 +32,15 @@ var skin_idx: int = 0:
 		if is_node_ready():
 			_apply_skin_textures()
 
+@warning_ignore_start("unused_signal")
 signal can_repair
 signal cannot_repair
-signal repairing(time: float)
 signal ufo_repaired
+signal repairing(time: float)
 
 
 func _ready():
-	collision_area.area_entered.connect(on_skeptic_seen_alien)
+	collision_area.area_entered.connect(_on_skeptic_seen_alien)
 	Events.item_collected.connect(_assign_item_action)
 	await get_tree().process_frame
 	_apply_skin_textures()
@@ -69,7 +70,7 @@ func _repair_ufo():
 				movement_blocked = false
 				var synchronizer = get_parent().get_node_or_null("PlayerInputSynchronizer")
 				if is_instance_valid(synchronizer):
-					animate(synchronizer.movement_vector)
+					_animate(synchronizer.movement_vector)
 		)
 		timer.timeout.connect(
 			func():
@@ -79,28 +80,14 @@ func _repair_ufo():
 		timer.start(animation_time)
 
 
-@rpc("any_peer", "call_local", "reliable")
-func _sync_alien_skin_across_network(assigned_idx: int):
-	skin_idx = assigned_idx
-	if is_node_ready():
-		_apply_skin_textures()
-
-
 func _apply_skin_textures():
-	var alien_skins_idx = map_alien_color(skin_idx)
+	var alien_skins_idx = _map_alien_color(skin_idx)
 	if alien_skins_idx != -1 and alien_skins_idx < AliensTextures.alien_textures.size():
 		current_skin = AliensTextures.alien_textures[alien_skins_idx]
 
 		if animation_player and sprite_2d:
-			set_animations(current_skin)
+			_set_animations(current_skin)
 			sprite_2d.texture = current_skin.front
-
-
-func callable_initialize_visibility():
-	if is_multiplayer_authority():
-		get_tree().call_group("ufos", "set_visible", true)
-		get_tree().call_group("skeptics", "set_visible", true)
-		get_tree().call_group("aliens", "set_visible", true)
 
 
 func _process(_delta):
@@ -108,14 +95,14 @@ func _process(_delta):
 		return
 
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
-		call_skeptic_network.rpc()
+		_call_skeptic_network.rpc()
 
 	if can_repair_ufo and near_wreck and Input.is_action_just_pressed("repair_ufo"):
 		_repair_ufo()
 
 
 @rpc("call_local", "any_peer", "reliable")
-func call_skeptic_network():
+func _call_skeptic_network():
 	voice_emitter_active = true
 	var voice_emitter = voice_emitter_scene.instantiate()
 	add_child(voice_emitter)
@@ -126,22 +113,17 @@ func _reset_voice_emmitter():
 	voice_emitter_active = false
 
 
-func call_skeptic():
-	call_skeptic_network()
+func _call_skeptic():
+	_call_skeptic_network()
 
 
-func _on_dialog_timer_timeout(node: Node2D):
-	if node != null:
-		node.queue_free()
-
-
-func on_skeptic_seen_alien(area: Area2D):
+func _on_skeptic_seen_alien(area: Area2D):
 	var object = area.get_parent()
 	if object is Skeptic:
 		object.alien_seen.emit(peer_id)
 
 
-func set_animations(animations_sprites: AliensTextures.AlienTextures):
+func _set_animations(animations_sprites: AliensTextures.AlienTextures):
 	var track_path = "Sprite2D:texture"
 	var anim_down = animation_player.get_animation("move down")
 	var track_down = anim_down.find_track(track_path, Animation.TYPE_VALUE)
@@ -192,7 +174,7 @@ func set_animations(animations_sprites: AliensTextures.AlienTextures):
 		anim_idle.track_set_key_value(track_idle, 3, animations_sprites.front)
 
 
-func animate(direction: Vector2):
+func _animate(direction: Vector2):
 	var directions = {
 		"down": Vector2.DOWN,
 		"up": Vector2.UP,
@@ -217,7 +199,7 @@ func animate(direction: Vector2):
 		animation_player.play("idle down")
 
 
-func map_alien_color(idx: int) -> int:
+func _map_alien_color(idx: int) -> int:
 	if idx < 0 or idx >= UfosTextures.ufo_textures.size():
 		return 0
 	if UfosTextures.ufo_textures[idx].color == "Blue":

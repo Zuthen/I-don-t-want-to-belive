@@ -27,10 +27,10 @@ func _ready():
 		ProjectSettings.set_setting("debug/settings/stdout/ignore_warnings", true)
 
 	await get_tree().process_frame
-	connect_to_nakama_server()
+	_connect_to_nakama_server()
 
 
-func connect_to_nakama_server():
+func _connect_to_nakama_server():
 	var server_key = "defaultkey"
 	var server_host = "nie-chc-uwierzy.fly.dev"
 
@@ -109,7 +109,7 @@ func _on_scene_tree_node_added(node: Node):
 				await get_tree().create_timer(0.2).timeout
 				multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
 				get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
-				escape_full_room_and_host_new()
+				_escape_full_room_and_host_new()
 
 
 func _verify_room_limit(_id: int):
@@ -133,36 +133,18 @@ func _verify_room_limit(_id: int):
 			if private:
 				private_room_full.emit()
 			else:
-				escape_full_room_and_host_new()
+				_escape_full_room_and_host_new()
 
 
 func host_create_match() -> String:
 	is_host = true
 	private = true
-	var generated_code = create_match_name()
+	var generated_code = _create_match_name()
 	await connect_to_named_room(generated_code)
 	return generated_code
 
 
-@rpc("authority", "call_remote", "reliable")
-func _host_response(accepted: bool, private: bool):
-	if accepted:
-		match_joined_successfully.emit(match_name, actual_match_id)
-
-	else:
-		get_tree().get_multiplayer().multiplayer_peer = null
-		await get_tree().create_timer(0.2).timeout
-
-		multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
-		get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
-
-		if private:
-			private_room_full.emit()
-		else:
-			escape_full_room_and_host_new()
-
-
-func create_match_name() -> String:
+func _create_match_name() -> String:
 	var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var new_code = ""
 
@@ -198,12 +180,12 @@ func join_existing_game():
 	if public_chat_channel.is_exception():
 		return
 
-	var target_room_code = await find_active_room()
+	var target_room_code = await _find_active_room()
 
 	if target_room_code == "":
 		is_host = true
 		private = false
-		var generated_code = create_match_name()
+		var generated_code = _create_match_name()
 
 		var msg_content = {
 			"room_code": generated_code,
@@ -218,7 +200,7 @@ func join_existing_game():
 		await connect_to_named_room(target_room_code)
 
 
-func find_active_room() -> String:
+func _find_active_room() -> String:
 	if not socket or not public_chat_channel:
 		return ""
 
@@ -256,16 +238,6 @@ func find_active_room() -> String:
 	return ""
 
 
-func server_report_empty_room(room_code: String) -> void:
-	if socket and public_chat_channel and room_code != "":
-		var msg_content = {
-			"room_code": room_code,
-			"player_count": 0,
-			"version": VersionManager.get_version(),
-		}
-		await socket.write_chat_message_async(public_chat_channel.id, msg_content)
-
-
 func connect_to_named_room(room_name: String):
 	if not socket or not multiplayer_bridge:
 		return
@@ -278,7 +250,7 @@ func connect_to_named_room(room_name: String):
 	multiplayer_bridge.join_named_match(room_name)
 
 
-func escape_full_room_and_host_new():
+func _escape_full_room_and_host_new():
 	get_tree().get_multiplayer().multiplayer_peer = null
 	await get_tree().create_timer(0.2).timeout
 
@@ -288,7 +260,7 @@ func escape_full_room_and_host_new():
 	is_host = true
 	private = false
 
-	var generated_code = create_match_name()
+	var generated_code = _create_match_name()
 
 	if public_chat_channel:
 		var msg_content = { "room_code": generated_code, "version": VersionManager.get_version(), "player_count": 1 }
@@ -300,71 +272,6 @@ func escape_full_room_and_host_new():
 
 	var lobby_scene = load("uid://dg7q16m0w6dnx") as PackedScene
 	get_tree().change_scene_to_packed(lobby_scene)
-
-
-func _on_client_connected_to_host_successfully():
-	await get_tree().create_timer(0.1).timeout
-
-	var total_players = multiplayer.get_peers().size() + 1
-
-	if total_players >= 5:
-		if private:
-			get_tree().get_multiplayer().multiplayer_peer = null
-			await get_tree().create_timer(0.2).timeout
-
-			multiplayer_bridge = NakamaMultiplayerBridge.new(socket)
-			get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
-
-			private_room_full.emit()
-		else:
-			escape_full_room_and_host_new()
-		return
-
-	match_joined_successfully.emit(match_name, actual_match_id)
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func _check_server_space(client_id: int, is_private_room: bool):
-	if not is_host:
-		return
-
-	var total_peers = multiplayer.get_peers().size()
-
-	if total_peers > 3:
-		_validation_response.rpc_id(client_id, false, is_private_room)
-	else:
-		_validation_response.rpc_id(client_id, true, is_private_room)
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func _validation_response(accepted: bool, is_private_room: bool):
-	if accepted:
-		actual_match_id = multiplayer_bridge.match_id
-		match_joined_successfully.emit(match_name, actual_match_id)
-	else:
-		if multiplayer_bridge and multiplayer_bridge.match_joined.is_connected(_on_bridge_match_joined):
-			multiplayer_bridge.match_joined.disconnect(_on_bridge_match_joined)
-
-		get_tree().get_multiplayer().multiplayer_peer = null
-		await get_tree().create_timer(0.2).timeout
-
-		if multiplayer_bridge:
-			get_tree().get_multiplayer().set_multiplayer_peer(multiplayer_bridge.multiplayer_peer)
-
-		is_connected_to_server = true
-		connection_established.emit()
-
-		if is_private_room:
-			private_room_full.emit()
-		else:
-			escape_full_room_and_host_new()
-
-
-func get_nakama_player_count() -> int:
-	if get_tree() and get_tree().get_multiplayer() and get_tree().get_multiplayer().multiplayer_peer != null:
-		var active_peers = get_tree().get_multiplayer().get_peers()
-		return active_peers.size() + 1
-	return 1
 
 
 func reconnect_after_error_dismissed():
