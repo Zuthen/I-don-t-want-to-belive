@@ -20,7 +20,7 @@ var crashed_ufos: Array[int] = []
 var max_ufos_count: int = 2
 var player: Player
 var additional_skills: Dictionary[Skill, bool] = { }
-
+var flat_skills: Array[String] = []
 const UFO_WINS := "Prawda 
 	nas jeszcze 
 	zadziwi..."
@@ -77,8 +77,11 @@ func _setup_backpack_skills():
 
 func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role):
 	var role_matches = player.role == faction or player.role == Player.Role.BOTH
+	if flat_skills.has(skill_name):
+		return
 	for skill in additional_skills:
 		if additional_skills[skill] == false and role_matches:
+			flat_skills.append(skill_name)
 			additional_skills[skill] = true
 			skill.visible = true
 			skill.set_icon_text(Findings.get_skill_label(skill_name))
@@ -101,11 +104,20 @@ func _connect_signals(player: Player):
 			ufo.laser_shoot.connect(_on_q_skill_fired)
 			ufo.captured.connect(_on_e_skill_fired)
 	elif player.role == Player.Role.ALIEN:
-		var alien = player.get_node_or_null("Alien")
+		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
 			_connect_sinal_if_not_connected(alien.can_repair, _on_alien_can_repair)
 			_connect_sinal_if_not_connected(alien.cannot_repair, _on_alien_cannot_repair)
 			_connect_sinal_if_not_connected(alien.repairing, _on_e_skill_fired)
+
+
+func _on_alien_near_ufo_wreck():
+	if player and player.role != Player.Role.ALIEN:
+		return
+	var alien = player.get_node("Alien") as Alien
+	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
+	var skills = backpack_skills.get_children()
+	skills[repair_action_idx].set_enabled()
 
 
 func _disconnect_skill_signals(player: Player):
@@ -130,14 +142,29 @@ func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callab
 func _on_alien_can_repair():
 	if player and player.role != Player.Role.ALIEN:
 		return
-	e.set_icon_text("Napraw")
-	e.visible = true
+	var alien = player.get_node("Alien") as Alien
+	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
+	var skills = backpack_skills.get_children()
+	skills[repair_action_idx].set_enabled()
+	skills[repair_action_idx].visible = true
+
+
+func _get_action_idx(actions: Array[Callable], action: Callable) -> int:
+	for i in range(actions.size()):
+		if actions[i].is_null():
+			continue
+		if actions[i] == action:
+			return i
+	return -1
 
 
 func _on_alien_cannot_repair():
 	if player and player.role != Player.Role.ALIEN:
 		return
-	e.visible = false
+	var alien = player.get_node("Alien") as Alien
+	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
+	var skills = backpack_skills.get_children()
+	skills[repair_action_idx].set_disabled()
 
 
 func _on_ufo_crashed(peer_id):

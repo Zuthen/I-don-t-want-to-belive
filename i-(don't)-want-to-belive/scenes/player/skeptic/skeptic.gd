@@ -100,7 +100,7 @@ func _connect_signals():
 
 
 func _assign_item_action(_texture, item_name, faction):
-	assign_item_action(item_name, Role.SKEPTIC, self, faction)
+	assign_item_action(item_name, Role.SKEPTIC, faction)
 
 
 func _update_visibility_for_local_player():

@@ -13,6 +13,7 @@ var movement_blocked: = false
 var role: Role
 var is_gameplay_ready: bool = false
 var can_collect = true
+var actions: Array[Callable] = [Callable(), Callable(), Callable()]
 
 
 func _ready():
@@ -22,6 +23,10 @@ func _ready():
 	await get_tree().process_frame
 	await get_tree().process_frame
 	is_gameplay_ready = true
+
+
+func get_actions() -> Array[Callable]:
+	return actions
 
 
 func move(speed: float, player_input_synchronizer: PlayerInputSynchronizer) -> Vector2:
@@ -114,15 +119,62 @@ func get_backpack() -> Backpack:
 
 
 func _get_ui() -> UserInterface:
+	if self is Alien or self is Ufo:
+		return get_parent().get_node("UserInterface")
 	return get_node("UserInterface")
 
 
-func assign_item_action(item_name, role: Role, player: Player, _faction: Player.Role):
-	if role == Role.ALIEN:
-		match item_name:
-			"repair_tool":
-				player.can_repair_ufo = true
-	if role == Role.SKEPTIC:
-		match item_name:
-			"sanity_pills":
-				player.can_take_pills = true
+func assign_item_action(item_name, usable_for_role: Role, _faction: Player.Role):
+	var usable_for_alien: bool = usable_for_role == Role.ALIEN or usable_for_role == Role.BOTH
+	if role == Role.ALIEN and usable_for_alien:
+		_assign_alien_actions(item_name)
+	var usable_for_skeptic: bool = usable_for_role == Role.SKEPTIC or usable_for_role == Role.BOTH
+	if role == Role.SKEPTIC and usable_for_skeptic:
+		_assign_skeptic_actions(item_name)
+
+
+func _unhandled_input(event: InputEvent):
+	if event.is_action_pressed("action 1"):
+		_use_action(0)
+	elif event.is_action_pressed("action 2"):
+		_use_action(1)
+	elif event.is_action_pressed("action 3"):
+		_use_action(2)
+
+
+func _use_action(i: int):
+	var action = actions[i]
+	if not action.is_null():
+		action.call()
+
+
+func _assign_alien_actions(item_name: String):
+	var alien = self
+	print(alien)
+	match item_name:
+		"repair_tool":
+			alien.can_repair_ufo = true
+			if _check_action_available(alien.repair_ufo):
+				return
+			_assign_action(alien.repair_ufo)
+
+
+func _check_action_available(action: Callable) -> bool:
+	for a in actions:
+		if a == action:
+			return true
+	return false
+
+
+func _assign_action(action: Callable):
+	for i in range(GameManager.backpack_capacity):
+		if actions[i].is_null():
+			actions[i] = action
+			break
+
+
+func _assign_skeptic_actions(item_name):
+	var skeptic = self as Skeptic
+	match item_name:
+		"sanity_pills":
+			skeptic.can_take_pills = true
