@@ -16,7 +16,7 @@ var capture_hit_target := false
 var laser_shoot_blocked := false
 var capture_blocked := false
 var capture_processing := false
-var game: Node2D
+var game: Game
 var skin_idx: int = 3
 const speed = 150.0
 const laser_shoot_timeout_seconds: float = 5.0
@@ -35,10 +35,7 @@ var input_multiplayer_authority: int:
 
 
 func _ready():
-	var parent_core = get_parent()
-	if parent_core:
-		game = parent_core.get_parent() as Node2D
-
+	game = get_tree().root.get_node("Game")
 	capture_area_collision.disabled = true
 	capture_area.area_entered.connect(_on_capture)
 
@@ -147,7 +144,7 @@ func _check_capture_result():
 	var tile_map = game.tile_map_layer
 	var my_position = tile_map.local_to_map(global_position)
 
-	if game.paths.has(my_position):
+	if game.map_paths.has(my_position):
 		var pixel_position = tile_map.map_to_local(my_position)
 		_on_capture_failed.rpc(skin_idx, pixel_position)
 	else:
@@ -176,25 +173,25 @@ func _find_paths_in_radius(pos_pixels: Vector2, radius: int) -> Array[Vector2i]:
 	var upper_row_idx = tile_position.y - radius
 	for i in range(tile_position.x - radius, tile_position.x + radius + 1):
 		var temp_tile = Vector2i(i, upper_row_idx)
-		if game.paths.has(temp_tile):
+		if game.map_paths.has(temp_tile):
 			possibilities.append(temp_tile)
 
 	var bottom_row_idx = tile_position.y + radius
 	for i in range(tile_position.x - radius, tile_position.x + radius + 1):
 		var temp_tile = Vector2i(i, bottom_row_idx)
-		if game.paths.has(temp_tile):
+		if game.map_paths.has(temp_tile):
 			possibilities.append(temp_tile)
 
 	var left_column_idx = tile_position.x - radius
 	for i in range(tile_position.y - radius + 1, tile_position.y + radius):
 		var temp_tile = Vector2i(left_column_idx, i)
-		if game.paths.has(temp_tile):
+		if game.map_paths.has(temp_tile):
 			possibilities.append(temp_tile)
 
 	var right_column_idx = tile_position.x + radius
 	for i in range(tile_position.y - radius + 1, tile_position.y + radius):
 		var temp_tile = Vector2i(right_column_idx, i)
-		if game.paths.has(temp_tile):
+		if game.map_paths.has(temp_tile):
 			possibilities.append(temp_tile)
 
 	return possibilities

@@ -4,6 +4,7 @@ class_name UserInterface
 
 @onready var q = $SkillsPanel/Q
 @onready var e = $SkillsPanel/E
+@onready var backpack_skills = $SkillsPanel/BackpackSkills
 @onready var win_info = $WinInfo
 @onready var win_label = $WinInfo/WinLabel
 @onready var faction_label = $WinInfo/FactionLabel
@@ -11,12 +12,14 @@ class_name UserInterface
 @onready var belive_points_counter = $Belive_Points_Counter
 @onready var walkie_talkie_message = $WalkieTalkieMessage
 @onready var main_menu_button = $WinInfo/MainMenuButton
+@onready var backpack = $SkillsPanel/Backpack
 
 var ufos_sprites
 var hit_points: int = 0
 var crashed_ufos: Array[int] = []
 var max_ufos_count: int = 2
 var player: Player
+var additional_skills: Dictionary[Skill, bool] = { }
 
 const UFO_WINS := "Prawda 
 	nas jeszcze 
@@ -30,11 +33,15 @@ func _ready():
 	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
 	_setup_win_section()
-	main_menu_button.pressed.connect(_go_to_main_menu)
+	_setup_backpack_skills()
 	if is_instance_valid(q):
 		q.set_icon_text("")
 	if is_instance_valid(e):
 		e.set_icon_text("")
+	for skill in additional_skills:
+		if is_instance_valid(skill):
+			skill.set_icon_text("")
+			skill.visible = false
 
 	player = get_parent()
 	for i in range(60):
@@ -60,7 +67,27 @@ func _ready():
 	)
 
 
+func _setup_backpack_skills():
+	var skill_nodes = backpack_skills.find_children("Skill*")
+	for skill_node in skill_nodes:
+		if skill_node is Skill:
+			var skill = skill_node as Skill
+			additional_skills[skill] = false
+
+
+func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role):
+	var role_matches = player.role == faction or player.role == Player.Role.BOTH
+	for skill in additional_skills:
+		if additional_skills[skill] == false and role_matches:
+			additional_skills[skill] = true
+			skill.visible = true
+			skill.set_icon_text(Findings.get_skill_label(skill_name))
+			break
+
+
 func _connect_signals(player: Player):
+	_connect_sinal_if_not_connected(Events.item_collected, _assign_backpack_skill)
+	_connect_sinal_if_not_connected(main_menu_button.pressed, _go_to_main_menu)
 	_disconnect_skill_signals(player)
 	_connect_sinal_if_not_connected(player.ufo_wins, _on_ufo_wins)
 	_connect_sinal_if_not_connected(player.skeptics_win, _on_skeptic_win)

@@ -1,5 +1,6 @@
-class_name Alien
 extends Player
+
+class_name Alien
 
 @onready var animation_player = $AnimationPlayer
 @onready var dialog_timer = $DialogTimer
@@ -50,10 +51,8 @@ func _ready():
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 
-func _assign_item_action(_texture, item_name):
-	match item_name:
-		"repair_tool":
-			can_repair_ufo = true
+func _assign_item_action(_texture, item_name, faction):
+	assign_item_action(item_name, Role.ALIEN, self, faction)
 
 
 func _repair_ufo():

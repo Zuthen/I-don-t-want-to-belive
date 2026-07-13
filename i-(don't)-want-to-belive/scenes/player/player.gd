@@ -3,7 +3,7 @@ extends CharacterBody2D
 class_name Player
 @onready var tile_map_layer = get_node_or_null("/root/Game/BuildingsAndPaths")
 var tile: Vector2
-enum Role { NONE, UFO, SKEPTIC, ALIEN }
+enum Role { UFO, SKEPTIC, ALIEN, BOTH }
 
 @warning_ignore_start("unused_signal")
 signal ufo_wins
@@ -12,6 +12,7 @@ var id: int = 0
 var movement_blocked: = false
 var role: Role
 var is_gameplay_ready: bool = false
+var can_collect = true
 
 
 func _ready():
@@ -105,3 +106,23 @@ func update_synchronizer_visibility_by_role():
 		visible = true
 	else:
 		pass
+
+
+func get_backpack() -> Backpack:
+	var ui = _get_ui()
+	return ui.backpack
+
+
+func _get_ui() -> UserInterface:
+	return get_node("UserInterface")
+
+
+func assign_item_action(item_name, role: Role, player: Player, _faction: Player.Role):
+	if role == Role.ALIEN:
+		match item_name:
+			"repair_tool":
+				player.can_repair_ufo = true
+	if role == Role.SKEPTIC:
+		match item_name:
+			"sanity_pills":
+				player.can_take_pills = true

@@ -13,7 +13,7 @@ font_color = Color(0.32941177, 0.23137255, 0.47058824, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_f8ipa"]
 font = ExtResource("5_y1pqf")
-font_size = 13
+font_size = 12
 font_color = Color(0.53333336, 0.5372549, 0.7882353, 1)
 
 [node name="Skill" type="VBoxContainer" unique_id=688888508]
@@ -24,9 +24,11 @@ script = ExtResource("1_f8ipa")
 
 [node name="Icon" type="TextureRect" parent="." unique_id=643834157]
 modulate = Color(0.53333336, 0.5372549, 0.7882353, 1)
+custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 texture = ExtResource("1_0w5t2")
+expand_mode = 1
 
 [node name="CoolDownProgressCircle" type="TextureProgressBar" parent="Icon" unique_id=115304042]
 layout_mode = 1

@@ -204,7 +204,7 @@ func _set_alien_state(ufo_index: int):
 		var tile_map = game.tile_map_layer
 		var current_grid_pos: Vector2i = tile_map.local_to_map(global_position)
 
-		if not game.paths.has(current_grid_pos):
+		if not game.map_paths.has(current_grid_pos):
 			var safe_tile = ufo.find_nearest_path(global_position)
 			global_position = tile_map.map_to_local(safe_tile)
 		else:

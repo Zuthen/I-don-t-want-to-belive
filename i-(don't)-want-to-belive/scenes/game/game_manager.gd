@@ -14,6 +14,7 @@ var is_local_fog_ready: bool = false
 var players_selections: Array[Preferences]
 var map_config: MapConfig = MapConfig.WIDE
 var map_paths_tiles: int = 750
+var backpack_capacity: int = 3
 
 
 func get_map_paths_tiles() -> int:

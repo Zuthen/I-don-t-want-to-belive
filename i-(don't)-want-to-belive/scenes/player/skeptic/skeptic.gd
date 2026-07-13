@@ -14,10 +14,8 @@ extends Player
 @onready var voice_receiver = $VoiceReceiver
 @onready var ui = $UserInterface
 
-var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
-var ufo_type_camera_scene: PackedScene = preload("uid://cba40e72olvj2")
 
 var animation_sprite_idx: int = 0
 var can_send_coordinates = true
@@ -35,6 +33,8 @@ var direction_sprite := "down"
 var belive_points: int = 0
 var camera_zoom: Vector2
 var warning_time: float = 1.5
+
+var can_take_pills = false
 
 signal belive_points_changed(amount: int)
 signal laser_seen(ufo_sender_id: int)
@@ -57,16 +57,11 @@ func _deferred_set_network_authority(value: int):
 		$MultiplayerSynchronizer.set_multiplayer_authority(value)
 
 
-# kandydat do ofunkcjowania
 func _ready():
 	if not is_inside_tree():
 		await tree_entered
 	warning_label.visible = false
 	camera_zoom = camera.zoom
-	belive_points_changed.connect(_on_belive_points_changed)
-	laser_seen.connect(_on_laser_seen)
-	alien_seen.connect(_on_alien_seen)
-	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
 
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
@@ -92,6 +87,20 @@ func _ready():
 
 	if has_node("MultiplayerSynchronizer") and has_method("update_synchronizer_visibility_by_role"):
 		update_synchronizer_visibility_by_role()
+	_connect_signals()
+
+
+func _connect_signals():
+	belive_points_changed.connect(_on_belive_points_changed)
+	laser_seen.connect(_on_laser_seen)
+	alien_seen.connect(_on_alien_seen)
+
+	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
+	Events.item_collected.connect(_assign_item_action)
+
+
+func _assign_item_action(_texture, item_name, faction):
+	assign_item_action(item_name, Role.SKEPTIC, self, faction)
 
 
 func _update_visibility_for_local_player():

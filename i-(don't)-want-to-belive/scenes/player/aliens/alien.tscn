@@ -283,7 +283,7 @@ _data = {
 [sub_resource type="CircleShape2D" id="CircleShape2D_ib4rs"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ehrl8"]
-size = Vector2(20, 26.666668)
+size = Vector2(13.333334, 17.777779)
 
 [node name="Alien" type="CharacterBody2D" unique_id=402508521]
 z_index = 2
@@ -364,7 +364,7 @@ collision_layer = 196
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Collector" unique_id=676801086]
-position = Vector2(0, 1.666666)
+position = Vector2(-2.6490954e-07, 1.6666665)
 shape = SubResource("RectangleShape2D_ehrl8")
 
 [node name="AnimatedWheel" type="Sprite2D" parent="." unique_id=1906068216]

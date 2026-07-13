@@ -2,6 +2,12 @@
 
 [ext_resource type="Script" uid="uid://bgmlu8ui34hg1" path="res://scenes/ui/game_ui/backpack.gd" id="1_1xyhe"]
 [ext_resource type="Texture2D" uid="uid://bgn34525kfomu" path="res://assets/objects/findings/backpack.png" id="1_l1vuj"]
+[ext_resource type="FontFile" uid="uid://dospyu21svvv" path="res://assets/fonts/Audiowide-Regular.ttf" id="3_p7sxj"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_xinpj"]
+font = ExtResource("3_p7sxj")
+font_size = 14
+font_color = Color(0.8901961, 0.34117648, 0.45882353, 1)
 
 [node name="Backpack" type="VBoxContainer" unique_id=1666698182]
 anchors_preset = 15
@@ -19,3 +25,11 @@ size_flags_horizontal = 4
 texture = ExtResource("1_l1vuj")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="OverflowLabel" type="Label" parent="." unique_id=608461088]
+visible = false
+layout_mode = 2
+text = "Plecak pełny!"
+label_settings = SubResource("LabelSettings_xinpj")
+horizontal_alignment = 1
+vertical_alignment = 1
