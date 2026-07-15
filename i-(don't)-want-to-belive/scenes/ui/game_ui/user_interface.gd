@@ -85,6 +85,8 @@ func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role):
 			additional_skills[skill] = true
 			skill.visible = true
 			skill.set_icon_text(Findings.get_skill_label(skill_name))
+			if skill_name == "repair_tool":
+				skill.set_disabled()
 			break
 
 
@@ -108,7 +110,6 @@ func _connect_signals(player: Player):
 		if alien:
 			_connect_sinal_if_not_connected(alien.can_repair, _on_alien_can_repair)
 			_connect_sinal_if_not_connected(alien.cannot_repair, _on_alien_cannot_repair)
-			_connect_sinal_if_not_connected(alien.repairing, _on_e_skill_fired)
 
 
 func _on_alien_near_ufo_wreck():
@@ -144,9 +145,10 @@ func _on_alien_can_repair():
 		return
 	var alien = player.get_node("Alien") as Alien
 	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
-	var skills = backpack_skills.get_children()
+	var skills = backpack_skills.get_children() as Array[Skill]
 	skills[repair_action_idx].set_enabled()
 	skills[repair_action_idx].visible = true
+	_connect_sinal_if_not_connected(alien.repairing, skills[repair_action_idx].start_cooldown)
 
 
 func _get_action_idx(actions: Array[Callable], action: Callable) -> int:
@@ -163,7 +165,7 @@ func _on_alien_cannot_repair():
 		return
 	var alien = player.get_node("Alien") as Alien
 	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
-	var skills = backpack_skills.get_children()
+	var skills = backpack_skills.get_children() as Array[Skill]
 	skills[repair_action_idx].set_disabled()
 
 

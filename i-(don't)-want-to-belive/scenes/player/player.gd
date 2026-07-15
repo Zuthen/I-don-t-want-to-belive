@@ -153,7 +153,7 @@ func _assign_alien_actions(item_name: String):
 	print(alien)
 	match item_name:
 		"repair_tool":
-			alien.can_repair_ufo = true
+			alien.repair_tool_collected = true
 			if _check_action_available(alien.repair_ufo):
 				return
 			_assign_action(alien.repair_ufo)

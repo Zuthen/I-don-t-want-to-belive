@@ -17,7 +17,7 @@ var voice_emitter_active := false
 const speed = 105.0
 var direction_sprite := "down"
 var peer_id: int
-var can_repair_ufo = false
+var repair_tool_collected = false
 var near_wreck = false
 
 var current_skin: AliensTextures.AlienTextures = null
@@ -61,7 +61,7 @@ func get_ufo_with_alien_container() -> UfoWithAlien:
 
 
 func repair_ufo():
-	if can_repair_ufo and near_wreck:
+	if repair_tool_collected and near_wreck:
 		var animation_time = animation_player.get_animation("ufo repair").length
 		animation_player.play("ufo repair")
 		repairing.emit(animation_time)

@@ -22,6 +22,7 @@ func _ready():
 
 
 func set_disabled():
+	print("nie mogę tego teraz zrobić")
 	icon.texture = icon_not_active_texture
 
 

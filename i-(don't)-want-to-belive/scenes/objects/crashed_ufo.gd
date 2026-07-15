@@ -44,7 +44,7 @@ func _enable_ufo_repair(collector: Area2D):
 	var ufo_with_alien = alien.get_ufo_with_alien_container()
 	if ufo_with_alien.id == my_id:
 		alien.near_wreck = true
-		if alien.can_repair_ufo:
+		if alien.repair_tool_collected:
 			alien.can_repair.emit()
 
 
