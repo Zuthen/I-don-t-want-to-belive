@@ -98,13 +98,13 @@ func _connect_signals(player: Player):
 	_connect_sinal_if_not_connected(player.skeptics_win, _on_skeptic_win)
 	if player.role == Player.Role.SKEPTIC:
 		player.belive_points_changed.connect(_on_belive_points_changed)
-		player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
+		player.walkie_talkie_message_sent.connect(_on_skill_fired.bind(e))
 	elif player.role == Player.Role.UFO:
 		_connect_sinal_if_not_connected(player.ufo_crashed, _on_ufo_crashed)
 		var ufo = player.get_node_or_null("Ufo")
 		if ufo:
-			ufo.laser_shoot.connect(_on_q_skill_fired)
-			ufo.captured.connect(_on_e_skill_fired)
+			_connect_sinal_if_not_connected(ufo.laser_shoot, _on_skill_fired.bind(q))
+			_connect_sinal_if_not_connected(ufo.captured, _on_skill_fired.bind(e))
 	elif player.role == Player.Role.ALIEN:
 		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
@@ -124,15 +124,17 @@ func _on_alien_near_ufo_wreck():
 func _disconnect_skill_signals(player: Player):
 	var ufo = player.get_node_or_null("Ufo")
 	if ufo:
-		if ufo.laser_shoot.is_connected(_on_q_skill_fired):
-			ufo.laser_shoot.disconnect(_on_q_skill_fired)
-		if ufo.captured.is_connected(_on_e_skill_fired):
-			ufo.captured.disconnect(_on_e_skill_fired)
+		_disconnect_connected_signal(ufo.laser_shoot, _on_skill_fired)
+		_disconnect_connected_signal(ufo.captured, _on_skill_fired)
 
 	var alien = player.get_node_or_null("Alien")
 	if alien:
-		if alien.repairing.is_connected(_on_e_skill_fired):
-			alien.repairing.disconnect(_on_e_skill_fired)
+		_disconnect_connected_signal(alien.repairing, _on_skill_fired)
+
+
+func _disconnect_connected_signal(connected_signal: Signal, handler: Callable):
+	if connected_signal.is_connected(handler):
+		connected_signal.disconnect(handler)
 
 
 func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callable):
@@ -252,12 +254,8 @@ func _on_skeptic_win():
 	_show_skeptics_victory_screen.rpc_id(0)
 
 
-func _on_q_skill_fired(time):
-	q.start_cooldown(time)
-
-
-func _on_e_skill_fired(time):
-	e.start_cooldown(time)
+func _on_skill_fired(time: float, skill: Skill):
+	skill.start_cooldown(time)
 
 
 @rpc("any_peer", "call_local", "reliable")
