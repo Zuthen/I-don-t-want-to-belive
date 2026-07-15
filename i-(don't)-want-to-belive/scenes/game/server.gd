@@ -16,6 +16,7 @@ var skeptics: Array[GameManager.Preferences] = []
 var skeptic_positions: Array[Vector2i] = []
 var collectables_positions: Array[Vector2i] = []
 var ready_peers_for_spawn: Dictionary = { }
+var collectables: Findings.CollectablesData
 var game: Game
 
 
@@ -44,7 +45,15 @@ func prepare_game(my_game: Game):
 	game.map_paths = create_map(game_map_seed)
 
 	skeptic_positions = _find_skeptics_positions(game.map_paths, random)
-	collectables_positions = _find_collectables_placements(game.map_paths)
+
+	var skeptic_collectables = Findings.create_skeptics_collectables()
+	var alien_collectables = Findings.create_aliens_collectables()
+	var collectables_count = skeptic_collectables.count + alien_collectables.count
+	var merged_collectables: Dictionary[String, int] = skeptic_collectables.collectables.duplicate()
+	merged_collectables.merge(alien_collectables.collectables)
+	collectables = Findings.CollectablesData.new(merged_collectables)
+	collectables_positions = _find_collectables_placements(game.map_paths, collectables_count)
+
 	players = GameManager.players_selections
 	_assign_roles(players)
 	_spawn_world(game_map_seed)
@@ -92,7 +101,7 @@ func _assign_roles(players: Array[GameManager.Preferences]):
 					skeptics.append(skeptic_player)
 
 
-func _find_collectables_placements(paths_array: Array[Vector2i]) -> Array[Vector2i]:
+func _find_collectables_placements(paths_array: Array[Vector2i], count: int) -> Array[Vector2i]:
 	if paths_array.is_empty():
 		return []
 	var dead_ends: Array[Vector2i] = []
@@ -106,11 +115,17 @@ func _find_collectables_placements(paths_array: Array[Vector2i]) -> Array[Vector
 			one_ways.append(path)
 		elif ways == 3:
 			two_ways.append(path)
-	if dead_ends.size() > 0:
-		return dead_ends
-	elif one_ways.size() > 0:
-		return one_ways
-	return two_ways
+	var collectables_placement: Array[Vector2i] = []
+	collectables_placement.append_array(dead_ends)
+	if collectables_placement.size() >= count:
+		return collectables_placement
+	collectables_placement.append_array(one_ways)
+	if collectables_placement.size() >= count:
+		return collectables_placement
+	collectables_placement.append_array(two_ways)
+	if collectables_placement.size() >= count:
+		return collectables_placement
+	return paths_array
 
 
 func _find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberGenerator) -> Array[Vector2i]:
@@ -161,16 +176,21 @@ func _map_to_spawn_data(skeptic_positions) -> Array:
 
 
 func _map_to_collectable_spawn_data(collectables_spawn_positions: Array[Vector2i], random: RandomNumberGenerator):
-	var collectibles_data = []
+	var collectables_data = []
+	var available_positions = collectables_spawn_positions.duplicate()
 	if collectables_positions.size() > 0:
-		var repair_tool_position_idx = random.randi() % collectables_spawn_positions.size()
-		var repair_tool_spawn_data = {
-			"type": "collectable",
-			"name": "repair_tool",
-			"spawn_position": collectables_spawn_positions[repair_tool_position_idx],
-		}
-		collectibles_data.append(repair_tool_spawn_data)
-	return collectibles_data
+		for item_name in collectables.collectables:
+			var count = collectables.collectables[item_name]
+			for i in range(count):
+				var item_position_idx = random.randi() % available_positions.size()
+				var spawn_data = {
+					"type": "collectable",
+					"name": item_name,
+					"spawn_position": available_positions[item_position_idx],
+				}
+				available_positions.remove_at(item_position_idx)
+				collectables_data.append(spawn_data)
+	return collectables_data
 
 
 func _check_ways(path: Vector2i, paths: Array[Vector2i]) -> int:
@@ -229,8 +249,8 @@ func check_if_everyone_is_ready_to_spawn(peer_id: int):
 			game._sync_final_roles_to_all_clients.rpc(sync_data)
 
 		var spawner_data = _map_to_spawn_data(skeptic_positions)
-		var collectibles_data = _map_to_collectable_spawn_data(collectables_positions, random)
-		spawner_data.append_array(collectibles_data)
+		var collectables_data = _map_to_collectable_spawn_data(collectables_positions, random)
+		spawner_data.append_array(collectables_data)
 
 		for data in spawner_data:
 			spawner.spawn(data)

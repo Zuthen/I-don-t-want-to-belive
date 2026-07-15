@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cvjiggvhnjfsh"]
 
-[ext_resource type="Script" uid="uid://dgtlhmxbdqehj" path="res://scenes/objects/collectible.gd" id="1_tw2o3"]
+[ext_resource type="Script" uid="uid://dgtlhmxbdqehj" path="res://scenes/objects/collectable.gd" id="1_tw2o3"]
 [ext_resource type="Texture2D" uid="uid://c3sk0xqwbgb8s" path="res://assets/objects/findings/camera.png" id="2_xm3te"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tw2o3"]

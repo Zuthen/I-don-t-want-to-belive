@@ -4,6 +4,7 @@ class_name UserInterface
 
 @onready var q = $SkillsPanel/Q
 @onready var e = $SkillsPanel/E
+@onready var backpack_skills = $SkillsPanel/BackpackSkills
 @onready var win_info = $WinInfo
 @onready var win_label = $WinInfo/WinLabel
 @onready var faction_label = $WinInfo/FactionLabel
@@ -11,13 +12,14 @@ class_name UserInterface
 @onready var belive_points_counter = $Belive_Points_Counter
 @onready var walkie_talkie_message = $WalkieTalkieMessage
 @onready var main_menu_button = $WinInfo/MainMenuButton
+@onready var backpack = $SkillsPanel/Backpack
 
 var ufos_sprites
 var hit_points: int = 0
 var crashed_ufos: Array[int] = []
 var max_ufos_count: int = 2
 var player: Player
-
+var additional_skills: Dictionary[Skill, bool] = { }
 const UFO_WINS := "Prawda 
 	nas jeszcze 
 	zadziwi..."
@@ -30,11 +32,15 @@ func _ready():
 	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
 	_setup_win_section()
-	main_menu_button.pressed.connect(_go_to_main_menu)
+	_setup_backpack_skills()
 	if is_instance_valid(q):
 		q.set_icon_text("")
 	if is_instance_valid(e):
 		e.set_icon_text("")
+	for skill in additional_skills:
+		if is_instance_valid(skill):
+			skill.set_icon_text("")
+			skill.visible = false
 
 	player = get_parent()
 	for i in range(60):
@@ -60,39 +66,102 @@ func _ready():
 	)
 
 
+func _setup_backpack_skills():
+	var skill_nodes = backpack_skills.find_children("Skill*")
+	for skill_node in skill_nodes:
+		if skill_node is Skill:
+			var skill = skill_node as Skill
+			additional_skills[skill] = false
+
+
+func _find_skill_index_by_skill_name(skill_name: String):
+	var skills_list = additional_skills.keys()
+	return skills_list.find_custom(func(skill): return skill.skill_name == skill_name)
+
+
+func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role):
+	var role_matches = player.role == faction or player.role == Player.Role.BOTH
+	if not role_matches:
+		return
+
+	if _find_skill_index_by_skill_name(skill_name) != -1:
+		return
+
+	var skills_list = additional_skills.keys()
+
+	var free_slot_idx = skills_list.find_custom(
+		func(skill): return additional_skills[skill] == false
+	)
+
+	if free_slot_idx != -1:
+		var free_skill = skills_list[free_slot_idx]
+		additional_skills[free_skill] = true
+		free_skill.skill_name = skill_name
+		free_skill.visible = true
+		free_skill.set_icon_text(Findings.get_skill_label(skill_name))
+		if skill_name == "repair_tool":
+			free_skill.set_disabled()
+
+
+func _clear_backpack_skill(skill_name: String):
+	var skills_list = additional_skills.keys()
+	var skill_idx = _find_skill_index_by_skill_name(skill_name)
+	if skill_idx != -1:
+		var taken_slot = skills_list[skill_idx]
+		additional_skills[taken_slot] = false
+		taken_slot.visible = false
+		taken_slot.set_icon_text("")
+		taken_slot.skill_name = ""
+
+
 func _connect_signals(player: Player):
-	_disconnect_skill_signals(player)
+	_connect_sinal_if_not_connected(Events.item_collected, _assign_backpack_skill)
+	_connect_sinal_if_not_connected(main_menu_button.pressed, _go_to_main_menu)
 	_connect_sinal_if_not_connected(player.ufo_wins, _on_ufo_wins)
 	_connect_sinal_if_not_connected(player.skeptics_win, _on_skeptic_win)
 	if player.role == Player.Role.SKEPTIC:
 		player.belive_points_changed.connect(_on_belive_points_changed)
-		player.walkie_talkie_message_sent.connect(_on_e_skill_fired)
+		player.walkie_talkie_message_sent.connect(_on_skill_fired.bind(e))
 	elif player.role == Player.Role.UFO:
-		_connect_sinal_if_not_connected(player.ufo_crashed, _on_ufo_crashed)
-		var ufo = player.get_node_or_null("Ufo")
-		if ufo:
-			ufo.laser_shoot.connect(_on_q_skill_fired)
-			ufo.captured.connect(_on_e_skill_fired)
+		_assign_ufo_signals()
 	elif player.role == Player.Role.ALIEN:
-		var alien = player.get_node_or_null("Alien")
+		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
 			_connect_sinal_if_not_connected(alien.can_repair, _on_alien_can_repair)
 			_connect_sinal_if_not_connected(alien.cannot_repair, _on_alien_cannot_repair)
-			_connect_sinal_if_not_connected(alien.repairing, _on_e_skill_fired)
+
+
+func _assign_ufo_signals():
+	_connect_sinal_if_not_connected(player.ufo_crashed, _on_ufo_crashed)
+	var ufo = player.get_node_or_null("Ufo")
+	if ufo:
+		_connect_sinal_if_not_connected(ufo.laser_shoot, _on_skill_fired.bind(q))
+		_connect_sinal_if_not_connected(ufo.captured, _on_skill_fired.bind(e))
+
+
+func _on_alien_near_ufo_wreck():
+	if player and player.role != Player.Role.ALIEN:
+		return
+	var alien = player.get_node("Alien") as Alien
+	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
+	var skills = backpack_skills.get_children()
+	skills[repair_action_idx].set_enabled()
 
 
 func _disconnect_skill_signals(player: Player):
 	var ufo = player.get_node_or_null("Ufo")
 	if ufo:
-		if ufo.laser_shoot.is_connected(_on_q_skill_fired):
-			ufo.laser_shoot.disconnect(_on_q_skill_fired)
-		if ufo.captured.is_connected(_on_e_skill_fired):
-			ufo.captured.disconnect(_on_e_skill_fired)
+		_disconnect_connected_signal(ufo.laser_shoot, _on_skill_fired)
+		_disconnect_connected_signal(ufo.captured, _on_skill_fired)
 
 	var alien = player.get_node_or_null("Alien")
 	if alien:
-		if alien.repairing.is_connected(_on_e_skill_fired):
-			alien.repairing.disconnect(_on_e_skill_fired)
+		_disconnect_connected_signal(alien.repairing, _on_skill_fired)
+
+
+func _disconnect_connected_signal(connected_signal: Signal, handler: Callable):
+	if connected_signal.is_connected(handler):
+		connected_signal.disconnect(handler)
 
 
 func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callable):
@@ -103,14 +172,31 @@ func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callab
 func _on_alien_can_repair():
 	if player and player.role != Player.Role.ALIEN:
 		return
-	e.set_icon_text("Napraw")
-	e.visible = true
+	var alien = player.get_node("Alien") as Alien
+	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
+	var skills = backpack_skills.get_children() as Array[Skill]
+	skills[repair_action_idx].set_enabled()
+	skills[repair_action_idx].visible = true
+	_connect_sinal_if_not_connected(alien.repairing, skills[repair_action_idx].start_cooldown)
+	_connect_sinal_if_not_connected(alien.repairing, func(_time): _clear_backpack_skill("repair_tool"))
+
+
+func _get_action_idx(actions: Array[Callable], action: Callable) -> int:
+	for i in range(actions.size()):
+		if actions[i].is_null():
+			continue
+		if actions[i] == action:
+			return i
+	return -1
 
 
 func _on_alien_cannot_repair():
 	if player and player.role != Player.Role.ALIEN:
 		return
-	e.visible = false
+	var alien = player.get_node("Alien") as Alien
+	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
+	var skills = backpack_skills.get_children() as Array[Skill]
+	skills[repair_action_idx].set_disabled()
 
 
 func _on_ufo_crashed(peer_id):
@@ -196,12 +282,8 @@ func _on_skeptic_win():
 	_show_skeptics_victory_screen.rpc_id(0)
 
 
-func _on_q_skill_fired(time):
-	q.start_cooldown(time)
-
-
-func _on_e_skill_fired(time):
-	e.start_cooldown(time)
+func _on_skill_fired(time: float, skill: Skill):
+	skill.start_cooldown(time)
 
 
 @rpc("any_peer", "call_local", "reliable")

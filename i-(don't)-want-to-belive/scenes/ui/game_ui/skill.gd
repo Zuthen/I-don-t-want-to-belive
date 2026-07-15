@@ -13,12 +13,21 @@ var text: String
 var cooldown_time: float = 3.0
 var time_left: float = 0.0
 var is_on_cooldown: bool = false
+var skill_name
 
 
 func _ready():
-	icon.texture = icon_active_texture
+	set_enabled()
 	cool_down_progress_circle.value = 0
 	set_process(false)
+
+
+func set_disabled():
+	icon.texture = icon_not_active_texture
+
+
+func set_enabled():
+	icon.texture = icon_active_texture
 
 
 func _process(delta: float) -> void:

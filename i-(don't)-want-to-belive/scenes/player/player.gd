@@ -3,7 +3,7 @@ extends CharacterBody2D
 class_name Player
 @onready var tile_map_layer = get_node_or_null("/root/Game/BuildingsAndPaths")
 var tile: Vector2
-enum Role { NONE, UFO, SKEPTIC, ALIEN }
+enum Role { UFO, SKEPTIC, ALIEN, BOTH }
 
 @warning_ignore_start("unused_signal")
 signal ufo_wins
@@ -12,6 +12,8 @@ var id: int = 0
 var movement_blocked: = false
 var role: Role
 var is_gameplay_ready: bool = false
+var can_collect = true
+var actions: Array[Callable] = [Callable(), Callable(), Callable()]
 
 
 func _ready():
@@ -21,6 +23,17 @@ func _ready():
 	await get_tree().process_frame
 	await get_tree().process_frame
 	is_gameplay_ready = true
+	Events.ufo_fixed.connect(_on_ufo_fixed)
+
+
+func _on_ufo_fixed(_p):
+	var repair_tools_in_backpack = get_backpack().get_backpack_items_by_name("repair_tool")
+	if repair_tools_in_backpack.size() > 0:
+		_clear_alien_action("repair_tool")
+
+
+func get_actions() -> Array[Callable]:
+	return actions
 
 
 func move(speed: float, player_input_synchronizer: PlayerInputSynchronizer) -> Vector2:
@@ -105,3 +118,90 @@ func update_synchronizer_visibility_by_role():
 		visible = true
 	else:
 		pass
+
+
+func get_backpack() -> Backpack:
+	var ui = _get_ui()
+	return ui.backpack
+
+
+func _get_ui() -> UserInterface:
+	if MultiplayerFeatures.local_ui != null:
+		return MultiplayerFeatures.local_ui
+
+	if is_inside_tree():
+		var ui = get_parent().get_node_or_null("UserInterface")
+		if ui is UserInterface:
+			return ui
+	return null
+
+
+func assign_item_action(item_name, usable_for_role: Role, _faction: Player.Role):
+	var usable_for_alien: bool = usable_for_role == Role.ALIEN or usable_for_role == Role.BOTH
+	if role == Role.ALIEN and usable_for_alien:
+		_assign_alien_actions(item_name)
+	var usable_for_skeptic: bool = usable_for_role == Role.SKEPTIC or usable_for_role == Role.BOTH
+	if role == Role.SKEPTIC and usable_for_skeptic:
+		_assign_skeptic_actions(item_name)
+
+
+func _unhandled_input(event: InputEvent):
+	if event.is_action_pressed("action 1"):
+		_use_action(0)
+	elif event.is_action_pressed("action 2"):
+		_use_action(1)
+	elif event.is_action_pressed("action 3"):
+		_use_action(2)
+
+
+func _use_action(i: int):
+	var action = actions[i]
+	if not action.is_null():
+		action.call()
+
+
+func _assign_alien_actions(item_name: String):
+	var alien = self
+	match item_name:
+		"repair_tool":
+			alien.repair_tool_collected = true
+			if _check_action_available(alien.repair_ufo):
+				return
+			_assign_action(alien.repair_ufo)
+
+
+func _clear_alien_action(item_name: String):
+	var alien = self
+	match item_name:
+		"repair_tool":
+			alien.repair_tool_collected = false
+			if _check_action_available(alien.repair_ufo):
+				_clear_action(alien.repair_ufo)
+
+
+func _clear_action(action: Callable):
+	for i in range(GameManager.backpack_capacity):
+		if actions[i] == action:
+			actions[i] = Callable()
+			break
+
+
+func _check_action_available(action: Callable) -> bool:
+	for a in actions:
+		if a == action:
+			return true
+	return false
+
+
+func _assign_action(action: Callable):
+	for i in range(GameManager.backpack_capacity):
+		if actions[i].is_null():
+			actions[i] = action
+			break
+
+
+func _assign_skeptic_actions(item_name):
+	var skeptic = self as Skeptic
+	match item_name:
+		"sanity_pills":
+			skeptic.can_take_pills = true

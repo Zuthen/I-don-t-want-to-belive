@@ -13,6 +13,12 @@
 [ext_resource type="PackedScene" uid="uid://tgygvek1j0wa" path="res://scenes/ui/game_ui/walkie_talkie_message.tscn" id="11_y3ul1"]
 [ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="12_olnl4"]
 [ext_resource type="PackedScene" uid="uid://c7fud3xvj6so" path="res://scenes/ui/game_ui/backpack.tscn" id="12_xekmr"]
+[ext_resource type="Texture2D" uid="uid://dxmvoqesvl8xf" path="res://assets/ui/keboard_buttons/keyboard_1.png" id="13_8asap"]
+[ext_resource type="Texture2D" uid="uid://d0j2gmyuws1ef" path="res://assets/ui/keboard_buttons/keyboard_1_outline.png" id="14_sobma"]
+[ext_resource type="Texture2D" uid="uid://b0s2xh0gjqtli" path="res://assets/ui/keboard_buttons/keyboard_2.png" id="15_25acm"]
+[ext_resource type="Texture2D" uid="uid://2pwlbkj5ep38" path="res://assets/ui/keboard_buttons/keyboard_2_outline.png" id="16_c4krn"]
+[ext_resource type="Texture2D" uid="uid://btgfyagpp15vn" path="res://assets/ui/keboard_buttons/keyboard_3.png" id="17_4fgii"]
+[ext_resource type="Texture2D" uid="uid://hd4nalej1t4a" path="res://assets/ui/keboard_buttons/keyboard_3_outline.png" id="18_vskms"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vo76m"]
 font = ExtResource("3_737vb")
@@ -133,7 +139,7 @@ stretch_mode = 5
 offset_left = 704.0
 offset_top = 21.0
 offset_right = 816.0
-offset_bottom = 682.0
+offset_bottom = 676.0
 
 [node name="Q" parent="SkillsPanel" unique_id=688888508 instance=ExtResource("7_xg44s")]
 layout_mode = 2
@@ -142,6 +148,25 @@ layout_mode = 2
 layout_mode = 2
 icon_active_texture = ExtResource("8_kw8g8")
 icon_not_active_texture = ExtResource("9_737vb")
+
+[node name="BackpackSkills" type="VBoxContainer" parent="SkillsPanel" unique_id=176672009]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="Skill 1" parent="SkillsPanel/BackpackSkills" unique_id=158861248 instance=ExtResource("7_xg44s")]
+layout_mode = 2
+icon_active_texture = ExtResource("13_8asap")
+icon_not_active_texture = ExtResource("14_sobma")
+
+[node name="Skill 2" parent="SkillsPanel/BackpackSkills" unique_id=1487931849 instance=ExtResource("7_xg44s")]
+layout_mode = 2
+icon_active_texture = ExtResource("15_25acm")
+icon_not_active_texture = ExtResource("16_c4krn")
+
+[node name="Skill 3" parent="SkillsPanel/BackpackSkills" unique_id=1348058171 instance=ExtResource("7_xg44s")]
+layout_mode = 2
+icon_active_texture = ExtResource("17_4fgii")
+icon_not_active_texture = ExtResource("18_vskms")
 
 [node name="HSeparator" type="HSeparator" parent="SkillsPanel" unique_id=1417151658]
 custom_minimum_size = Vector2(100, 0)

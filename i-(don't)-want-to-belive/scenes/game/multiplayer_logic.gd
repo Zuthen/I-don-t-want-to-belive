@@ -5,7 +5,7 @@ var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://m52fuwcrlo2k")
 var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
 var laser_scene = preload("uid://dnsiqidfpctrc")
-var collectible_scene = preload("uid://cvjiggvhnjfsh")
+var collectable_scene = preload("uid://cvjiggvhnjfsh")
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var local_ui: UserInterface
 var server_icon_cooldowns: Array[int] = []
@@ -62,12 +62,17 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				node.net_is_laser_type = data.get("is_laser_type", false)
 				return node
 			"collectable":
-				node = collectible_scene.instantiate()
+				node = collectable_scene.instantiate()
 				node.name = "Collectable_" + str(randi())
-
+				var collectable_name = data.get("name")
 				if data.get("name") == "repair_tool":
 					node.texture = load("uid://mucvykffmbay")
-					node.item_name = "repair_tool"
+					node.item_name = collectable_name
+					node.set_faction(collectable_name)
+				if data.get("name") == "sanity_pills":
+					node.texture = load("uid://clotb5wahgifk")
+					node.item_name = collectable_name
+					node.set_faction(collectable_name)
 				if data.has("spawn_position"):
 					var local_pos = tile_map.map_to_local(data.spawn_position)
 					node.tree_entered.connect(func(): node.global_position = local_pos, CONNECT_ONE_SHOT)

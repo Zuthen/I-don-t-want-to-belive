@@ -38,32 +38,21 @@ func _connect_signals():
 	Events.alien_fixed_ufo.connect(_on_fixed)
 
 
-func _enable_ufo_repair(body):
+func _enable_ufo_repair(collector: Area2D):
 	var my_id = multiplayer.get_unique_id()
-	var ufo_with_alien = _find_ufo_with_alien_node(body)
-	if ufo_with_alien is UfoWithAlien and ufo_with_alien.id == my_id:
-		var alien = ufo_with_alien.get_node("Alien") as Alien
+	var alien = collector.get_parent() as Alien
+	var ufo_with_alien = alien.get_ufo_with_alien_container()
+	if ufo_with_alien.id == my_id:
 		alien.near_wreck = true
-		if alien.can_repair_ufo:
+		if alien.repair_tool_collected:
 			alien.can_repair.emit()
 
 
-func _find_ufo_with_alien_node(body) -> Player:
-	var current_node = body
-	var main_player_root: Player = null
-	while current_node != null and current_node != get_tree().root:
-		if "id" in current_node and current_node.id != 0:
-			main_player_root = current_node
-			break
-		current_node = current_node.get_parent()
-	return main_player_root
-
-
-func _disable_ufo_repair(body):
+func _disable_ufo_repair(collector: Area2D):
 	var my_id = multiplayer.get_unique_id()
-	var ufo_with_alien = _find_ufo_with_alien_node(body)
-	if ufo_with_alien is UfoWithAlien and ufo_with_alien.id == my_id:
-		var alien = ufo_with_alien.get_node("Alien")
+	var alien = collector.get_parent() as Alien
+	var ufo_with_alien = alien.get_ufo_with_alien_container()
+	if ufo_with_alien.id == my_id:
 		alien.near_wreck = false
 		alien.cannot_repair.emit()
 

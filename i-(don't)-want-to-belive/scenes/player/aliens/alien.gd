@@ -1,5 +1,6 @@
-class_name Alien
 extends Player
+
+class_name Alien
 
 @onready var animation_player = $AnimationPlayer
 @onready var dialog_timer = $DialogTimer
@@ -16,7 +17,7 @@ var voice_emitter_active := false
 const speed = 105.0
 var direction_sprite := "down"
 var peer_id: int
-var can_repair_ufo = false
+var repair_tool_collected = false
 var near_wreck = false
 
 var current_skin: AliensTextures.AlienTextures = null
@@ -50,34 +51,40 @@ func _ready():
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 
-func _assign_item_action(_texture, item_name):
-	match item_name:
-		"repair_tool":
-			can_repair_ufo = true
+func _assign_item_action(_texture, item_name, faction):
+	assign_item_action(item_name, Role.ALIEN, faction)
 
 
-func _repair_ufo():
-	var animation_time = animation_player.get_animation("ufo repair").length
-	animation_player.play("ufo repair")
-	repairing.emit(animation_time)
-	if is_multiplayer_authority():
-		movement_blocked = true
-		var timer = Timer.new()
-		timer.one_shot = true
-		add_child(timer)
-		timer.timeout.connect(
-			func():
-				movement_blocked = false
-				var synchronizer = get_parent().get_node_or_null("PlayerInputSynchronizer")
-				if is_instance_valid(synchronizer):
-					_animate(synchronizer.movement_vector)
-		)
-		timer.timeout.connect(
-			func():
-				timer.queue_free()
-				Events.alien_fixed_ufo.emit(peer_id)
-		)
-		timer.start(animation_time)
+func get_ufo_with_alien_container() -> UfoWithAlien:
+	var ufo_with_alien = get_parent()
+	return ufo_with_alien
+
+
+func repair_ufo():
+	if repair_tool_collected and near_wreck:
+		var animation_time = animation_player.get_animation("ufo repair").length
+		animation_player.play("ufo repair")
+		var backpack = get_backpack()
+		backpack.remove.emit("repair_tool")
+		repairing.emit(animation_time)
+		if is_multiplayer_authority():
+			movement_blocked = true
+			var timer = Timer.new()
+			timer.one_shot = true
+			add_child(timer)
+			timer.timeout.connect(
+				func():
+					movement_blocked = false
+					var synchronizer = get_parent().get_node_or_null("PlayerInputSynchronizer")
+					if is_instance_valid(synchronizer):
+						_animate(synchronizer.movement_vector)
+			)
+			timer.timeout.connect(
+				func():
+					timer.queue_free()
+					Events.alien_fixed_ufo.emit(peer_id)
+			)
+			timer.start(animation_time)
 
 
 func _apply_skin_textures():
@@ -96,9 +103,6 @@ func _process(_delta):
 
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
 		_call_skeptic_network.rpc()
-
-	if can_repair_ufo and near_wreck and Input.is_action_just_pressed("repair_ufo"):
-		_repair_ufo()
 
 
 @rpc("call_local", "any_peer", "reliable")
