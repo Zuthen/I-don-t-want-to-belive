@@ -21,7 +21,7 @@ func _ready():
 
 	if multiplayer.is_server():
 		server = Server.new()
-		server.name = "Server" # Nadajemy stałą nazwę w sieci
+		server.name = "Server"
 		add_child(server)
 		server.set_tile_maps(tile_map_layer, buildings_details)
 		server.set_spawner(multiplayer_spawner)

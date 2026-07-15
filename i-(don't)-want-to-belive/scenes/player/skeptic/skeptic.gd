@@ -16,10 +16,10 @@ extends Player
 
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
-
 var animation_sprite_idx: int = 0
 var can_send_coordinates = true
 var voice_emitter_active := false
+var icon_cooldown_active := false
 
 var seen_ufos: Array[int] = []
 var seen_aliens: Array[int] = []
@@ -34,12 +34,14 @@ var belive_points: int = 0
 var camera_zoom: Vector2
 var warning_time: float = 1.5
 
-var can_take_pills = false
+var sanity_pills_collected = false
 
 signal belive_points_changed(amount: int)
 signal laser_seen(ufo_sender_id: int)
 signal walkie_talkie_message_sent(time: float)
 signal alien_seen(peer_id: int)
+signal can_take_sanity_pill(can: bool)
+signal out_of_pills()
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -101,6 +103,30 @@ func _connect_signals():
 
 func _assign_item_action(_texture, item_name, faction):
 	assign_item_action(item_name, Role.SKEPTIC, faction)
+	_check_can_take_sanity_pills()
+
+
+func _check_can_take_sanity_pills():
+	can_take_sanity_pill.emit(sanity_pills_collected and belive_points > 0)
+
+
+func take_sanity_pill():
+	if sanity_pills_collected and belive_points > 0:
+		var backpack = get_backpack()
+		await get_tree().process_frame
+
+		var sanity_pills_count = backpack.get_backpack_items_by_name("sanity_pills").size()
+
+		if sanity_pills_count < 2:
+			sanity_pills_collected = false
+
+		backpack.remove.emit("sanity_pills")
+		belive_points_changed.emit(-1)
+		_check_can_take_sanity_pills()
+
+		if sanity_pills_count == 1:
+			sanity_pills_collected = false
+			out_of_pills.emit()
 
 
 func _update_visibility_for_local_player():
@@ -175,6 +201,7 @@ func _on_belive_points_changed(hit_points: int):
 	belive_points += hit_points
 	if belive_points >= max_belive_points:
 		ufo_wins.emit()
+	_check_can_take_sanity_pills()
 
 
 func _on_laser_seen(ufo_sender_id: int):
@@ -193,6 +220,9 @@ func _on_laser_seen(ufo_sender_id: int):
 	var dialog = dialogs.pick_random() as Marker2D
 	var target_position = global_position + dialog.position
 
+	if dialog_timer:
+		dialog_timer.start(3.0)
+
 	request_icon_spawn_on_server.rpc(target_position, ufo_sender_id, multiplayer.get_unique_id(), "angry")
 
 
@@ -203,6 +233,7 @@ func request_icon_spawn_on_server(target_position: Vector2, sender_id: int, targ
 
 	if MultiplayerFeatures.server_icon_cooldowns.has(target_id):
 		return
+
 	MultiplayerFeatures.server_icon_cooldowns.append(target_id)
 
 	var is_laser = true if icon_ref == "angry" else false
@@ -224,7 +255,7 @@ func request_icon_spawn_on_server(target_position: Vector2, sender_id: int, targ
 
 		get_tree().create_timer(3.0).timeout.connect(
 			func():
-				if MultiplayerFeatures.server_icon_cooldowns.has(target_id):
+				while MultiplayerFeatures.server_icon_cooldowns.has(target_id):
 					MultiplayerFeatures.server_icon_cooldowns.erase(target_id),
 			CONNECT_ONE_SHOT,
 		)
@@ -381,6 +412,9 @@ func _teleport_network_rpc(pixel_position: Vector2):
 
 @rpc("any_peer", "call_local", "reliable")
 func trigger_captured_effects_network(ufo_index: int, target_pos: Vector2i):
+	if multiplayer.get_remote_sender_id() != 0 and multiplayer.is_server():
+		return
+
 	if is_multiplayer_authority():
 		belive_points_changed.emit(3)
 		_play_captured_animation(ufo_index, target_pos)
