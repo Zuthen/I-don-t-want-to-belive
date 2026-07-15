@@ -119,9 +119,14 @@ func get_backpack() -> Backpack:
 
 
 func _get_ui() -> UserInterface:
-	if self is Alien or self is Ufo:
-		return get_parent().get_node("UserInterface")
-	return get_node("UserInterface")
+	if MultiplayerFeatures.local_ui != null:
+		return MultiplayerFeatures.local_ui
+
+	if is_inside_tree():
+		var ui = get_parent().get_node_or_null("UserInterface")
+		if ui is UserInterface:
+			return ui
+	return null
 
 
 func assign_item_action(item_name, usable_for_role: Role, _faction: Player.Role):
@@ -150,7 +155,6 @@ func _use_action(i: int):
 
 func _assign_alien_actions(item_name: String):
 	var alien = self
-	print(alien)
 	match item_name:
 		"repair_tool":
 			alien.repair_tool_collected = true

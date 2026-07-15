@@ -64,6 +64,8 @@ func repair_ufo():
 	if repair_tool_collected and near_wreck:
 		var animation_time = animation_player.get_animation("ufo repair").length
 		animation_player.play("ufo repair")
+		var backpack = get_backpack()
+		backpack.remove.emit("repair_tool")
 		repairing.emit(animation_time)
 		if is_multiplayer_authority():
 			movement_blocked = true

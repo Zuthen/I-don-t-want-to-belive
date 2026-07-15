@@ -13,6 +13,7 @@ var text: String
 var cooldown_time: float = 3.0
 var time_left: float = 0.0
 var is_on_cooldown: bool = false
+var skill_name
 
 
 func _ready():
@@ -22,7 +23,6 @@ func _ready():
 
 
 func set_disabled():
-	print("nie mogę tego teraz zrobić")
 	icon.texture = icon_not_active_texture
 
 
