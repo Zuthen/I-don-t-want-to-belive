@@ -99,7 +99,7 @@ func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role):
 		free_skill.skill_name = skill_name
 		free_skill.visible = true
 		free_skill.set_icon_text(Findings.get_skill_label(skill_name))
-		if skill_name == "repair_tool":
+		if skill_name == "repair_tool" or skill_name == "sanity_pills":
 			free_skill.set_disabled()
 
 
@@ -122,6 +122,9 @@ func _connect_signals(player: Player):
 	if player.role == Player.Role.SKEPTIC:
 		player.belive_points_changed.connect(_on_belive_points_changed)
 		player.walkie_talkie_message_sent.connect(_on_skill_fired.bind(e))
+		player.can_take_sanity_pill.connect(_set_sanity_pill_skill)
+		player.out_of_pills.connect(_on_out_of_pills)
+
 	elif player.role == Player.Role.UFO:
 		_assign_ufo_signals()
 	elif player.role == Player.Role.ALIEN:
@@ -129,6 +132,20 @@ func _connect_signals(player: Player):
 		if alien:
 			_connect_sinal_if_not_connected(alien.can_repair, _on_alien_can_repair)
 			_connect_sinal_if_not_connected(alien.cannot_repair, _on_alien_cannot_repair)
+
+
+func _on_out_of_pills():
+	_clear_backpack_skill("sanity_pills")
+
+
+func _set_sanity_pill_skill(enabled):
+	var sanity_pills_idx = _find_skill_index_by_skill_name("sanity_pills")
+	var skills_list = additional_skills.keys()
+
+	if enabled:
+		skills_list[sanity_pills_idx].set_enabled()
+	else:
+		skills_list[sanity_pills_idx].set_disabled()
 
 
 func _assign_ufo_signals():
@@ -208,6 +225,9 @@ func _on_ufo_crashed(peer_id):
 
 @rpc("any_peer", "call_local", "reliable")
 func _report_ufo_crash_to_server(dropped_peer_id: int):
+	if not multiplayer.is_server():
+		return
+
 	if not crashed_ufos.has(dropped_peer_id):
 		crashed_ufos.append(dropped_peer_id)
 
@@ -222,7 +242,12 @@ func _report_ufo_crash_to_server(dropped_peer_id: int):
 				break
 
 		if !ufo_can_win:
-			_on_skeptic_win()
+			_broadcast_skeptic_win.rpc()
+
+
+@rpc("authority", "call_local", "reliable")
+func _broadcast_skeptic_win():
+	_on_skeptic_win()
 
 
 func _setup_win_section():
@@ -306,5 +331,5 @@ func _on_belive_points_changed(amount):
 	hit_points += amount
 	if hit_points > ufos_sprites.size():
 		hit_points = ufos_sprites.size()
-	for i in range(hit_points):
+	for i in range(ufos_sprites.size()):
 		ufos_sprites[i].visible = (i < hit_points)

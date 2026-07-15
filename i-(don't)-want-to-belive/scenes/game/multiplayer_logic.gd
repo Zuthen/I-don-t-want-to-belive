@@ -184,7 +184,8 @@ func broadcast_walkie_talkie(message_content: String):
 		var sender_id = multiplayer.get_remote_sender_id()
 		var my_id = multiplayer.get_unique_id()
 
-		var label_type = "Nadana wiadomość:" if sender_id == my_id else "Odebrana wiadomość:"
+		var is_me = (sender_id == 0) or (sender_id == my_id)
+		var label_type = "Nadana wiadomość:" if is_me else "Odebrana wiadomość:"
 
 		if is_instance_valid(local_ui.walkie_talkie_message):
 			local_ui.walkie_talkie_message.setup(label_type, message_content)

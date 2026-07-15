@@ -116,8 +116,8 @@ func _update_players_visibility(local_player: Node2D):
 				player.visible = true
 				continue
 			player.visible = false
-		#for collectable in items:
-		#collectable.visible = false
+		for collectable in items:
+			collectable.visible = false
 		return
 
 	var local_tile = buildings_layer.local_to_map(local_player.global_position)

@@ -31,7 +31,6 @@ func get_backpack_items_by_name(item_name: String) -> Array[BackpackItem]:
 
 func _remove_item(item_name: String):
 	var found_items = get_backpack_items_by_name(item_name)
-	print(found_items.size())
 	if found_items.size() > 0:
 		var item_to_remove = found_items[0]
 		item_to_remove.queue_free()

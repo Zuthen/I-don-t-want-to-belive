@@ -233,11 +233,16 @@ func _on_capture(other):
 func _on_capture_failed(ufo_index: int, target_global_position: Vector2):
 	if not multiplayer.is_server():
 		return
+
 	var explosion_sound = Sounds.explosion_sounds.pick_random()
 	sound.stream = explosion_sound
 	sound.play()
+
 	var sender_id = multiplayer.get_remote_sender_id()
-	var player_core = game.get_node(str(sender_id)) as UfoWithAlien
+	if sender_id == 0:
+		sender_id = multiplayer.get_unique_id()
+
+	var player_core = game.get_node_or_null(str(sender_id)) as UfoWithAlien
 
 	var crashed_ufo_spawn_data = {
 		"type": "wreck",
@@ -279,10 +284,14 @@ func _fire_laser():
 @rpc("any_peer", "call_local", "reliable")
 func _server_spawn_laser(position: Vector2):
 	if multiplayer.is_server():
+		var sender_id = multiplayer.get_remote_sender_id()
+		if sender_id == 0:
+			sender_id = multiplayer.get_unique_id()
+
 		var laser_data = {
 			"type": "laser",
 			"global_position": position,
 			"color_idx": skin_idx,
-			"peer_id": multiplayer.get_unique_id(),
+			"peer_id": sender_id,
 		}
 		game.multiplayer_spawner.spawn(laser_data)

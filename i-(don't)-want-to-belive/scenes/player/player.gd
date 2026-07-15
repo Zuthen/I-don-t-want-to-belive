@@ -204,4 +204,7 @@ func _assign_skeptic_actions(item_name):
 	var skeptic = self as Skeptic
 	match item_name:
 		"sanity_pills":
-			skeptic.can_take_pills = true
+			skeptic.sanity_pills_collected = true
+			if _check_action_available(skeptic.take_sanity_pill):
+				return
+			_assign_action(skeptic.take_sanity_pill)
