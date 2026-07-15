@@ -82,6 +82,8 @@ func _on_ufo_fixed(new_position: Vector2):
 	if destination_position.y < MapSettings.min_position.y:
 		destination_position = Vector2(new_position.x, MapSettings.min_position.y)
 	global_position = destination_position
+	var ufo = get_node("Ufo")
+	ufo.capture_blocked = false
 	change_state.rpc(State.UFO, ufo_index_sync)
 
 

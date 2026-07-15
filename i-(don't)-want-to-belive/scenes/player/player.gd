@@ -23,6 +23,13 @@ func _ready():
 	await get_tree().process_frame
 	await get_tree().process_frame
 	is_gameplay_ready = true
+	Events.ufo_fixed.connect(_on_ufo_fixed)
+
+
+func _on_ufo_fixed(_p):
+	var repair_tools_in_backpack = get_backpack().get_backpack_items_by_name("repair_tool")
+	if repair_tools_in_backpack.size() > 0:
+		_clear_alien_action("repair_tool")
 
 
 func get_actions() -> Array[Callable]:
@@ -161,6 +168,22 @@ func _assign_alien_actions(item_name: String):
 			if _check_action_available(alien.repair_ufo):
 				return
 			_assign_action(alien.repair_ufo)
+
+
+func _clear_alien_action(item_name: String):
+	var alien = self
+	match item_name:
+		"repair_tool":
+			alien.repair_tool_collected = false
+			if _check_action_available(alien.repair_ufo):
+				_clear_action(alien.repair_ufo)
+
+
+func _clear_action(action: Callable):
+	for i in range(GameManager.backpack_capacity):
+		if actions[i] == action:
+			actions[i] = Callable()
+			break
 
 
 func _check_action_available(action: Callable) -> bool:
