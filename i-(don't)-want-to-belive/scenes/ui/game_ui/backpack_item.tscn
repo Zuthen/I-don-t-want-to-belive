@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bq5ok1etalft8" path="res://assets/ui/panel_glass.png" id="1_7w8dl"]
 [ext_resource type="Script" uid="uid://dilk8kbqa4m1t" path="res://scenes/ui/game_ui/backpack_item.gd" id="2_873sp"]
+[ext_resource type="PackedScene" uid="uid://bnwjrodkh6f5h" path="res://scenes/ui/tooltip.tscn" id="3_yhu20"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_873sp"]
 texture = ExtResource("1_7w8dl")
@@ -27,3 +28,6 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Tooltip" parent="." unique_id=1522953099 instance=ExtResource("3_yhu20")]
+layout_mode = 2
