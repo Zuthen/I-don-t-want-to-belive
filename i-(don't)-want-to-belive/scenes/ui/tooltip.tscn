@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bnwjrodkh6f5h"]
+
+[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="1_mtwet"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cyxd6"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_vild7"]
+font = ExtResource("1_mtwet")
+font_size = 8
+font_color = Color(0.007843138, 0.03137255, 0.14901961, 1)
+
+[node name="Tooltip" type="PanelContainer" unique_id=1522953099]
+z_index = 1
+offset_left = -54.0
+offset_top = 39.0
+offset_right = 43.0
+offset_bottom = 75.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cyxd6")
+
+[node name="Label" type="Label" parent="." unique_id=1288971272]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "Kod skopiowany do schowka"
+label_settings = SubResource("LabelSettings_vild7")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

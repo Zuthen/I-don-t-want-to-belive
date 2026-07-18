@@ -79,7 +79,7 @@ func _find_skill_index_by_skill_name(skill_name: String):
 	return skills_list.find_custom(func(skill): return skill.skill_name == skill_name)
 
 
-func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role):
+func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role, _player_faction):
 	var role_matches = player.role == faction or player.role == Player.Role.BOTH
 	if not role_matches:
 		return

@@ -51,7 +51,7 @@ func _ready():
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 
-func _assign_item_action(_texture, item_name, faction):
+func _assign_item_action(_texture, item_name, faction, _player_faction):
 	assign_item_action(item_name, Role.ALIEN, faction)
 
 
