@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://bnwjrodkh6f5h"]
 
-[ext_resource type="Script" uid="uid://b3xfllqtrrtyr" path="res://scenes/ui/tooltip.gd" id="1_b5j4s"]
 [ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="1_mtwet"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cyxd6"]
@@ -17,7 +16,6 @@ offset_top = 39.0
 offset_right = 43.0
 offset_bottom = 75.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyxd6")
-script = ExtResource("1_b5j4s")
 
 [node name="Label" type="Label" parent="." unique_id=1288971272]
 layout_mode = 2

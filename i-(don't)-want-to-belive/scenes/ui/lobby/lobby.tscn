@@ -180,6 +180,7 @@ offset_left = -52.0
 offset_top = 37.0
 offset_right = 41.0
 offset_bottom = 98.0
+font_color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
 
 [node name="TextBackground" parent="MarginContainer/HBoxContainer/MarginContainer/VBoxContainer" unique_id=1490259344 instance=ExtResource("11_gj1jc")]
 visibility_layer = 2

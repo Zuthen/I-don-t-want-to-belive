@@ -6,7 +6,13 @@ class_name BackpackItem
 
 var texture: Texture2D
 var item_name: String
+var description: String
 
 
 func _ready():
 	texture_rect.texture = texture
+	_set_tooltip()
+
+
+func _set_tooltip():
+	tooltip_text = description

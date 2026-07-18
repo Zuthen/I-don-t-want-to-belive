@@ -101,7 +101,7 @@ func _connect_signals():
 	Events.item_collected.connect(_assign_item_action)
 
 
-func _assign_item_action(_texture, item_name, faction):
+func _assign_item_action(_texture, item_name, faction, _player_faction):
 	assign_item_action(item_name, Role.SKEPTIC, faction)
 	_check_can_take_sanity_pills()
 

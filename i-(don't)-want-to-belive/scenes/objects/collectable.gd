@@ -45,7 +45,7 @@ func _collect(other):
 		var backpack = player.get_backpack()
 		player.can_collect = backpack.can_collect()
 		if player.can_collect:
-			Events.item_collected.emit(texture, item_name, faction)
+			Events.item_collected.emit(texture, item_name, faction, player.role)
 			_request_server_removal.rpc_id(1)
 
 
