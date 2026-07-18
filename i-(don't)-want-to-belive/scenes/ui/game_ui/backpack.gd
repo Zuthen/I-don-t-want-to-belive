@@ -37,12 +37,12 @@ func _remove_item(item_name: String):
 		overflow_label.visible = false
 
 
-func _item_collected(texture: Texture2D, item_name: String, _faction, _player_faction: Player.Role):
+func _item_collected(texture: Texture2D, item_name: String, _faction, player_faction: Player.Role):
 	if max_capacity - get_child_count() > 0:
 		var backpack_item = backpack_item_scene.instantiate()
 		backpack_item.item_name = item_name
 		backpack_item.texture = texture
-		backpack_item.description = BackpackItemsDictionary.get_item_description(_player_faction, item_name)
+		backpack_item.description = BackpackItemsDictionary.get_item_description(player_faction, item_name)
 		add_child(backpack_item)
 
 	if get_child_count() == max_capacity:
