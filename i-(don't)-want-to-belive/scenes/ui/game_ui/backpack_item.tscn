@@ -1,7 +1,33 @@
 [gd_scene format=3 uid="uid://dsg7kyngde3tw"]
 
 [ext_resource type="Texture2D" uid="uid://bq5ok1etalft8" path="res://assets/ui/panel_glass.png" id="1_7w8dl"]
+[ext_resource type="FontFile" uid="uid://c6bbdf1ltbu1b" path="res://assets/fonts/Orbitron-VariableFont_wght.ttf" id="1_yhu20"]
 [ext_resource type="Script" uid="uid://dilk8kbqa4m1t" path="res://scenes/ui/game_ui/backpack_item.gd" id="2_873sp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yhu20"]
+content_margin_left = 4.0
+content_margin_top = 2.0
+content_margin_right = 4.0
+content_margin_bottom = 2.0
+bg_color = Color(0.45490196, 0.4627451, 0.7137255, 1)
+border_width_left = 1
+border_width_top = 2
+border_width_right = 1
+border_width_bottom = 2
+border_color = Color(0.08, 0.08, 0.08, 1)
+border_blend = true
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="Theme" id="Theme_lyyul"]
+default_font = ExtResource("1_yhu20")
+TooltipLabel/base_type = &"RichTextLabel"
+TooltipLabel/constants/outline_size = 1
+TooltipLabel/font_sizes/font_size = 16
+TooltipLabel/fonts/font = ExtResource("1_yhu20")
+TooltipPanel/styles/panel = SubResource("StyleBoxFlat_yhu20")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_873sp"]
 texture = ExtResource("1_7w8dl")
@@ -11,12 +37,16 @@ modulate_color = Color(0.53333336, 0.5372549, 0.7882353, 1)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -760.0
-offset_bottom = -640.0
+offset_left = 382.0
+offset_top = 288.0
+offset_right = -378.0
+offset_bottom = -352.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+tooltip_text = "Dupa biskupa olaboga hej"
+theme = SubResource("Theme_lyyul")
 theme_override_styles/panel = SubResource("StyleBoxTexture_873sp")
 script = ExtResource("2_873sp")
 
