@@ -17,8 +17,11 @@ var voice_emitter_active := false
 const speed = 105.0
 var direction_sprite := "down"
 var peer_id: int
-var repair_tool_collected = false
-var near_wreck = false
+var near_wreck = false:
+	set(value):
+		if near_wreck != value:
+			near_wreck = value
+			near_wreck_changed.emit(value)
 
 var current_skin: AliensTextures.AlienTextures = null
 
@@ -34,15 +37,14 @@ var skin_idx: int = 0:
 			_apply_skin_textures()
 
 @warning_ignore_start("unused_signal")
-signal can_repair
-signal cannot_repair
+
 signal ufo_repaired
 signal repairing(time: float)
+signal near_wreck_changed(near: bool)
 
 
 func _ready():
 	collision_area.area_entered.connect(_on_skeptic_seen_alien)
-	Events.item_collected.connect(_assign_item_action)
 	await get_tree().process_frame
 	_apply_skin_textures()
 
@@ -51,21 +53,16 @@ func _ready():
 		get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 
 
-func _assign_item_action(_texture, item_name, faction, _player_faction):
-	assign_item_action(item_name, Role.ALIEN, faction)
-
-
 func get_ufo_with_alien_container() -> UfoWithAlien:
 	var ufo_with_alien = get_parent()
 	return ufo_with_alien
 
 
 func repair_ufo():
-	if repair_tool_collected and near_wreck:
+	if near_wreck:
 		var animation_time = animation_player.get_animation("ufo repair").length
 		animation_player.play("ufo repair")
-		var backpack = get_backpack()
-		backpack.remove.emit("repair_tool")
+		ItemsManager.item_used.emit("repair_tool", self)
 		repairing.emit(animation_time)
 		if is_multiplayer_authority():
 			movement_blocked = true

@@ -51,6 +51,7 @@ func _deferred_set_network_authority(value: int):
 
 
 func _ready():
+	super()
 	Events.ufo_fixed.connect(_on_ufo_fixed)
 	game = get_parent()
 	current_state = State.UFO

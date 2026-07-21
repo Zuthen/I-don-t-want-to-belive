@@ -19,17 +19,27 @@ var actions: Array[Callable] = [Callable(), Callable(), Callable()]
 func _ready():
 	if not is_inside_tree():
 		await tree_entered
+	ItemsManager.backpack_updated.connect(_assign_item_action)
+	ItemsManager.item_type_removed.connect(_clear_action)
 	_set_fsx_volume()
 	await get_tree().process_frame
 	await get_tree().process_frame
 	is_gameplay_ready = true
-	Events.ufo_fixed.connect(_on_ufo_fixed)
 
 
-func _on_ufo_fixed(_p):
-	var repair_tools_in_backpack = get_backpack().get_backpack_items_by_name("repair_tool")
-	if repair_tools_in_backpack.size() > 0:
-		_clear_alien_action("repair_tool")
+func _get_action_by_item_name(item_name: String, player: Player) -> Callable:
+	if player.role == Role.SKEPTIC:
+		match item_name:
+			"sanity_pills":
+				return player.take_sanity_pill
+			"signal_jammer":
+				return player.add_signal_jammer
+	elif player.role == Role.ALIEN:
+		match item_name:
+			"repair_tool":
+				return player.repair_ufo
+
+	return Callable()
 
 
 func get_actions() -> Array[Callable]:
@@ -136,13 +146,14 @@ func _get_ui() -> UserInterface:
 	return null
 
 
-func assign_item_action(item_name, usable_for_role: Role, _faction: Player.Role):
+func _assign_item_action(item_name: String, faction, usable_for_role):
 	var usable_for_alien: bool = usable_for_role == Role.ALIEN or usable_for_role == Role.BOTH
 	if role == Role.ALIEN and usable_for_alien:
-		_assign_alien_actions(item_name)
+		_assign_alien_actions(item_name, usable_for_role)
+
 	var usable_for_skeptic: bool = usable_for_role == Role.SKEPTIC or usable_for_role == Role.BOTH
 	if role == Role.SKEPTIC and usable_for_skeptic:
-		_assign_skeptic_actions(item_name)
+		_assign_skeptic_actions(item_name, usable_for_role)
 
 
 func _unhandled_input(event: InputEvent):
@@ -160,30 +171,23 @@ func _use_action(i: int):
 		action.call()
 
 
-func _assign_alien_actions(item_name: String):
-	var alien = self
+func _assign_alien_actions(item_name: String, player_role: Player.Role):
+	var alien = get_node("Alien") as Alien
+
 	match item_name:
 		"repair_tool":
-			alien.repair_tool_collected = true
-			if _check_action_available(alien.repair_ufo):
-				return
-			_assign_action(alien.repair_ufo)
+			_assign_action(alien.repair_ufo, false, item_name, player_role)
+		_:
+			return
 
 
-func _clear_alien_action(item_name: String):
-	var alien = self
-	match item_name:
-		"repair_tool":
-			alien.repair_tool_collected = false
-			if _check_action_available(alien.repair_ufo):
-				_clear_action(alien.repair_ufo)
-
-
-func _clear_action(action: Callable):
-	for i in range(GameManager.backpack_capacity):
-		if actions[i] == action:
-			actions[i] = Callable()
-			break
+func _clear_action(item_name: String, player: Player):
+	var action = _get_action_by_item_name(item_name, player)
+	if _check_action_available(action):
+		for i in range(GameManager.backpack_capacity):
+			if actions[i] == action:
+				actions[i] = Callable()
+				ItemsManager.action_removed.emit(item_name)
 
 
 func _check_action_available(action: Callable) -> bool:
@@ -193,18 +197,22 @@ func _check_action_available(action: Callable) -> bool:
 	return false
 
 
-func _assign_action(action: Callable):
+func _assign_action(action: Callable, enabled_on_collect: bool, item_name: String, my_role: Role):
+	if _check_action_available(action):
+		return
 	for i in range(GameManager.backpack_capacity):
 		if actions[i].is_null():
 			actions[i] = action
-			break
+			ItemsManager.input_action_assigned.emit(enabled_on_collect, item_name, my_role)
+			return
 
 
-func _assign_skeptic_actions(item_name):
+func _assign_skeptic_actions(item_name, player_role: Role):
 	var skeptic = self as Skeptic
 	match item_name:
 		"sanity_pills":
-			skeptic.sanity_pills_collected = true
-			if _check_action_available(skeptic.take_sanity_pill):
-				return
-			_assign_action(skeptic.take_sanity_pill)
+			_assign_action(skeptic.take_sanity_pill, skeptic.belive_points > 0, item_name, player_role)
+		"signal_jammer":
+			_assign_action(skeptic.add_signal_jammer, skeptic.can_send_coordinates, item_name, player_role)
+		_:
+			return

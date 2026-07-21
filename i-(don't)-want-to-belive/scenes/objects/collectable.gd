@@ -7,7 +7,7 @@ class_name Collectable
 
 var texture: Texture2D
 var item_name: String
-var faction: Player.Role
+var item_faction: Player.Role
 
 var skeptic_color = Color("e35775ff")
 var alien_color = Color("57e357ff")
@@ -22,11 +22,13 @@ func _ready():
 func set_faction(item_name):
 	match item_name:
 		"sanity_pills":
-			faction = Player.Role.SKEPTIC
+			item_faction = Player.Role.SKEPTIC
 		"repair_tool":
-			faction = Player.Role.ALIEN
+			item_faction = Player.Role.ALIEN
+		"signal_jammer":
+			item_faction = Player.Role.BOTH
 		_:
-			faction = Player.Role.BOTH
+			item_faction = Player.Role.BOTH
 
 
 func _collect(other):
@@ -45,14 +47,14 @@ func _collect(other):
 		var backpack = player.get_backpack()
 		player.can_collect = backpack.can_collect()
 		if player.can_collect:
-			Events.item_collected.emit(texture, item_name, faction, player.role)
+			ItemsManager.item_collected.emit(texture, item_name, item_faction, player.role)
 			_request_server_removal.rpc_id(1)
 
 
 func _draw():
 	var radius = collision_shape_2d.shape.radius
 	var color: Color
-	match faction:
+	match item_faction:
 		Player.Role.ALIEN:
 			color = alien_color
 		Player.Role.SKEPTIC:

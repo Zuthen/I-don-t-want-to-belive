@@ -17,7 +17,11 @@ extends Player
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var captured_animation_scene: PackedScene = preload("uid://68od6wexu11a")
 var animation_sprite_idx: int = 0
-var can_send_coordinates = true
+var can_send_coordinates: bool = true:
+	set(value):
+		if can_send_coordinates != value:
+			can_send_coordinates = value
+			can_send_coordinates_changed.emit(value)
 var voice_emitter_active := false
 var icon_cooldown_active := false
 
@@ -35,13 +39,15 @@ var camera_zoom: Vector2
 var warning_time: float = 1.5
 
 var sanity_pills_collected = false
+var signal_jammer_active = false
 
 signal belive_points_changed(amount: int)
 signal laser_seen(ufo_sender_id: int)
 signal walkie_talkie_message_sent(time: float)
 signal alien_seen(peer_id: int)
-signal can_take_sanity_pill(can: bool)
-signal out_of_pills()
+signal can_take_sanity_pill(bool)
+signal jammer_activated()
+signal can_send_coordinates_changed(new_value: bool)
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -60,11 +66,11 @@ func _deferred_set_network_authority(value: int):
 
 
 func _ready():
+	super()
 	if not is_inside_tree():
 		await tree_entered
 	warning_label.visible = false
 	camera_zoom = camera.zoom
-
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
 
@@ -96,37 +102,13 @@ func _connect_signals():
 	belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
 	alien_seen.connect(_on_alien_seen)
-
 	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
-	Events.item_collected.connect(_assign_item_action)
-
-
-func _assign_item_action(_texture, item_name, faction, _player_faction):
-	assign_item_action(item_name, Role.SKEPTIC, faction)
-	_check_can_take_sanity_pills()
-
-
-func _check_can_take_sanity_pills():
-	can_take_sanity_pill.emit(sanity_pills_collected and belive_points > 0)
 
 
 func take_sanity_pill():
-	if sanity_pills_collected and belive_points > 0:
-		var backpack = get_backpack()
-		await get_tree().process_frame
-
-		var sanity_pills_count = backpack.get_backpack_items_by_name("sanity_pills").size()
-
-		if sanity_pills_count < 2:
-			sanity_pills_collected = false
-
-		backpack.remove.emit("sanity_pills")
+	if belive_points > 0:
+		ItemsManager.item_used.emit("sanity_pills", self)
 		belive_points_changed.emit(-1)
-		_check_can_take_sanity_pills()
-
-		if sanity_pills_count == 1:
-			sanity_pills_collected = false
-			out_of_pills.emit()
 
 
 func _update_visibility_for_local_player():
@@ -190,7 +172,12 @@ func _walkie_talkie_message():
 		message = coordinates.letter + str(coordinates.number) if randi() % 100 < 40 else coordinates.letter
 
 	walkie_talkie_message_sent.emit(walkie_talkie_timeout_seconds)
-	MultiplayerFeatures.broadcast_walkie_talkie.rpc(message)
+	if signal_jammer_active:
+		signal_jammer_active = false
+		MultiplayerFeatures.send_to_skeptics_only(message)
+		ui.e.hide_booster_icon()
+	else:
+		MultiplayerFeatures.broadcast_walkie_talkie.rpc(message)
 
 
 func _reset_voice_emmitter():
@@ -199,9 +186,12 @@ func _reset_voice_emmitter():
 
 func _on_belive_points_changed(hit_points: int):
 	belive_points += hit_points
-	if belive_points >= max_belive_points:
+	if belive_points > 0:
+		can_take_sanity_pill.emit(true)
+	elif belive_points == 0:
+		can_take_sanity_pill.emit(false)
+	elif belive_points >= max_belive_points:
 		ufo_wins.emit()
-	_check_can_take_sanity_pills()
 
 
 func _on_laser_seen(ufo_sender_id: int):
@@ -434,6 +424,16 @@ func _on_alien_seen(alien_peer_id: int):
 		belive_points_changed.emit(1)
 		warning_label.text = "Widzisz kosmitę!"
 		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
+
+
+func add_signal_jammer():
+	if not signal_jammer_active:
+		var jammer_icon: Texture2D = load("uid://ckigjj2nvqy3g")
+		ui.e.set_booster_icon(jammer_icon)
+		ui.e.booster_icon.visible = true
+		ItemsManager.item_used.emit("signal_jammer", self)
+		signal_jammer_active = true
+		jammer_activated.emit()
 
 
 func _animate(direction: Vector2):

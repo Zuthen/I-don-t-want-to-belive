@@ -65,14 +65,14 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				node = collectable_scene.instantiate()
 				node.name = "Collectable_" + str(randi())
 				var collectable_name = data.get("name")
+				node.set_faction(collectable_name)
+				node.item_name = collectable_name
 				if data.get("name") == "repair_tool":
 					node.texture = load("uid://mucvykffmbay")
-					node.item_name = collectable_name
-					node.set_faction(collectable_name)
 				if data.get("name") == "sanity_pills":
 					node.texture = load("uid://clotb5wahgifk")
-					node.item_name = collectable_name
-					node.set_faction(collectable_name)
+				if data.get("name") == "signal_jammer":
+					node.texture = load("uid://ckigjj2nvqy3g")
 				if data.has("spawn_position"):
 					var local_pos = tile_map.map_to_local(data.spawn_position)
 					node.tree_entered.connect(func(): node.global_position = local_pos, CONNECT_ONE_SHOT)
@@ -180,15 +180,19 @@ func _get_all_players() -> Array[Node]:
 
 @rpc("any_peer", "call_local", "reliable")
 func broadcast_walkie_talkie(message_content: String):
-	if is_instance_valid(local_ui):
-		var sender_id = multiplayer.get_remote_sender_id()
-		var my_id = multiplayer.get_unique_id()
+	var sender_id = multiplayer.get_remote_sender_id()
+	local_ui.display_walkie_talkie_message(sender_id, message_content, "Nadana wiadomość:", "Odebrana wiadomość:")
 
-		var is_me = (sender_id == 0) or (sender_id == my_id)
-		var label_type = "Nadana wiadomość:" if is_me else "Odebrana wiadomość:"
 
-		if is_instance_valid(local_ui.walkie_talkie_message):
-			local_ui.walkie_talkie_message.setup(label_type, message_content)
+@rpc("any_peer", "call_local", "reliable")
+func receive_walkie_talkie_skeptic(message_content: String):
+	var sender_id = multiplayer.get_remote_sender_id()
+	local_ui.display_walkie_talkie_message(sender_id, message_content, "Nadana zaszyfrowana wiadomość:", "Odebrana zaszyfrowana wiadomość:")
+
+
+func send_to_skeptics_only(message_content: String):
+	for peer_id in GameManager.get_skeptics():
+		receive_walkie_talkie_skeptic.rpc_id(int(peer_id), message_content)
 
 
 func _on_network_node_spawned(_node: Node):
