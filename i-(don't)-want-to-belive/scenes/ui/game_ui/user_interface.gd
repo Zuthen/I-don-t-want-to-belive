@@ -20,6 +20,7 @@ var crashed_ufos: Array[int] = []
 var max_ufos_count: int = 2
 var player: Player
 var additional_skills: Dictionary[Skill, bool] = { }
+var jammer_ready = true
 const UFO_WINS := "Prawda 
 	nas jeszcze 
 	zadziwi..."
@@ -79,28 +80,27 @@ func _find_skill_index_by_skill_name(skill_name: String):
 	return skills_list.find_custom(func(skill): return skill.skill_name == skill_name)
 
 
-func _assign_backpack_skill(_texture, skill_name: String, faction: Player.Role, player_faction):
-	var role_matches = player_faction == faction or faction == Player.Role.BOTH
-	if not role_matches:
+func _assign_backpack_skill(enabled_on_collect: bool, item_name: String, player_role: Player.Role):
+	var slot_index = _find_skill_index_by_skill_name(item_name)
+
+	if slot_index != -1:
 		return
 
-	if _find_skill_index_by_skill_name(skill_name) != -1:
-		return
+	var skill_slots = additional_skills.keys()
 
-	var skills_list = additional_skills.keys()
-
-	var free_slot_idx = skills_list.find_custom(
+	var free_slot_idx = skill_slots.find_custom(
 		func(skill): return additional_skills[skill] == false
 	)
 
 	if free_slot_idx != -1:
-		var free_skill = skills_list[free_slot_idx]
+		var free_skill = skill_slots[free_slot_idx]
 		additional_skills[free_skill] = true
-		free_skill.skill_name = skill_name
+		free_skill.skill_name = item_name
 		free_skill.visible = true
-		free_skill.set_icon_text(Findings.get_skill_label(skill_name))
-		if skill_name == "repair_tool" or skill_name == "sanity_pills":
-			free_skill.set_disabled()
+		free_skill.set_icon_text(Findings.get_skill_label(player_role, item_name))
+		free_skill.set_disabled()
+		if enabled_on_collect:
+			free_skill.set_enabled()
 
 
 func _clear_backpack_skill(skill_name: String):
@@ -115,7 +115,8 @@ func _clear_backpack_skill(skill_name: String):
 
 
 func _connect_signals(player: Player):
-	_connect_sinal_if_not_connected(Events.item_collected, _assign_backpack_skill)
+	_connect_sinal_if_not_connected(ItemsManager.input_action_assigned, _assign_backpack_skill)
+	_connect_sinal_if_not_connected(ItemsManager.action_removed, _clear_backpack_skill)
 	_connect_sinal_if_not_connected(main_menu_button.pressed, _go_to_main_menu)
 	_connect_sinal_if_not_connected(player.ufo_wins, _on_ufo_wins)
 	_connect_sinal_if_not_connected(player.skeptics_win, _on_skeptic_win)
@@ -123,29 +124,46 @@ func _connect_signals(player: Player):
 		player.belive_points_changed.connect(_on_belive_points_changed)
 		player.walkie_talkie_message_sent.connect(_on_skill_fired.bind(e))
 		player.can_take_sanity_pill.connect(_set_sanity_pill_skill)
-		player.out_of_pills.connect(_on_out_of_pills)
+		player.jammer_activated.connect(_on_jammer_activated.bind(player as Skeptic))
+		player.can_send_coordinates_changed.connect(_on_jammer_ready)
 
 	elif player.role == Player.Role.UFO:
 		_assign_ufo_signals()
 	elif player.role == Player.Role.ALIEN:
 		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
-			_connect_sinal_if_not_connected(alien.can_repair, _on_alien_can_repair)
-			_connect_sinal_if_not_connected(alien.cannot_repair, _on_alien_cannot_repair)
+			_connect_sinal_if_not_connected(alien.near_wreck_changed, _on_alien_can_repair)
 
 
-func _on_out_of_pills():
-	_clear_backpack_skill("sanity_pills")
-
-
-func _set_sanity_pill_skill(enabled):
-	var sanity_pills_idx = _find_skill_index_by_skill_name("sanity_pills")
+func _on_jammer_activated(player: Skeptic):
+	var jammer_idx = _find_skill_index_by_skill_name("signal_jammer")
 	var skills_list = additional_skills.keys()
+	if not player.can_send_coordinates:
+		skills_list[jammer_idx].set_disabled()
+	ItemsManager.item_used.emit("signal_jammer", player)
+
+
+func _on_jammer_ready(ready: bool):
+	var jammer_idx = _find_skill_index_by_skill_name("signal_jammer")
+	var skills_list = additional_skills.keys()
+	if ready:
+		skills_list[jammer_idx].set_enabled()
+	else:
+		skills_list[jammer_idx].set_disabled()
+
+
+func _set_sanity_pill_skill(enabled: bool):
+	var sanity_pills_idx = _find_skill_index_by_skill_name("sanity_pills")
+
+	if sanity_pills_idx == -1:
+		return
+
+	var skill = additional_skills.keys()[sanity_pills_idx]
 
 	if enabled:
-		skills_list[sanity_pills_idx].set_enabled()
+		skill.set_enabled()
 	else:
-		skills_list[sanity_pills_idx].set_disabled()
+		skill.set_disabled()
 
 
 func _assign_ufo_signals():
@@ -186,16 +204,27 @@ func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callab
 		signal_to_connect.connect(callable)
 
 
-func _on_alien_can_repair():
+func _on_alien_can_repair(near_wreck: bool):
 	if player and player.role != Player.Role.ALIEN:
 		return
+
 	var alien = player.get_node("Alien") as Alien
-	var repair_action_idx = _get_action_idx(alien.get_actions(), alien.repair_ufo)
 	var skills = backpack_skills.get_children() as Array[Skill]
-	skills[repair_action_idx].set_enabled()
-	skills[repair_action_idx].visible = true
-	_connect_sinal_if_not_connected(alien.repairing, skills[repair_action_idx].start_cooldown)
-	_connect_sinal_if_not_connected(alien.repairing, func(_time): _clear_backpack_skill("repair_tool"))
+
+	var repair_skill_idx = skills.find_custom(
+		func(s): return s.skill_name == "repair_tool"
+	)
+
+	if repair_skill_idx == -1:
+		return
+
+	var repair_skill = skills[repair_skill_idx]
+	if near_wreck:
+		repair_skill.set_enabled()
+	else:
+		repair_skill.set_disabled()
+
+	_connect_sinal_if_not_connected(alien.repairing, repair_skill.start_cooldown)
 
 
 func _get_action_idx(actions: Array[Callable], action: Callable) -> int:
@@ -333,3 +362,10 @@ func _on_belive_points_changed(amount):
 		hit_points = ufos_sprites.size()
 	for i in range(ufos_sprites.size()):
 		ufos_sprites[i].visible = (i < hit_points)
+
+
+func display_walkie_talkie_message(sender_id: int, message_content: String, label_me: String, label_other: String):
+	var my_id = multiplayer.get_unique_id()
+	var is_me = (sender_id == 0) or (sender_id == my_id)
+	var label_type = label_me if is_me else label_other
+	walkie_talkie_message.setup(label_type, message_content)

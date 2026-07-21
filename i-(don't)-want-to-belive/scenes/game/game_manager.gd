@@ -31,3 +31,11 @@ func get_map_paths_tiles() -> int:
 		_:
 			pavement_tiles = 750
 	return max(pavement_tiles, 25)
+
+
+func get_skeptics() -> Array[int]:
+	var skeptics: Array[int] = []
+	for player in players_selections:
+		if player.type == "skeptic":
+			skeptics.append(player.peer_id)
+	return skeptics

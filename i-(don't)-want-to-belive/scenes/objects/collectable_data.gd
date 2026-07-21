@@ -15,12 +15,20 @@ class CollectablesData:
 		count = all_collectables_count
 
 
-static func get_skill_label(skill_name: String) -> String:
+static func get_skill_label(role: Player.Role, skill_name: String) -> String:
 	match skill_name:
 		"repair_tool":
 			return "Napraw"
 		"sanity_pills":
 			return "Weź tabletkę"
+		"signal_jammer":
+			if role == Player.Role.SKEPTIC:
+				print("jestem sceptem")
+				return "Zaszyfruj sygnał"
+			if role == Player.Role.ALIEN:
+				print("jestem ufokiem")
+				return "Wyślij swoją pozycję"
+			return ""
 		_:
 			return ""
 
@@ -35,5 +43,6 @@ static func create_aliens_collectables() -> CollectablesData:
 static func create_skeptics_collectables() -> CollectablesData:
 	var collectables: Dictionary[String, int] = {
 		"sanity_pills": 2,
+		"signal_jammer": 2,
 	}
 	return CollectablesData.new(collectables)

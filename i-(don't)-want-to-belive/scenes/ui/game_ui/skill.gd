@@ -8,6 +8,7 @@ extends Control
 @onready var icon = $Icon
 @onready var label = $Label
 @onready var time_left_label = $Icon/TimeLeftLabel
+@onready var booster_icon = $Icon/BoosterIcon
 
 var text: String
 var cooldown_time: float = 3.0
@@ -19,7 +20,17 @@ var skill_name
 func _ready():
 	set_enabled()
 	cool_down_progress_circle.value = 0
+	booster_icon.visible = false
 	set_process(false)
+
+
+func set_booster_icon(texture: Texture2D):
+	booster_icon.texture = texture
+
+
+func hide_booster_icon():
+	booster_icon.texture = null
+	booster_icon.visible = false
 
 
 func set_disabled():
