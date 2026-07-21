@@ -177,6 +177,8 @@ func _assign_alien_actions(item_name: String, player_role: Player.Role):
 	match item_name:
 		"repair_tool":
 			_assign_action(alien.repair_ufo, false, item_name, player_role)
+		"signal_jammer":
+			_assign_action(alien.jammered_walkie_talkie_message, true, item_name, player_role)
 		_:
 			return
 

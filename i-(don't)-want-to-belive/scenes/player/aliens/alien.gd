@@ -206,3 +206,15 @@ func _map_alien_color(idx: int) -> int:
 	if UfosTextures.ufo_textures[idx].color == "Blue":
 		return AliensTextures.alien_textures.find_custom(func(texture): return texture.color == "purple")
 	return AliensTextures.alien_textures.find_custom(func(texture): return texture.color == UfosTextures.ufo_textures[idx].color.to_lower())
+
+
+func jammered_walkie_talkie_message():
+	var coordinates = get_coordinates(global_position)
+	var message: String = ""
+
+	if randi() % 100 >= 40:
+		message = str(coordinates.number)
+	else:
+		message = coordinates.letter + str(coordinates.number) if randi() % 100 < 40 else coordinates.letter
+	MultiplayerFeatures.broadcast_walkie_talkie.rpc(message)
+	ItemsManager.item_used.emit("signal_jammer", self)
