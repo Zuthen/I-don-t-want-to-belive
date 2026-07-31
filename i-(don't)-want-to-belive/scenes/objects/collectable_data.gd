@@ -23,10 +23,8 @@ static func get_skill_label(role: Player.Role, skill_name: String) -> String:
 			return "Weź tabletkę"
 		"signal_jammer":
 			if role == Player.Role.SKEPTIC:
-				print("jestem sceptem")
 				return "Zaszyfruj sygnał"
 			if role == Player.Role.ALIEN:
-				print("jestem ufokiem")
 				return "Wyślij swoją pozycję"
 			return ""
 		_:

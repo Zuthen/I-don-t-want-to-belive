@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://iog7v4qeloao"]
+
+[ext_resource type="FontFile" uid="uid://c6bbdf1ltbu1b" path="res://assets/fonts/Orbitron-VariableFont_wght.ttf" id="1_cax4r"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_6un58"]
+font = ExtResource("1_cax4r")
+font_color = Color(0.8932403, 0.34896463, 0.46216196, 1)
+outline_size = 3
+
+[node name="Code" type="Label" unique_id=49029626]
+size_flags_horizontal = 4
+text = "Kod gry"
+label_settings = SubResource("LabelSettings_6un58")

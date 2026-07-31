@@ -1,0 +1,188 @@
+[gd_scene format=3 uid="uid://up7ssvvcvcwp"]
+
+[ext_resource type="Script" uid="uid://cwgfcde5jn48d" path="res://scenes/ui/settings/credits.gd" id="1_slero"]
+[ext_resource type="PackedScene" uid="uid://dxufm2wx7nb1i" path="res://scenes/ui/settings/credits_section.tscn" id="1_wv8f7"]
+[ext_resource type="FontFile" uid="uid://cupdbivn04a5g" path="res://assets/fonts/Quicksand-VariableFont_wght.ttf" id="2_lbqho"]
+[ext_resource type="Texture2D" uid="uid://dey2b04kaas3x" path="res://assets/external icons/GitHub_Invertocat_White_Clearspace.png" id="3_6bndi"]
+[ext_resource type="PackedScene" uid="uid://kl4f1idrmk8k" path="res://scenes/ui/icon_button.tscn" id="3_6un58"]
+[ext_resource type="Texture2D" uid="uid://bla8l3q5a3a10" path="res://assets/objects/stars/star_01.png" id="4_br3w3"]
+[ext_resource type="Texture2D" uid="uid://bvsh4hvd1nfa8" path="res://assets/objects/planets/planet01.png" id="5_5qcig"]
+[ext_resource type="Texture2D" uid="uid://7rljy2deue53" path="res://assets/characters/ufos/shipPink_manned.png" id="6_yqj8i"]
+[ext_resource type="Texture2D" uid="uid://ncb6aq1vv0e1" path="res://assets/characters/ufos/shipBeige_manned.png" id="7_slero"]
+[ext_resource type="Texture2D" uid="uid://churjk82wdc4r" path="res://assets/objects/stars/star_06.png" id="8_bgu4f"]
+[ext_resource type="Texture2D" uid="uid://diuojxfyrhoyv" path="res://assets/objects/stars/star_02.png" id="9_rml7n"]
+[ext_resource type="Texture2D" uid="uid://bqe7vc0ytby5c" path="res://assets/ui/icons/cross.png" id="11_yqj8i"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h175o"]
+content_margin_left = 60.0
+content_margin_top = 25.0
+content_margin_right = 20.0
+bg_color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="LabelSettings" id="LabelSettings_lbqho"]
+font = ExtResource("2_lbqho")
+
+[node name="Credits" type="PanelContainer" unique_id=1213145675]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 52.0
+offset_top = 30.0
+offset_right = -47.0
+offset_bottom = -204.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_h175o")
+script = ExtResource("1_slero")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="." unique_id=1912369713]
+layout_mode = 2
+
+[node name="Left" type="VBoxContainer" parent="HBoxContainer2" unique_id=1155006569]
+layout_mode = 2
+
+[node name="CreditsSection" parent="HBoxContainer2/Left" unique_id=1662920754 instance=ExtResource("1_wv8f7")]
+layout_mode = 2
+
+[node name="Content" parent="HBoxContainer2/Left/CreditsSection" index="0" unique_id=509388931]
+theme_override_constants/separation = 10
+
+[node name="Title" parent="HBoxContainer2/Left/CreditsSection/Content" index="0" unique_id=49029626]
+size_flags_horizontal = 1
+
+[node name="Author" type="Label" parent="HBoxContainer2/Left/CreditsSection/Content" index="1" unique_id=1738846287]
+layout_mode = 2
+text = "Zuzanna Kostkiewicz"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer2/Left/CreditsSection/Content" index="2" unique_id=301280831]
+layout_mode = 2
+
+[node name="GithubLogo" type="TextureRect" parent="HBoxContainer2/Left/CreditsSection/Content/HBoxContainer" unique_id=541245954]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+texture = ExtResource("3_6bndi")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LinkButton" type="LinkButton" parent="HBoxContainer2/Left/CreditsSection/Content/HBoxContainer" unique_id=390890610]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_lbqho")
+text = ": Zuthen"
+uri = "https://github.com/Zuthen/I-don-t-want-to-belive"
+
+[node name="CreditsSection2" parent="HBoxContainer2/Left" unique_id=557933775 instance=ExtResource("1_wv8f7")]
+layout_mode = 2
+
+[node name="Title" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="0" unique_id=49029626]
+size_flags_horizontal = 1
+text = "Testy i wsparcie 
+motywacyjne"
+
+[node name="Author" type="Label" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="1" unique_id=1229250711]
+layout_mode = 2
+text = "Julcin Pupcin"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="Author2" type="Label" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="2" unique_id=1342476898]
+layout_mode = 2
+text = "Endrju"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="Author3" type="Label" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="3" unique_id=2115946571]
+layout_mode = 2
+text = "Przemek Socha"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="Author4" type="Label" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="4" unique_id=1846565392]
+layout_mode = 2
+text = "Ratataj_glamour"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="Author5" type="Label" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="5" unique_id=1243040461]
+layout_mode = 2
+text = "Soy Quark-Gluon Soup Glamour"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="Author6" type="Label" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="6" unique_id=915424863]
+layout_mode = 2
+text = "Styx"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="Right" type="VBoxContainer" parent="HBoxContainer2" unique_id=324600438]
+layout_mode = 2
+
+[node name="CreditsSection" parent="HBoxContainer2/Right" unique_id=2052512470 instance=ExtResource("1_wv8f7")]
+layout_mode = 2
+
+[node name="Title" parent="HBoxContainer2/Right/CreditsSection/Content" parent_id_path=PackedInt32Array(2052512470, 509388931) index="0" unique_id=49029626]
+size_flags_horizontal = 1
+text = "Wszystkie 
+wykorzystane 
+grafiki"
+
+[node name="LinkButton2" type="LinkButton" parent="HBoxContainer2/Right/CreditsSection/Content" parent_id_path=PackedInt32Array(2052512470, 509388931) index="1" unique_id=1810634000]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_lbqho")
+text = "Kenney"
+uri = "https://kenney.nl/"
+
+[node name="CreditsSection2" parent="HBoxContainer2/Right" unique_id=1226708069 instance=ExtResource("1_wv8f7")]
+layout_mode = 2
+
+[node name="Title" parent="HBoxContainer2/Right/CreditsSection2/Content" parent_id_path=PackedInt32Array(1226708069, 509388931) index="0" unique_id=49029626]
+text = "Muzyka"
+
+[node name="Author7" type="Label" parent="HBoxContainer2/Right/CreditsSection2/Content" parent_id_path=PackedInt32Array(1226708069, 509388931) index="1" unique_id=327501256]
+layout_mode = 2
+text = "alkakrab04@gmail.com
+(itch.io)"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="Star01" type="Sprite2D" parent="." unique_id=828935599]
+position = Vector2(686, 354)
+scale = Vector2(0.41210938, 0.453125)
+texture = ExtResource("4_br3w3")
+
+[node name="Planet01" type="Sprite2D" parent="." unique_id=1494934871]
+position = Vector2(626, 380.00006)
+scale = Vector2(0.14062503, 0.13750006)
+texture = ExtResource("5_5qcig")
+
+[node name="ShipPinkManned" type="Sprite2D" parent="." unique_id=1428219818]
+position = Vector2(504, 399)
+scale = Vector2(0.5483871, 0.5590551)
+texture = ExtResource("6_yqj8i")
+
+[node name="ShipBeigeManned" type="Sprite2D" parent="." unique_id=123559637]
+position = Vector2(572, 285)
+scale = Vector2(0.3951613, 0.3852459)
+texture = ExtResource("7_slero")
+
+[node name="Star06" type="Sprite2D" parent="." unique_id=1817900223]
+position = Vector2(386.75, 434.5)
+scale = Vector2(0.088867165, 0.09960938)
+texture = ExtResource("8_bgu4f")
+
+[node name="Star02" type="Sprite2D" parent="." unique_id=1850742128]
+position = Vector2(131.00005, 420)
+scale = Vector2(0.31054688, 0.3046875)
+texture = ExtResource("9_rml7n")
+
+[node name="IconButton" parent="." unique_id=2111074099 instance=ExtResource("3_6un58")]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture = ExtResource("11_yqj8i")
+
+[editable path="HBoxContainer2/Left/CreditsSection"]
+[editable path="HBoxContainer2/Left/CreditsSection2"]
+[editable path="HBoxContainer2/Right/CreditsSection"]
+[editable path="HBoxContainer2/Right/CreditsSection2"]
