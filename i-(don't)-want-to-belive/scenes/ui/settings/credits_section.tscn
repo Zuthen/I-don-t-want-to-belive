@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dxufm2wx7nb1i"]
+
+[ext_resource type="PackedScene" uid="uid://iog7v4qeloao" path="res://scenes/ui/settings/Title.tscn" id="1_6k8i2"]
+
+[node name="CreditsSection" type="MarginContainer" unique_id=1662920754]
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="." unique_id=509388931]
+layout_mode = 2
+
+[node name="Title" parent="Content" unique_id=49029626 instance=ExtResource("1_6k8i2")]
+layout_mode = 2
