@@ -33,7 +33,6 @@ const speed = 100.0
 const max_belive_points := 5
 const capture_animation_time: float = 4.0
 
-var direction_sprite := "down"
 var belive_points: int = 0
 var camera_zoom: Vector2
 var warning_time: float = 1.5
@@ -151,7 +150,7 @@ func _physics_process(_delta):
 	if not multiplayer or not multiplayer.has_multiplayer_peer():
 		return
 	var sync_direction = move(speed, player_input_synchronizer)
-	_animate(sync_direction)
+	animate(sync_direction, animation_player, animation_sprite_idx)
 
 
 @rpc("call_local", "any_peer", "reliable")
@@ -434,30 +433,3 @@ func add_signal_jammer():
 		ItemsManager.item_used.emit("signal_jammer", self)
 		signal_jammer_active = true
 		jammer_activated.emit()
-
-
-func _animate(direction: Vector2):
-	if not is_inside_tree() or animation_player == null:
-		return
-	var directions = {
-		"down": Vector2.DOWN,
-		"up": Vector2.UP,
-		"left": Vector2.LEFT,
-		"right": Vector2.RIGHT,
-	}
-	var norm_dir = direction.normalized()
-
-	if norm_dir.is_equal_approx(directions["down"]):
-		animation_player.play("move down " + str(animation_sprite_idx))
-		direction_sprite = "down"
-	elif norm_dir.is_equal_approx(directions["up"]):
-		animation_player.play("move up " + str(animation_sprite_idx))
-		direction_sprite = "up"
-	elif norm_dir.is_equal_approx(directions["left"]):
-		animation_player.play("move left " + str(animation_sprite_idx))
-		direction_sprite = "left"
-	elif norm_dir.is_equal_approx(directions["right"]):
-		animation_player.play("move right " + str(animation_sprite_idx))
-		direction_sprite = "right"
-	elif norm_dir == Vector2.ZERO:
-		animation_player.play("idle " + direction_sprite + " " + str(animation_sprite_idx))

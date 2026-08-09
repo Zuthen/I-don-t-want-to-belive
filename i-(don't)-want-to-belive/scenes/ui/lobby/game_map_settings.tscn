@@ -4,6 +4,9 @@
 [ext_resource type="Script" uid="uid://b6vbg3yftxsh5" path="res://scenes/ui/lobby/game_map_settings.gd" id="1_rwyr8"]
 
 [sub_resource type="FontFile" id="FontFile_rwyr8"]
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/variation_coordinates = {}
 cache/0/face_index = 0
 cache/0/embolden = 0.0
@@ -76,3 +79,12 @@ min_value = 1.0
 max_value = 20.0
 value = 1.0
 alignment = 2
+
+[node name="RobertLabel" type="Label" parent="." unique_id=1272069113]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Robert B."
+label_settings = SubResource("LabelSettings_4kpoo")
+
+[node name="RobertCheckbox" type="CheckBox" parent="." unique_id=847080723]
+layout_mode = 2

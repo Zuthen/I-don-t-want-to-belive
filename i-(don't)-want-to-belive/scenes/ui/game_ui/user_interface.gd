@@ -75,13 +75,8 @@ func _setup_backpack_skills():
 			additional_skills[skill] = false
 
 
-func _find_skill_index_by_skill_name(skill_name: String):
-	var skills_list = additional_skills.keys()
-	return skills_list.find_custom(func(skill): return skill.skill_name == skill_name)
-
-
 func _assign_backpack_skill(enabled_on_collect: bool, item_name: String, player_role: Player.Role):
-	var slot_index = _find_skill_index_by_skill_name(item_name)
+	var slot_index = _find_skill_by_name(item_name).idx
 
 	if slot_index != -1:
 		return
@@ -105,7 +100,7 @@ func _assign_backpack_skill(enabled_on_collect: bool, item_name: String, player_
 
 func _clear_backpack_skill(skill_name: String):
 	var skills_list = additional_skills.keys()
-	var skill_idx = _find_skill_index_by_skill_name(skill_name)
+	var skill_idx = _find_skill_by_name(skill_name).idx
 	if skill_idx != -1:
 		var taken_slot = skills_list[skill_idx]
 		additional_skills[taken_slot] = false
@@ -129,6 +124,9 @@ func _connect_signals(player: Player):
 
 	elif player.role == Player.Role.UFO:
 		_assign_ufo_signals()
+	elif player.role == Player.Role.BOSS:
+		player as Robert
+		_connect_sinal_if_not_connected(player.near_wreck_changed, _on_robert_near_wreck)
 	elif player.role == Player.Role.ALIEN:
 		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
@@ -136,7 +134,7 @@ func _connect_signals(player: Player):
 
 
 func _on_jammer_activated(player: Skeptic):
-	var jammer_idx = _find_skill_index_by_skill_name("signal_jammer")
+	var jammer_idx = _find_skill_by_name("signal_jammer").idx
 	var skills_list = additional_skills.keys()
 	if not player.can_send_coordinates:
 		skills_list[jammer_idx].set_disabled()
@@ -144,7 +142,7 @@ func _on_jammer_activated(player: Skeptic):
 
 
 func _on_jammer_ready(ready: bool):
-	var jammer_idx = _find_skill_index_by_skill_name("signal_jammer")
+	var jammer_idx = _find_skill_by_name("signal_jammer").idx
 	var skills_list = additional_skills.keys()
 	if ready:
 		skills_list[jammer_idx].set_enabled()
@@ -153,7 +151,7 @@ func _on_jammer_ready(ready: bool):
 
 
 func _set_sanity_pill_skill(enabled: bool):
-	var sanity_pills_idx = _find_skill_index_by_skill_name("sanity_pills")
+	var sanity_pills_idx = _find_skill_by_name("sanity_pills").idx
 
 	if sanity_pills_idx == -1:
 		return
@@ -204,21 +202,69 @@ func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callab
 		signal_to_connect.connect(callable)
 
 
+func _on_robert_near_wreck(near_wreck: bool, wreck_peer_id):
+	if player and player.role != Player.Role.BOSS:
+		return
+
+	if player.steering_wheel_collected:
+		var steering_wheel_skill_data = _find_skill_by_name("steering_wheel")
+		if steering_wheel_skill_data.idx == -1:
+			return
+		var insert_steering_wheel_skill = steering_wheel_skill_data.skill
+		if player.near_wreck:
+			insert_steering_wheel_skill.set_enabled()
+		else:
+			insert_steering_wheel_skill.set_disabled()
+		_connect_sinal_if_not_connected(player.insert_steering_wheel, Callable())
+
+	if player.repair_tool_collected and _is_steering_wheel_mounted_on_wreck(wreck_peer_id):
+		var repair_skill_data = _find_skill_by_name("repair_tool")
+		if repair_skill_data.idx == -1:
+			return
+		if player.near_wreck:
+			repair_skill_data.skill.set_enabled()
+		else:
+			repair_skill_data.skill.set_disabled()
+
+
+func _is_steering_wheel_mounted_on_wreck(wreck_peer_id: int):
+	var wrecks = get_tree().get_nodes_in_group("wrecks")
+	for wreck in wrecks:
+		if wreck.peer_id == wreck_peer_id:
+			return true
+	return false
+
+
+class SkillData:
+	var skill: Skill
+	var idx: int
+
+
+func _find_skill_by_name(skill_name: String):
+	var skills = backpack_skills.get_children() as Array[Skill]
+	var skill_idx = skills.find_custom(
+		func(s): return s.skill_name == skill_name
+	)
+	if skill_idx == -1:
+		return
+	var skillData = SkillData.new()
+	skillData.skill = skills[skill_idx]
+	skillData.idx = skill_idx
+	return skillData
+
+
 func _on_alien_can_repair(near_wreck: bool):
 	if player and player.role != Player.Role.ALIEN:
 		return
 
 	var alien = player.get_node("Alien") as Alien
-	var skills = backpack_skills.get_children() as Array[Skill]
-
-	var repair_skill_idx = skills.find_custom(
-		func(s): return s.skill_name == "repair_tool"
-	)
+	var skill_data = _find_skill_by_name("repair_tool")
+	var repair_skill_idx = skill_data.idx
 
 	if repair_skill_idx == -1:
 		return
 
-	var repair_skill = skills[repair_skill_idx]
+	var repair_skill = skill_data.skill
 	if near_wreck:
 		repair_skill.set_enabled()
 	else:

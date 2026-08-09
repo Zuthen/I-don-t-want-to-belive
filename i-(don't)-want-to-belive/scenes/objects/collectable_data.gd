@@ -27,20 +27,17 @@ static func get_skill_label(role: Player.Role, skill_name: String) -> String:
 			if role == Player.Role.ALIEN:
 				return "Wyślij swoją pozycję"
 			return ""
+		"steering_wheel":
+			return "Umieść koło sterowe we wraku"
 		_:
 			return ""
 
 
-static func create_aliens_collectables() -> CollectablesData:
+static func create_collectables() -> CollectablesData:
 	var collectables: Dictionary[String, int] = {
 		"repair_tool": 2,
-	}
-	return CollectablesData.new(collectables)
-
-
-static func create_skeptics_collectables() -> CollectablesData:
-	var collectables: Dictionary[String, int] = {
 		"sanity_pills": 2,
 		"signal_jammer": 2,
+		"steering_wheel": 1,
 	}
 	return CollectablesData.new(collectables)

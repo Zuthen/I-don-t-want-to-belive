@@ -3,7 +3,7 @@ extends CharacterBody2D
 class_name Player
 @onready var tile_map_layer = get_node_or_null("/root/Game/BuildingsAndPaths")
 var tile: Vector2
-enum Role { UFO, SKEPTIC, ALIEN, BOTH }
+enum Role { UFO, SKEPTIC, ALIEN, BOSS, GROUND }
 
 @warning_ignore_start("unused_signal")
 signal ufo_wins
@@ -38,6 +38,10 @@ func _get_action_by_item_name(item_name: String, player: Player) -> Callable:
 		match item_name:
 			"repair_tool":
 				return player.repair_ufo
+	elif player.role == Role.BOSS:
+		match item_name:
+			"steering_wheel":
+				return player.insert_steering_wheel
 
 	return Callable()
 
@@ -146,14 +150,18 @@ func _get_ui() -> UserInterface:
 	return null
 
 
-func _assign_item_action(item_name: String, faction, usable_for_role):
-	var usable_for_alien: bool = usable_for_role == Role.ALIEN or usable_for_role == Role.BOTH
+func _assign_item_action(item_name: String, _faction, usable_for_role):
+	var usable_for_alien: bool = usable_for_role == Role.ALIEN or usable_for_role == Role.GROUND
 	if role == Role.ALIEN and usable_for_alien:
 		_assign_alien_actions(item_name, usable_for_role)
 
-	var usable_for_skeptic: bool = usable_for_role == Role.SKEPTIC or usable_for_role == Role.BOTH
+	var usable_for_skeptic: bool = usable_for_role == Role.SKEPTIC or usable_for_role == Role.GROUND
 	if role == Role.SKEPTIC and usable_for_skeptic:
 		_assign_skeptic_actions(item_name, usable_for_role)
+
+	var usable_for_robert: bool = usable_for_role == Role.BOSS or usable_for_role == Role.GROUND
+	if role == Role.BOSS and usable_for_robert:
+		_assign_robert_actions(item_name, usable_for_role)
 
 
 func _unhandled_input(event: InputEvent):
@@ -218,3 +226,40 @@ func _assign_skeptic_actions(item_name, player_role: Role):
 			_assign_action(skeptic.add_signal_jammer, skeptic.can_send_coordinates, item_name, player_role)
 		_:
 			return
+
+
+func _assign_robert_actions(item_name, player_role: Role):
+	var robert = self as Robert
+	match item_name:
+		"steering_wheel":
+			_assign_action(robert.insert_steering_wheel, robert.near_wreck, item_name, player_role)
+		"repair_tool":
+			_assign_action(robert.repair_ufo, false, item_name, player_role)
+
+
+func animate(direction: Vector2, animation_player, animation_sprite_idx):
+	var direction_sprite := "down"
+	if not is_inside_tree() or animation_player == null:
+		return
+	var directions = {
+		"down": Vector2.DOWN,
+		"up": Vector2.UP,
+		"left": Vector2.LEFT,
+		"right": Vector2.RIGHT,
+	}
+	var norm_dir = direction.normalized()
+
+	if norm_dir.is_equal_approx(directions["down"]):
+		animation_player.play("move down " + str(animation_sprite_idx))
+		direction_sprite = "down"
+	elif norm_dir.is_equal_approx(directions["up"]):
+		animation_player.play("move up " + str(animation_sprite_idx))
+		direction_sprite = "up"
+	elif norm_dir.is_equal_approx(directions["left"]):
+		animation_player.play("move left " + str(animation_sprite_idx))
+		direction_sprite = "left"
+	elif norm_dir.is_equal_approx(directions["right"]):
+		animation_player.play("move right " + str(animation_sprite_idx))
+		direction_sprite = "right"
+	elif norm_dir == Vector2.ZERO:
+		animation_player.play("idle " + direction_sprite + " " + str(animation_sprite_idx))

@@ -15,6 +15,14 @@ var players_selections: Array[Preferences]
 var map_config: MapConfig = MapConfig.WIDE
 var map_paths_tiles: int = 750
 var backpack_capacity: int = 3
+var with_robert: bool = false
+
+var players_count: int:
+	get:
+		return 5 if with_robert else 4
+
+var skeptics_count: int = 2
+var ufos_count: int = 2
 
 
 func get_map_paths_tiles() -> int:

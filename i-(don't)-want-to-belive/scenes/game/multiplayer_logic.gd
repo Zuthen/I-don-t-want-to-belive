@@ -3,6 +3,7 @@ extends Node
 
 var skeptic_scene: PackedScene = preload("uid://b7wo2a5407873")
 var ufo_scene: PackedScene = preload("uid://m52fuwcrlo2k")
+var robert_scene: PackedScene = preload("uid://bwi14wyt7gjco")
 var crashed_ufo_scene = preload("uid://bddko8bky1tp7")
 var laser_scene = preload("uid://dnsiqidfpctrc")
 var collectable_scene = preload("uid://cvjiggvhnjfsh")
@@ -35,10 +36,17 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				node.name = str(data.peer_id)
 				node.id = data.peer_id
 				node.input_multiplayer_authority = data.peer_id
+			"robert":
+				node = robert_scene.instantiate()
+				node.role = Player.Role.BOSS
+				node.name = str(data.peer_id)
+				node.id = data.peer_id
+				node.input_multiplayer_authority = data.peer_id
 			"wreck":
 				node = crashed_ufo_scene.instantiate()
 				node.name = "CrashedUfo_" + str(data.peer_id)
 				node.peer_id = data.peer_id
+				node.add_to_group("wrecks")
 			"laser":
 				node = laser_scene.instantiate()
 				node.z_index = 11
@@ -104,7 +112,7 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				if data.has("peer_id"):
 					node.peer_id = data.peer_id
 				return node
-			"ufo", "skeptic":
+			"ufo", "skeptic", "robert":
 				if data.has("skin_idx"):
 					_apply_skin(node, data.skin_idx)
 
@@ -175,6 +183,7 @@ func _get_all_players() -> Array[Node]:
 	all_players.append_array(get_tree().get_nodes_in_group("ufos"))
 	all_players.append_array(get_tree().get_nodes_in_group("skeptics"))
 	all_players.append_array(get_tree().get_nodes_in_group("aliens"))
+	all_players.append_array(get_tree().get_nodes_in_group("roberts"))
 	return all_players
 
 

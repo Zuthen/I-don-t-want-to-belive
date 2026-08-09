@@ -23,5 +23,16 @@ static func get_item_description(role: Player.Role, item_name: String) -> String
 					Po użyciu na walkie-talkie
 					ufo nie zobaczy nadanej
 					przez ciebie pozycji"
+	elif role == Player.Role.BOSS:
+		match item_name:
+			"steering_wheel":
+				return "Koło sterowe:
+					Po użyciu na wraku ufo
+					i naprawie ufo za pomocą
+					narzędzia naprawczego
+					możesz odlecieć i wygrać"
+			"repair_tool":
+				return "Wichajster:
+					 Użyj do naprawy wraku ufo"
 
 	return "Nie możesz użyć tego przedmiotu"

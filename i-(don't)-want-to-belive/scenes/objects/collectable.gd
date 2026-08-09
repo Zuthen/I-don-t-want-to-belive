@@ -12,6 +12,7 @@ var item_faction: Player.Role
 var skeptic_color = Color("e35775ff")
 var alien_color = Color("57e357ff")
 var both_color = Color("5796e3ff")
+var robert_color = Color("e39657ff")
 
 
 func _ready():
@@ -26,9 +27,11 @@ func set_faction(item_name):
 		"repair_tool":
 			item_faction = Player.Role.ALIEN
 		"signal_jammer":
-			item_faction = Player.Role.BOTH
+			item_faction = Player.Role.GROUND
+		"steering_wheel":
+			item_faction = Player.Role.BOSS
 		_:
-			item_faction = Player.Role.BOTH
+			item_faction = Player.Role.GROUND
 
 
 func _collect(other):
@@ -59,7 +62,9 @@ func _draw():
 			color = alien_color
 		Player.Role.SKEPTIC:
 			color = skeptic_color
-		Player.Role.BOTH:
+		Player.Role.BOSS:
+			color = robert_color
+		Player.Role.GROUND:
 			color = both_color
 		_:
 			color = both_color

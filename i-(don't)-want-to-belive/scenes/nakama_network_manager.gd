@@ -90,7 +90,7 @@ func _on_scene_tree_node_added(node: Node):
 		var peers_list = multiplayer.get_peers()
 		var total_players = peers_list.size() + 1
 
-		if not is_host and total_players >= 5:
+		if not is_host and total_players >= GameManager.players_count + 1:
 			node.queue_free()
 			get_tree().get_multiplayer().multiplayer_peer = null
 
@@ -229,7 +229,7 @@ func _find_active_room() -> String:
 				if waiting_players <= 0:
 					continue
 
-				if waiting_players >= 4:
+				if waiting_players >= GameManager.players_count:
 					continue
 
 				var found_code = content["room_code"]

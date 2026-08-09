@@ -137,14 +137,17 @@ func _assign_new_leader_id(new_leader_id: int):
 
 
 func _on_player_count_changed(_peer_id: int):
-	_update_players_counter()
 	_recalculate_leader_by_id()
+	_update_players_counter()
 	var my_id = multiplayer.get_unique_id()
 	var peers = multiplayer.get_peers()
 
 	if not peers.is_empty() and my_id != current_lobby_leader_id:
 		if current_lobby_leader_id in peers:
 			_request_current_ready_count.rpc_id(current_lobby_leader_id)
+
+	if multiplayer.is_server():
+		_sync_robert_state.rpc(GameManager.with_robert)
 
 
 func _recalculate_leader_by_id():
@@ -180,11 +183,45 @@ func _connect_signals():
 	ufo_skin_slider.skin_index_changed.connect(func(index): ufo_skin_index = index)
 	skeptic_skin_slider.skin_index_changed.connect(func(index): skeptic_skin_index = index)
 	leave_button.pressed.connect(_leave_lobby)
+	game_map_settings.with_robert_changed.connect(_on_with_robert_changed_by_host)
 
 	if not multiplayer.peer_connected.is_connected(_on_player_count_changed):
 		multiplayer.peer_connected.connect(_on_player_count_changed)
 	if not multiplayer.peer_disconnected.is_connected(_on_player_count_changed):
 		multiplayer.peer_disconnected.connect(_on_player_count_changed)
+	game_map_settings.with_robert_changed.connect(
+		func(is_robert):
+			if multiplayer.is_server():
+				_sync_robert_state.rpc(is_robert)
+	)
+
+
+func _on_with_robert_changed_by_host(is_with_robert: bool):
+	_sync_robert_state.rpc(is_with_robert)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _sync_robert_state(is_with_robert: bool):
+	GameManager.with_robert = is_with_robert
+	_update_factions_list(is_with_robert)
+	_update_players_counter()
+
+
+func _update_factions_list(with_robert: bool):
+	var selected_id = factions.get_selected_id()
+	factions.clear()
+	var skeptic_icon = load("uid://dhsp46crp15wo")
+	var ufo_icon = load("uid://fehu3j1x7vn")
+	factions.add_icon_item(skeptic_icon, "Sceptyk", 0)
+	factions.add_icon_item(ufo_icon, "Ufok", 1)
+	if with_robert:
+		var robert_icon = load("uid://bonb0l27pbhxn")
+		factions.add_icon_item(robert_icon, "Robert Boss", 2)
+	var new_index = factions.get_item_index(selected_id)
+	if new_index != -1:
+		factions.select(new_index)
+	else:
+		factions.select(1)
 
 
 func _set_sliders():
@@ -197,15 +234,16 @@ func _update_players_counter():
 	if main_loop and main_loop.get_multiplayer():
 		var net = main_loop.get_multiplayer()
 		if net.multiplayer_peer == null:
-			players_label.text = "1/4 graczy"
+			players_label.text = str("1/", GameManager.players_count, " graczy")
 			return
 
 		var total_players = net.get_peers().size() + 1
-		if total_players >= 5:
-			total_players = 4
-		players_label.text = str(total_players) + "/4 graczy"
+		if total_players >= GameManager.players_count + 1:
+			total_players = GameManager.players_count
+		players_label.text = str(total_players, "/", GameManager.players_count, " graczy")
 	else:
-		players_label.text = "1/4 graczy"
+		players_label.text = str("1/", GameManager.players_count, " graczy")
+	ready_players_label.text = "Gotowi gracze: %d/%d" % [ready_players_counter, GameManager.players_count]
 
 
 func _connect():
@@ -251,7 +289,7 @@ func _adjust_skins_visibility(value):
 	if value == 1:
 		ufo_skin_slider.set_deferred("visible", true)
 		skeptic_skin_slider.set_deferred("visible", false)
-	elif value == 0:
+	else:
 		skeptic_skin_slider.set_deferred("visible", true)
 		ufo_skin_slider.set_deferred("visible", false)
 
@@ -269,6 +307,9 @@ func _on_preferences_set():
 		_server_request_preferences.rpc_id(1, sender_id, type, skeptic_skin_index)
 	elif role_idx == 1:
 		type = "ufo"
+		_server_request_preferences.rpc_id(1, sender_id, type, ufo_skin_index)
+	elif role_idx == 2:
+		type = "robert"
 		_server_request_preferences.rpc_id(1, sender_id, type, ufo_skin_index)
 
 
@@ -289,14 +330,14 @@ func _server_request_preferences(sender_id: int, type: String, skin_idx: int):
 	else:
 		_set_players_ready.rpc(ready_players_counter)
 
-	if ready_players_counter == 4:
+	if ready_players_counter == GameManager.players_count:
 		all_players_ready.emit()
 
 
 @rpc("any_peer", "call_local", "reliable")
 func _set_players_ready(count: int):
 	ready_players_counter = count
-	ready_players_label.text = "gotowi gracze: " + str(count) + "/4"
+	ready_players_label.text = "gotowi gracze: " + str(count, "/", GameManager.players_count)
 
 
 @rpc("any_peer", "call_remote", "reliable")

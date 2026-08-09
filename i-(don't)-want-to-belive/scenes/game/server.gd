@@ -13,6 +13,9 @@ var players: Array[GameManager.Preferences] = []
 
 var ufos: Array[GameManager.Preferences] = []
 var skeptics: Array[GameManager.Preferences] = []
+var roberts: Array[GameManager.Preferences] = []
+var no_role_assigned: Array[GameManager.Preferences] = []
+
 var skeptic_positions: Array[Vector2i] = []
 var collectables_positions: Array[Vector2i] = []
 var ready_peers_for_spawn: Dictionary = { }
@@ -46,13 +49,8 @@ func prepare_game(my_game: Game):
 
 	skeptic_positions = _find_skeptics_positions(game.map_paths, random)
 
-	var skeptic_collectables = Findings.create_skeptics_collectables()
-	var alien_collectables = Findings.create_aliens_collectables()
-	var collectables_count = skeptic_collectables.count + alien_collectables.count
-	var merged_collectables: Dictionary[String, int] = skeptic_collectables.collectables.duplicate()
-	merged_collectables.merge(alien_collectables.collectables)
-	collectables = Findings.CollectablesData.new(merged_collectables)
-	collectables_positions = _find_collectables_placements(game.map_paths, collectables_count)
+	collectables = Findings.create_collectables()
+	collectables_positions = _find_collectables_placements(game.map_paths, collectables.count)
 
 	players = GameManager.players_selections
 	_assign_roles(players)
@@ -77,28 +75,56 @@ func get_map_paths() -> Array[Vector2i]:
 
 
 func _assign_roles(players: Array[GameManager.Preferences]):
-	for player in players:
-		if player.type.to_lower() == "ufo":
-			ufos.append(player)
-		elif player.type.to_lower() == "skeptic":
-			skeptics.append(player)
+	ufos.clear()
+	skeptics.clear()
+	roberts.clear()
+	no_role_assigned.clear()
 
-	if skeptics.size() != 2 and ufos.size() != 2:
-		if skeptics.size() > ufos.size():
-			while ufos.size() < 2:
-				var ufo_player = skeptics.pick_random()
-				if ufo_player:
-					skeptics.erase(ufo_player)
-					ufo_player.skin_idx = randi() % 5
-					ufo_player.type = "ufo"
-					ufos.append(ufo_player)
-		elif ufos.size() > skeptics.size():
-			while skeptics.size() < 2:
-				var skeptic_player = ufos.pick_random()
-				if skeptic_player:
-					ufos.erase(skeptic_player)
-					skeptic_player.type = "skeptic"
-					skeptics.append(skeptic_player)
+	var want_ufo: Array[GameManager.Preferences] = []
+	var want_skeptic: Array[GameManager.Preferences] = []
+	var want_robert: Array[GameManager.Preferences] = []
+
+	for player in players:
+		match player.type.to_lower():
+			"ufo":
+				want_ufo.append(player)
+			"skeptic":
+				want_skeptic.append(player)
+			"robert":
+				want_robert.append(player)
+			_:
+				no_role_assigned.append(player)
+
+	want_ufo.shuffle()
+	want_skeptic.shuffle()
+	want_robert.shuffle()
+
+	_assign_role(ufos, GameManager.ufos_count, want_ufo, "ufo")
+	_assign_role(skeptics, GameManager.skeptics_count, want_skeptic, "skeptic")
+
+	var robert_limit = 1 if GameManager.with_robert else 0
+	_assign_role(roberts, robert_limit, want_robert, "robert")
+
+	no_role_assigned.shuffle()
+
+	_fill_missing_role(ufos, GameManager.ufos_count, "ufo")
+	_fill_missing_role(skeptics, GameManager.skeptics_count, "skeptic")
+	_fill_missing_role(roberts, robert_limit, "robert")
+
+
+func _assign_role(destination_array: Array[GameManager.Preferences], role_limit: int, preferences_array: Array[GameManager.Preferences], type: String):
+	while destination_array.size() < role_limit and not preferences_array.is_empty():
+		var player = preferences_array.pop_back()
+		player.type = type
+		destination_array.append(player)
+	no_role_assigned.append_array(preferences_array)
+
+
+func _fill_missing_role(destination_array: Array[GameManager.Preferences], limit: int, type: String):
+	while destination_array.size() < limit and not no_role_assigned.is_empty():
+		var player = no_role_assigned.pop_back()
+		player.type = type
+		destination_array.append(player)
 
 
 func _find_collectables_placements(paths_array: Array[Vector2i], count: int) -> Array[Vector2i]:
@@ -165,10 +191,15 @@ func _map_to_spawn_data(skeptic_positions) -> Array:
 			var rand_x = randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
 			var rand_y = randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
 			data["spawn_position"] = Vector2i(rand_x, rand_y)
-		else:
+		elif player_pref.type == "skeptic":
 			var spawn_pos = skeptic_positions[skeptic_count] if skeptic_count < skeptic_positions.size() else Vector2i(0, 0)
 			data["spawn_position"] = spawn_pos
 			skeptic_count += 1
+		elif player_pref.type == "robert":
+			var rand_x = randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
+			var rand_y = randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
+			var robert_position = Vector2i(rand_x, rand_y)
+			data["spawn_position"] = robert_position
 
 		players_data.append(data)
 
@@ -178,6 +209,8 @@ func _map_to_spawn_data(skeptic_positions) -> Array:
 func _map_to_collectable_spawn_data(collectables_spawn_positions: Array[Vector2i], random: RandomNumberGenerator):
 	var collectables_data = []
 	var available_positions = collectables_spawn_positions.duplicate()
+	print("collectables: ", collectables)
+	print("collectables.collectables: ", collectables.collectables)
 	if collectables_positions.size() > 0:
 		for item_name in collectables.collectables:
 			var count = collectables.collectables[item_name]

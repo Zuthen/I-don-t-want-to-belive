@@ -10,6 +10,8 @@ class_name CrashedUfo
 @onready var repair_area = $RepairArea
 
 var peer_id: int
+var steering_wheel_mounted = false
+
 var ufo_texture_idx:
 	set(value):
 		ufo_texture_idx = value
@@ -32,26 +34,46 @@ func _ready():
 
 
 func _connect_signals():
-	repair_area.area_entered.connect(_enable_ufo_repair)
-	repair_area.area_exited.connect(_disable_ufo_repair)
+	repair_area.area_entered.connect(_set_near_wreck)
+	repair_area.area_exited.connect(_reset_near_wreck)
 	vision.area_entered.connect(_on_crashed_ufo_seen)
 	Events.alien_fixed_ufo.connect(_on_fixed)
+	Events.steering_wheel_inserted.connect(_insert_steering_wheel)
 
 
-func _enable_ufo_repair(collector: Area2D):
+func _insert_steering_wheel():
+	steering_wheel_mounted = true
+
+
+func _set_near_wreck(collector: Area2D):
 	var my_id = multiplayer.get_unique_id()
-	var alien = collector.get_parent() as Alien
-	var ufo_with_alien = alien.get_ufo_with_alien_container()
-	if ufo_with_alien.id == my_id:
-		alien.near_wreck = true
+	var collector_role = collector.get_parent().role
+	if collector_role == Player.Role.ALIEN:
+		var alien = collector.get_parent() as Alien
+		var ufo_with_alien = alien.get_ufo_with_alien_container()
+		if ufo_with_alien.id == my_id:
+			alien.near_wreck = true
+	elif collector_role == Player.Role.BOSS:
+		if collector_role == Player.Role.BOSS:
+			var robert = collector.get_parent() as Robert
+			if robert.id == my_id:
+				robert.near_wreck = true
+				robert.near_wreck_changed.emit(true, peer_id)
 
 
-func _disable_ufo_repair(collector: Area2D):
+func _reset_near_wreck(collector: Area2D):
 	var my_id = multiplayer.get_unique_id()
-	var alien = collector.get_parent() as Alien
-	var ufo_with_alien = alien.get_ufo_with_alien_container()
-	if ufo_with_alien.id == my_id:
-		alien.near_wreck = false
+	var collector_role = collector.get_parent().role
+	if collector_role == Player.Role.ALIEN:
+		var alien = collector.get_parent() as Alien
+		var ufo_with_alien = alien.get_ufo_with_alien_container()
+		if ufo_with_alien.id == my_id:
+			alien.near_wreck = false
+	elif collector_role == Player.Role.BOSS:
+		var robert = collector.get_parent() as Robert
+		if robert.id == my_id:
+			robert.near_wreck = false
+			robert.near_wreck_changed.emit(false)
 
 
 func _on_crashed_ufo_seen(other):
