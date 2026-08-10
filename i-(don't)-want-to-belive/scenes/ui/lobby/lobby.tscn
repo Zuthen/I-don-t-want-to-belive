@@ -23,12 +23,11 @@ font_size = 20
 
 [sub_resource type="Theme" id="Theme_5t5el"]
 default_font = ExtResource("1_5t5el")
-default_font_size = 20
 OptionButton/constants/h_separation = 10
-OptionButton/constants/icon_max_width = 32
+OptionButton/constants/icon_max_width = 64
 OptionButton/constants/line_spacing = 2
 PopupMenu/constants/h_separation = 10
-PopupMenu/constants/icon_max_width = 32
+PopupMenu/constants/icon_max_width = 64
 
 [sub_resource type="LabelSettings" id="LabelSettings_rqagm"]
 font = ExtResource("4_2rbxb")
@@ -97,10 +96,10 @@ label_settings = SubResource("LabelSettings_bthuv")
 
 [node name="Factions" type="OptionButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1694607065]
 layout_mode = 2
-size_flags_horizontal = 0
 theme = SubResource("Theme_5t5el")
 theme_override_fonts/font = ExtResource("1_5t5el")
 theme_override_font_sizes/font_size = 20
+expand_icon = true
 selected = 1
 item_count = 2
 popup/item_0/text = "Sceptyk"

@@ -7,12 +7,13 @@ class_name UserInterface
 @onready var backpack_skills = $SkillsPanel/BackpackSkills
 @onready var win_info = $WinInfo
 @onready var win_label = $WinInfo/WinLabel
-@onready var faction_label = $WinInfo/FactionLabel
+@onready var win_info_faction_label = $WinInfo/FactionLabel
 @onready var belive_points_counter_background = $Belive_Points_Counter_Background
 @onready var belive_points_counter = $Belive_Points_Counter
 @onready var walkie_talkie_message = $WalkieTalkieMessage
 @onready var main_menu_button = $WinInfo/MainMenuButton
 @onready var backpack = $SkillsPanel/Backpack
+@onready var faction_label = $SkillsPanel/FactionLabel
 
 var ufos_sprites
 var hit_points: int = 0
@@ -359,12 +360,14 @@ func _setup_ui(role: Player.Role):
 		ufo.visible = false
 	match role:
 		Player.Role.UFO:
+			faction_label.text = "Ufok"
 			q.set_icon_text("Wystrzel laser")
 			e.set_icon_text("Pochwyć")
 			e.visible = true
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		Player.Role.SKEPTIC:
+			faction_label.text = "Sceptyk"
 			e.set_icon_text("Wyślij swoją pozycję")
 			q.set_icon_text("Zawołaj")
 		Player.Role.ALIEN:
@@ -372,6 +375,8 @@ func _setup_ui(role: Player.Role):
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
+		Player.Role.BOSS:
+			faction_label.text = "Robert"
 
 
 func _on_ufo_wins():
@@ -389,7 +394,7 @@ func _on_skill_fired(time: float, skill: Skill):
 @rpc("any_peer", "call_local", "reliable")
 func _show_ufo_victory_screen():
 	win_label.text = UFO_WINS
-	faction_label.text = "Wygrywają ufoki"
+	win_info_faction_label.text = "Wygrywają ufoki"
 	win_info.visible = true
 	main_menu_button.disabled = false
 
@@ -397,7 +402,7 @@ func _show_ufo_victory_screen():
 @rpc("any_peer", "call_local", "reliable")
 func _show_skeptics_victory_screen():
 	win_label.text = SKEPTICS_WIN
-	faction_label.text = "Wygrywają sceptycy"
+	win_info_faction_label.text = "Wygrywają sceptycy"
 	win_info.visible = true
 	main_menu_button.disabled = false
 

@@ -17,6 +17,7 @@ var roberts: Array[GameManager.Preferences] = []
 var no_role_assigned: Array[GameManager.Preferences] = []
 
 var skeptic_positions: Array[Vector2i] = []
+var robert_position: Vector2i
 var collectables_positions: Array[Vector2i] = []
 var ready_peers_for_spawn: Dictionary = { }
 var collectables: Findings.CollectablesData
@@ -48,7 +49,8 @@ func prepare_game(my_game: Game):
 	game.map_paths = create_map(game_map_seed)
 
 	skeptic_positions = _find_skeptics_positions(game.map_paths, random)
-
+	if GameManager.with_robert:
+		robert_position = _find_robert_position(game.map_paths, random)
 	collectables = Findings.create_collectables()
 	collectables_positions = _find_collectables_placements(game.map_paths, collectables.count)
 
@@ -128,13 +130,20 @@ func _fill_missing_role(destination_array: Array[GameManager.Preferences], limit
 
 
 func _find_collectables_placements(paths_array: Array[Vector2i], count: int) -> Array[Vector2i]:
-	if paths_array.is_empty():
+	var available_placements = paths_array.duplicate()
+	for skeptic_position in skeptic_positions:
+		var idx = available_placements.find(skeptic_position)
+		available_placements.pop_at(idx)
+	if GameManager.with_robert:
+		var robert_position_idx = available_placements.find(robert_position)
+		available_placements.pop_at(robert_position_idx)
+	if available_placements.is_empty():
 		return []
 	var dead_ends: Array[Vector2i] = []
 	var one_ways: Array[Vector2i] = []
 	var two_ways: Array[Vector2i] = []
-	for path in paths_array:
-		var ways = _check_ways(path, paths_array)
+	for path in available_placements:
+		var ways = _check_ways(path, available_placements)
 		if ways == 1:
 			dead_ends.append(path)
 		elif ways == 2:
@@ -151,7 +160,7 @@ func _find_collectables_placements(paths_array: Array[Vector2i], count: int) -> 
 	collectables_placement.append_array(two_ways)
 	if collectables_placement.size() >= count:
 		return collectables_placement
-	return paths_array
+	return available_placements
 
 
 func _find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumberGenerator) -> Array[Vector2i]:
@@ -174,7 +183,25 @@ func _find_skeptics_positions(paths_array: Array[Vector2i], random: RandomNumber
 	return [paths_array[0], paths_array[paths_array.size() - 1]]
 
 
-func _map_to_spawn_data(skeptic_positions) -> Array:
+func _find_robert_position(paths_array: Array[Vector2i], random: RandomNumberGenerator) -> Vector2i:
+	if paths_array.is_empty():
+		return Vector2i(0, 0)
+	var available_positions = paths_array.duplicate()
+	var dynamic_min_distance: float = sqrt(MapSettings.paths_tiles) * 0.85
+	for skeptic_position in skeptic_positions:
+		var position_idx = available_positions.find(skeptic_position)
+		if position_idx != -1:
+			available_positions.pop_at(position_idx)
+
+	for i in range(MapSettings.paths_tiles / 2.0):
+		var random_index = random.randi() % available_positions.size()
+		var position_candidate = available_positions[random_index]
+		if position_candidate.distance_to(skeptic_positions[0]) >= dynamic_min_distance and position_candidate.distance_to(skeptic_positions[0]) >= dynamic_min_distance:
+			return position_candidate
+	return available_positions[0]
+
+
+func _map_to_spawn_data(skeptic_positions, _robert_position = null) -> Array:
 	var players_data = []
 	var skeptic_count = 0
 
@@ -196,10 +223,7 @@ func _map_to_spawn_data(skeptic_positions) -> Array:
 			data["spawn_position"] = spawn_pos
 			skeptic_count += 1
 		elif player_pref.type == "robert":
-			var rand_x = randi_range(MapSettings.min_position.x, MapSettings.max_position.x)
-			var rand_y = randi_range(MapSettings.min_position.y, MapSettings.max_position.y)
-			var robert_position = Vector2i(rand_x, rand_y)
-			data["spawn_position"] = robert_position
+			data["spawn_position"] = _robert_position
 
 		players_data.append(data)
 
@@ -280,8 +304,11 @@ func check_if_everyone_is_ready_to_spawn(peer_id: int):
 
 		if is_instance_valid(game) and game.has_method("_sync_final_roles_to_all_clients"):
 			game._sync_final_roles_to_all_clients.rpc(sync_data)
-
-		var spawner_data = _map_to_spawn_data(skeptic_positions)
+		var spawner_data
+		if GameManager.with_robert:
+			spawner_data = _map_to_spawn_data(skeptic_positions, robert_position)
+		else:
+			spawner_data = _map_to_spawn_data(skeptic_positions)
 		var collectables_data = _map_to_collectable_spawn_data(collectables_positions, random)
 		spawner_data.append_array(collectables_data)
 

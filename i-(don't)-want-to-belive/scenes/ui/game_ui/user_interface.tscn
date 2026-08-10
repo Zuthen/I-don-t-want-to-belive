@@ -34,6 +34,10 @@ font_size = 33
 outline_size = 11
 outline_color = Color(0.15, 0.15, 0.15, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_ksavb"]
+font = ExtResource("5_vo76m")
+font_color = Color(0.89411765, 0.34901962, 0.4627451, 1)
+
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_xekmr"]
 color = Color(0.53333336, 0.5372549, 0.7882353, 1)
 
@@ -140,6 +144,14 @@ offset_left = 704.0
 offset_top = 21.0
 offset_right = 816.0
 offset_bottom = 676.0
+
+[node name="FactionLabel" type="Label" parent="SkillsPanel" unique_id=1338446792]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Siemano mordo"
+label_settings = SubResource("LabelSettings_ksavb")
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="Q" parent="SkillsPanel" unique_id=688888508 instance=ExtResource("7_xg44s")]
 layout_mode = 2
