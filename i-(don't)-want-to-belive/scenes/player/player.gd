@@ -19,8 +19,6 @@ var actions: Array[Callable] = [Callable(), Callable(), Callable()]
 func _ready():
 	if not is_inside_tree():
 		await tree_entered
-	ItemsManager.backpack_updated.connect(_assign_item_action)
-	ItemsManager.item_type_removed.connect(_clear_action)
 	_set_fsx_volume()
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -130,8 +128,6 @@ func _set_fsx_volume():
 func update_synchronizer_visibility_by_role():
 	if is_in_group("ufos") and not is_in_group("aliens"):
 		visible = true
-	else:
-		pass
 
 
 func get_backpack() -> Backpack:
@@ -150,18 +146,29 @@ func _get_ui() -> UserInterface:
 	return null
 
 
-func _assign_item_action(item_name: String, _faction, usable_for_role):
-	var usable_for_alien: bool = usable_for_role == Role.ALIEN or usable_for_role == Role.GROUND
-	if role == Role.ALIEN and usable_for_alien:
-		_assign_alien_actions(item_name, usable_for_role)
+func _assign_item_action(item_name: String, player_role: int):
+	if self.role == Role.ALIEN and check_usable(item_name, Role.ALIEN):
+		_assign_alien_actions(item_name)
 
-	var usable_for_skeptic: bool = usable_for_role == Role.SKEPTIC or usable_for_role == Role.GROUND
-	if role == Role.SKEPTIC and usable_for_skeptic:
-		_assign_skeptic_actions(item_name, usable_for_role)
+	elif self.role == Role.SKEPTIC and check_usable(item_name, Role.SKEPTIC):
+		_assign_skeptic_actions(item_name)
 
-	var usable_for_robert: bool = usable_for_role == Role.BOSS or usable_for_role == Role.GROUND
-	if role == Role.BOSS and usable_for_robert:
-		_assign_robert_actions(item_name, usable_for_role)
+	elif self.role == Role.BOSS and check_usable(item_name, Role.BOSS):
+		_assign_robert_actions(item_name)
+
+
+func check_usable(item_name: String, player_role: Player.Role) -> bool:
+	var roles_can_use: Array[Role]
+	match item_name:
+		"repair_tool":
+			roles_can_use = [Role.ALIEN, Role.BOSS]
+		"sanity_pills":
+			roles_can_use = [Role.SKEPTIC]
+		"signal_jammer":
+			roles_can_use = [Role.SKEPTIC, Role.ALIEN]
+		"steering_wheel":
+			roles_can_use = [Role.BOSS]
+	return roles_can_use.has(player_role)
 
 
 func _unhandled_input(event: InputEvent):
@@ -179,14 +186,14 @@ func _use_action(i: int):
 		action.call()
 
 
-func _assign_alien_actions(item_name: String, player_role: Player.Role):
+func _assign_alien_actions(item_name: String):
 	var alien = get_node("Alien") as Alien
 
 	match item_name:
 		"repair_tool":
-			_assign_action(alien.repair_ufo, false, item_name, player_role)
+			_assign_action(alien.repair_ufo, false, item_name)
 		"signal_jammer":
-			_assign_action(alien.jammered_walkie_talkie_message, true, item_name, player_role)
+			_assign_action(alien.jammered_walkie_talkie_message, true, item_name)
 		_:
 			return
 
@@ -207,34 +214,36 @@ func _check_action_available(action: Callable) -> bool:
 	return false
 
 
-func _assign_action(action: Callable, enabled_on_collect: bool, item_name: String, my_role: Role):
+func _assign_action(action: Callable, enabled_on_collect: bool, item_name: String):
 	if _check_action_available(action):
 		return
 	for i in range(GameManager.backpack_capacity):
 		if actions[i].is_null():
 			actions[i] = action
-			ItemsManager.input_action_assigned.emit(enabled_on_collect, item_name, my_role)
+			ItemsManager.input_action_assigned.emit(enabled_on_collect, item_name)
+			print("input_action_assigned: ", action)
 			return
 
 
-func _assign_skeptic_actions(item_name, player_role: Role):
+func _assign_skeptic_actions(item_name):
 	var skeptic = self as Skeptic
 	match item_name:
 		"sanity_pills":
-			_assign_action(skeptic.take_sanity_pill, skeptic.belive_points > 0, item_name, player_role)
+			_assign_action(skeptic.take_sanity_pill, skeptic.belive_points > 0, item_name)
 		"signal_jammer":
-			_assign_action(skeptic.add_signal_jammer, skeptic.can_send_coordinates, item_name, player_role)
+			_assign_action(skeptic.add_signal_jammer, skeptic.can_send_coordinates, item_name)
 		_:
 			return
 
 
-func _assign_robert_actions(item_name, player_role: Role):
-	var robert = self as Robert
+func _assign_robert_actions(item_name):
+	print("assign robert actions", item_name)
+
 	match item_name:
 		"steering_wheel":
-			_assign_action(robert.insert_steering_wheel, robert.near_wreck, item_name, player_role)
+			_assign_action(self.insert_steering_wheel, self.near_wreck, item_name)
 		"repair_tool":
-			_assign_action(robert.repair_ufo, false, item_name, player_role)
+			_assign_action(self.repair_ufo, self.near_wreck, item_name)
 
 
 func animate(direction: Vector2, animation_player, animation_sprite_idx):

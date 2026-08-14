@@ -76,14 +76,9 @@ func _setup_backpack_skills():
 			additional_skills[skill] = false
 
 
-func _assign_backpack_skill(enabled_on_collect: bool, item_name: String, player_role: Player.Role):
-	var slot_index = _find_skill_by_name(item_name).idx
-
-	if slot_index != -1:
-		return
-
+func _assign_backpack_skill(enabled_on_collect: bool, item_name: String):
+	print("assigning backpack action")
 	var skill_slots = additional_skills.keys()
-
 	var free_slot_idx = skill_slots.find_custom(
 		func(skill): return additional_skills[skill] == false
 	)
@@ -93,7 +88,7 @@ func _assign_backpack_skill(enabled_on_collect: bool, item_name: String, player_
 		additional_skills[free_skill] = true
 		free_skill.skill_name = item_name
 		free_skill.visible = true
-		free_skill.set_icon_text(Findings.get_skill_label(player_role, item_name))
+		free_skill.set_icon_text(Findings.get_skill_label(player.role, item_name))
 		free_skill.set_disabled()
 		if enabled_on_collect:
 			free_skill.set_enabled()
@@ -152,7 +147,15 @@ func _on_jammer_ready(ready: bool):
 
 
 func _set_sanity_pill_skill(enabled: bool):
-	var sanity_pills_idx = _find_skill_by_name("sanity_pills").idx
+	if not is_multiplayer_authority():
+		return
+
+	var skill_data = _find_skill_by_name("sanity_pills")
+
+	if skill_data == null:
+		return
+
+	var sanity_pills_idx = skill_data.idx
 
 	if sanity_pills_idx == -1:
 		return
@@ -204,25 +207,22 @@ func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callab
 
 
 func _on_robert_near_wreck(near_wreck: bool, wreck_peer_id):
-	if player and player.role != Player.Role.BOSS:
+	if not is_instance_valid(player) or player.role != Player.Role.BOSS:
 		return
 
-	if player.steering_wheel_collected:
-		var steering_wheel_skill_data = _find_skill_by_name("steering_wheel")
-		if steering_wheel_skill_data.idx == -1:
-			return
+	var steering_wheel_skill_data = _find_skill_by_name("steering_wheel")
+
+	if steering_wheel_skill_data != null and steering_wheel_skill_data.idx != -1:
 		var insert_steering_wheel_skill = steering_wheel_skill_data.skill
-		if player.near_wreck:
+
+		if near_wreck:
 			insert_steering_wheel_skill.set_enabled()
 		else:
 			insert_steering_wheel_skill.set_disabled()
-		_connect_sinal_if_not_connected(player.insert_steering_wheel, Callable())
 
-	if player.repair_tool_collected and _is_steering_wheel_mounted_on_wreck(wreck_peer_id):
-		var repair_skill_data = _find_skill_by_name("repair_tool")
-		if repair_skill_data.idx == -1:
-			return
-		if player.near_wreck:
+	var repair_skill_data = _find_skill_by_name("repair_tool")
+	if repair_skill_data != null and repair_skill_data.idx != -1:
+		if near_wreck:
 			repair_skill_data.skill.set_enabled()
 		else:
 			repair_skill_data.skill.set_disabled()
@@ -251,6 +251,7 @@ func _find_skill_by_name(skill_name: String):
 	var skillData = SkillData.new()
 	skillData.skill = skills[skill_idx]
 	skillData.idx = skill_idx
+	print(skillData)
 	return skillData
 
 
@@ -260,6 +261,8 @@ func _on_alien_can_repair(near_wreck: bool):
 
 	var alien = player.get_node("Alien") as Alien
 	var skill_data = _find_skill_by_name("repair_tool")
+	if skill_data == null:
+		return
 	var repair_skill_idx = skill_data.idx
 
 	if repair_skill_idx == -1:
@@ -377,6 +380,10 @@ func _setup_ui(role: Player.Role):
 			belive_points_counter.visible = false
 		Player.Role.BOSS:
 			faction_label.text = "Robert"
+			q.visible = false
+			e.visible = false
+			belive_points_counter_background.visible = false
+			belive_points_counter.visible = false
 
 
 func _on_ufo_wins():

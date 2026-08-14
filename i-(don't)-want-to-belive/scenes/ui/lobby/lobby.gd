@@ -399,7 +399,14 @@ func _set_role_info():
 	elif role_idx == 0:
 		about_role.text = "[b]Cel:[/b] Znaleźć drugiego sceptyka i współnie utwierdzić się w przekonaniu, że UFO nie istnieje.
 [b]Zdolności: [/b]
-	[b] Zawołanie: [/b] Jeśli drugi sceptyk is w zasięgu twojego głosu, będziesz wiedzieć, w którą stronę iść.
+	[b] Zawołanie: [/b] Jeśli drugi sceptyk jest w zasięgu twojego głosu, będziesz wiedzieć, w którą stronę iść.
 		[b] Uwaga! [/b] Kosmici po rozbiciu statku mogą podszywać się pod sceptyków.
 	[b] Walkie-Talkie: [/b] Wysyłasz swoją lokalizację drugiemu sceptykowi. Będzie to litera i/lub liczba (losowo).
 		[b]Uwaga! [/b] Statki UFO (ale nie kosmici) zawsze przechwytują tę informację."
+	elif role_idx == 2:
+		about_role.text = "[b]Cel:[/b] UFO istnieje. To jest fakt. Jedyne o czym marzysz, to przelecieć się spodkiem. 
+		Musisz tylko zamontować kierownicę i dokonać naprawy, zanim kosmita zrobi to sam i odleci.
+[b]Zdolności: [/b]
+	[b] Przekonywanie (pasywna): [/b] Jeśli spotkasz sceptyka, zdobędzie on punkt wiary w UFO
+		[b] Uwaga! [/b] Jeśli sceptyk zdobędzie piąty punkt wiary to wygrają ufoki a nie ty. No ale to prawie to samo.
+	[b] Samoporwanie (pasywna): [/b] Jeśli ufo cię porwie, wygrywasz automatycznie"

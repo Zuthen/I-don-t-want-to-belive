@@ -37,14 +37,29 @@ func _remove_item(item_name: String, player: Player):
 			ItemsManager.item_type_removed.emit(item_name, player)
 
 
-func _item_collected(texture: Texture2D, item_name: String, faction, player_role: Player.Role):
+func _item_collected(texture: Texture2D, item_name: String, player_role: int, color: Color):
+	print("item collected (backpack): ", item_name, player_role)
 	if max_capacity - get_child_count() > 0:
 		var backpack_item = backpack_item_scene.instantiate()
 		backpack_item.item_name = item_name
 		backpack_item.texture = texture
+		backpack_item.color = color
 		backpack_item.description = BackpackItemsDictionary.get_item_description(player_role, item_name)
 		add_child(backpack_item)
-		ItemsManager.backpack_updated.emit(item_name, faction, player_role)
 
-	if get_child_count() == max_capacity:
-		overflow_label.visible = true
+		var local_player: Player = null
+
+		var my_id_string = str(multiplayer.get_unique_id())
+		var game_node = get_node_or_null("/root/Game")
+		if game_node:
+			local_player = game_node.get_node_or_null(my_id_string) as Player
+
+		if not is_instance_valid(local_player):
+			var local_players_group = get_tree().get_nodes_in_group("local_player")
+			if local_players_group.size() > 0:
+				local_player = local_players_group[0] as Player
+
+		if is_instance_valid(local_player):
+			local_player._assign_item_action(item_name, player_role)
+
+		ItemsManager.backpack_updated.emit(item_name, player_role)

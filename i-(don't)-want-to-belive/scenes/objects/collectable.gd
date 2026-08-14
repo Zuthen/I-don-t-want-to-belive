@@ -9,29 +9,39 @@ var texture: Texture2D
 var item_name: String
 var item_faction: Player.Role
 
-var skeptic_color = Color("e35775ff")
-var alien_color = Color("57e357ff")
-var both_color = Color("5796e3ff")
-var robert_color = Color("e39657ff")
+var not_usable_color = Color("e35775ff")
+var usable_color = Color("57e357ff")
+var final_color: Color = Color.WHITE
 
 
 func _ready():
 	sprite_2d.texture = texture
 	collectable.area_entered.connect(_collect)
+	_update_color_by_local_player_role()
 
 
-func set_faction(item_name):
-	match item_name:
-		"sanity_pills":
-			item_faction = Player.Role.SKEPTIC
-		"repair_tool":
-			item_faction = Player.Role.ALIEN
-		"signal_jammer":
-			item_faction = Player.Role.GROUND
-		"steering_wheel":
-			item_faction = Player.Role.BOSS
-		_:
-			item_faction = Player.Role.GROUND
+func _update_color_by_local_player_role():
+	var local_player: Player = null
+	var my_id = multiplayer.get_unique_id()
+
+	var local_players_group = get_tree().get_nodes_in_group("local_player")
+	if local_players_group.size() > 0:
+		local_player = local_players_group[0] as Player
+
+	if not is_instance_valid(local_player):
+		var game_node = get_node_or_null("/root/Game")
+		if game_node:
+			local_player = game_node.get_node_or_null(str(my_id)) as Player
+
+	if is_instance_valid(local_player):
+		var is_usable = local_player.check_usable(item_name, local_player.role)
+		if is_usable:
+			final_color = usable_color
+		else:
+			final_color = not_usable_color
+	else:
+		final_color = not_usable_color
+	queue_redraw()
 
 
 func _collect(other):
@@ -50,30 +60,18 @@ func _collect(other):
 		var backpack = player.get_backpack()
 		player.can_collect = backpack.can_collect()
 		if player.can_collect:
-			ItemsManager.item_collected.emit(texture, item_name, item_faction, player.role)
+			ItemsManager.item_collected.emit(texture, item_name, player.role, final_color)
 			_request_server_removal.rpc_id(1)
 
 
 func _draw():
 	var radius = collision_shape_2d.shape.radius
-	var color: Color
-	match item_faction:
-		Player.Role.ALIEN:
-			color = alien_color
-		Player.Role.SKEPTIC:
-			color = skeptic_color
-		Player.Role.BOSS:
-			color = robert_color
-		Player.Role.GROUND:
-			color = both_color
-		_:
-			color = both_color
-
 	var stroke_thickness: float = 0.6
 	var outer_radius: float = radius + stroke_thickness
-	var stroke_color: Color = color.darkened(0.25)
+	var stroke_color: Color = final_color.darkened(0.25)
+
 	draw_circle(Vector2.ZERO, outer_radius, stroke_color, true, -1.0, true)
-	draw_circle(Vector2.ZERO, radius, color, true, -1.0, true)
+	draw_circle(Vector2.ZERO, radius, final_color, true, -1.0, true)
 
 
 @rpc("any_peer", "call_local", "reliable")

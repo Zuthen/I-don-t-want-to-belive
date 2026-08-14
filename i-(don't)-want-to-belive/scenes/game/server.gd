@@ -233,8 +233,6 @@ func _map_to_spawn_data(skeptic_positions, _robert_position = null) -> Array:
 func _map_to_collectable_spawn_data(collectables_spawn_positions: Array[Vector2i], random: RandomNumberGenerator):
 	var collectables_data = []
 	var available_positions = collectables_spawn_positions.duplicate()
-	print("collectables: ", collectables)
-	print("collectables.collectables: ", collectables.collectables)
 	if collectables_positions.size() > 0:
 		for item_name in collectables.collectables:
 			var count = collectables.collectables[item_name]

@@ -11,6 +11,7 @@ class_name CrashedUfo
 
 var peer_id: int
 var steering_wheel_mounted = false
+var fixed: bool = false
 
 var ufo_texture_idx:
 	set(value):
@@ -46,16 +47,22 @@ func _insert_steering_wheel():
 
 
 func _set_near_wreck(collector: Area2D):
+	var parent_node = collector.get_parent()
+	if not is_instance_valid(parent_node) or not ("role" in parent_node):
+		return
+
 	var my_id = multiplayer.get_unique_id()
-	var collector_role = collector.get_parent().role
+	var collector_role = parent_node.role
 	if collector_role == Player.Role.ALIEN:
-		var alien = collector.get_parent() as Alien
-		var ufo_with_alien = alien.get_ufo_with_alien_container()
-		if ufo_with_alien.id == my_id:
-			alien.near_wreck = true
+		var alien = parent_node as Alien
+		if is_instance_valid(alien):
+			var ufo_with_alien = alien.get_ufo_with_alien_container()
+			if is_instance_valid(ufo_with_alien) and ufo_with_alien.id == my_id:
+				alien.near_wreck = true
+
 	elif collector_role == Player.Role.BOSS:
-		if collector_role == Player.Role.BOSS:
-			var robert = collector.get_parent() as Robert
+		var robert = parent_node as Robert
+		if is_instance_valid(robert):
 			if robert.id == my_id:
 				robert.near_wreck = true
 				robert.near_wreck_changed.emit(true, peer_id)
@@ -73,7 +80,7 @@ func _reset_near_wreck(collector: Area2D):
 		var robert = collector.get_parent() as Robert
 		if robert.id == my_id:
 			robert.near_wreck = false
-			robert.near_wreck_changed.emit(false)
+			robert.near_wreck_changed.emit(false, peer_id)
 
 
 func _on_crashed_ufo_seen(other):
@@ -108,14 +115,28 @@ func send_ufo_fixed_signal():
 
 func _set_animations():
 	var track_path = "Sprite2D:texture"
+
 	var fixed_animation = animator.get_animation("fixed")
 	var track = fixed_animation.find_track(track_path, Animation.TYPE_VALUE)
 	if track != -1:
 		fixed_animation.track_set_key_value(track, 0, UfosTextures.ufo_textures[ufo_texture_idx].ship)
 
+	var robert_fixing_animation = animator.get_animation("robert fixing")
+	var track_robert = robert_fixing_animation.find_track(track_path, Animation.TYPE_VALUE)
+	if track != -1:
+		robert_fixing_animation.track_set_key_value(track_robert, 0, UfosTextures.ufo_textures[ufo_texture_idx].ship_crashed)
+		robert_fixing_animation.track_set_key_value(track_robert, 1, UfosTextures.ufo_textures[ufo_texture_idx].ship_damage)
+		robert_fixing_animation.track_set_key_value(track_robert, 2, UfosTextures.ufo_textures[ufo_texture_idx].ship_fixed)
+
 
 func _on_fixed_animation_complete():
 	_request_server_to_destroy.rpc_id(1)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func network_repair():
+	animator.play("robert fixing")
+	fixed = true
 
 
 @rpc("any_peer", "call_local", "reliable")

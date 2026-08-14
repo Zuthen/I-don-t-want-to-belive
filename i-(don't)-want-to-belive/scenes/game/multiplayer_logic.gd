@@ -73,7 +73,6 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				node = collectable_scene.instantiate()
 				node.name = "Collectable_" + str(randi())
 				var collectable_name = data.get("name")
-				node.set_faction(collectable_name)
 				node.item_name = collectable_name
 				if data.get("name") == "repair_tool":
 					node.texture = load("uid://mucvykffmbay")
@@ -81,6 +80,8 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 					node.texture = load("uid://clotb5wahgifk")
 				if data.get("name") == "signal_jammer":
 					node.texture = load("uid://ckigjj2nvqy3g")
+				if data.get("name") == "steering_wheel":
+					node.texture = load("uid://dn4h1ge7ygdiw")
 				if data.has("spawn_position"):
 					var local_pos = tile_map.map_to_local(data.spawn_position)
 					node.tree_entered.connect(func(): node.global_position = local_pos, CONNECT_ONE_SHOT)
@@ -118,13 +119,12 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 
 		_assign_to_group(data, node)
 
-		if data.peer_id == multiplayer.get_unique_id():
-			get_tree().call_group("local_player", "remove_from_group", "local_player")
-			node.add_to_group("local_player")
-
 		node.name = str(data.peer_id)
 		node.tree_entered.connect(
 			func():
+				if data.peer_id == multiplayer.get_unique_id():
+					node.get_tree().call_group("local_player", "remove_from_group", "local_player")
+					node.add_to_group("local_player")
 				node.set_multiplayer_authority(data.peer_id)
 
 				var sync_node = node.get_node_or_null("PlayerInputSynchronizer")
@@ -147,6 +147,7 @@ func _force_refresh_visibility():
 	get_tree().call_group("skeptics", "_update_visibility_for_local_player")
 	get_tree().call_group("ufos", "_update_visibility_for_local_player")
 	get_tree().call_group("aliens", "_update_visibility_for_local_player")
+	get_tree().call_group("roberts", "_update_visibility_for_local_player")
 
 
 func _apply_skin(node: Node, skin_idx: int):

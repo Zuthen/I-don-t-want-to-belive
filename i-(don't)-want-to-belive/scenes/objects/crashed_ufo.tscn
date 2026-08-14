@@ -60,6 +60,8 @@
 [ext_resource type="Texture2D" uid="uid://dfa5nwc03etc1" path="res://assets/particles/White puff/whitePuff21.png" id="57_oqhft"]
 [ext_resource type="Texture2D" uid="uid://c4d8hcxu4pmu7" path="res://assets/particles/White puff/whitePuff22.png" id="58_rjxjh"]
 [ext_resource type="Texture2D" uid="uid://bcttka8brswaw" path="res://assets/particles/White puff/whitePuff23.png" id="59_m1lvr"]
+[ext_resource type="Texture2D" uid="uid://07diujydfq8j" path="res://assets/characters/ufos/shipBeige_damage1.png" id="61_gaju1"]
+[ext_resource type="Texture2D" uid="uid://c1cmrvec5x1qk" path="res://assets/characters/ufos/shipBeige.png" id="62_2csdq"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_2sb7k"]
 properties/0/path = NodePath(".:global_position")
@@ -353,12 +355,42 @@ tracks/3/keys = {
 "values": [Vector2(0, -6.9999995)]
 }
 
+[sub_resource type="Animation" id="Animation_f1gdt"]
+resource_name = "robert_fixing"
+length = 0.8
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("1_8ffh5"), ExtResource("61_gaju1"), ExtResource("62_2csdq")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Particle:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_4b8n1"]
 _data = {
 &"RESET": SubResource("Animation_nrkhd"),
 &"crash": SubResource("Animation_j01sh"),
 &"fixed": SubResource("Animation_2satv"),
-&"idle": SubResource("Animation_wey35")
+&"idle": SubResource("Animation_wey35"),
+&"robert fixing": SubResource("Animation_f1gdt")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2sb7k"]
@@ -401,6 +433,7 @@ visible = false
 shape = SubResource("RectangleShape2D_2sb7k")
 
 [node name="RepairArea" type="Area2D" parent="." unique_id=29065032]
+visible = false
 collision_layer = 0
 collision_mask = 128
 
