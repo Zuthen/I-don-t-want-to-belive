@@ -157,7 +157,7 @@ func _get_ui() -> UserInterface:
 	return null
 
 
-func _assign_item_action(item_name: String, player_role: int):
+func _assign_item_action(item_name: String, _player_role: int):
 	if self.role == Role.ALIEN and check_usable(item_name, Role.ALIEN):
 		_assign_alien_actions(item_name)
 

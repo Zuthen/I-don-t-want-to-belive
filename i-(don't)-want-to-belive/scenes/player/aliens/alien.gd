@@ -125,24 +125,23 @@ func _on_skeptic_seen_alien(area: Area2D):
 
 
 func _set_animations(animations_sprites: AliensTextures.AlienTextures):
-	var track_path = "Sprite2D:texture"
 	var anim_down = animation_player.get_animation("move down")
-	var track_down = anim_down.find_track(track_path, Animation.TYPE_VALUE)
-	if track_down != -1:
-		anim_down.track_set_key_value(track_down, 0, animations_sprites.front)
-		anim_down.track_set_key_value(track_down, 1, animations_sprites.jump)
-		anim_down.track_set_key_value(track_down, 2, animations_sprites.duck)
-		anim_down.track_set_key_value(track_down, 3, animations_sprites.front)
-		anim_down.track_set_key_value(track_down, 4, animations_sprites.jump)
-		anim_down.track_set_key_value(track_down, 5, animations_sprites.duck)
-
 	var anim_up = animation_player.get_animation("move up")
-	var track_up = anim_up.find_track(track_path, Animation.TYPE_VALUE)
-	if track_up != -1:
-		anim_up.track_set_key_value(track_up, 0, animations_sprites.climb_a)
-		anim_up.track_set_key_value(track_up, 1, animations_sprites.climb_b)
-
 	var anim_repair = animation_player.get_animation("ufo repair")
+	var anim_left = animation_player.get_animation("move left")
+	var anim_right = animation_player.get_animation("move right")
+	var anim_idle = animation_player.get_animation("idle down")
+
+	var down_sprites: Array[Texture2D] = [
+		animations_sprites.front,
+		animations_sprites.jump,
+		animations_sprites.duck,
+		animations_sprites.front,
+		animations_sprites.jump,
+		animations_sprites.duck,
+	]
+
+	var track_path = "Sprite2D:texture"
 	var track = anim_repair.find_track(track_path, Animation.TYPE_VALUE)
 	var keys_size = anim_repair.track_get_key_count(track)
 	if track != -1:
@@ -150,29 +149,25 @@ func _set_animations(animations_sprites: AliensTextures.AlienTextures):
 			anim_repair.track_set_key_value(track, i, animations_sprites.climb_a)
 			anim_repair.track_set_key_value(track, i + 1, animations_sprites.climb_b)
 
-	var anim_left = animation_player.get_animation("move left")
-	var track_left = anim_left.find_track(track_path, Animation.TYPE_VALUE)
-	if track_left != -1:
-		anim_left.track_set_key_value(track_left, 0, animations_sprites.walk_a)
-		anim_left.track_set_key_value(track_left, 1, animations_sprites.front)
-		anim_left.track_set_key_value(track_left, 2, animations_sprites.walk_b)
-		anim_left.track_set_key_value(track_left, 3, animations_sprites.front)
+	var left_sprites: Array[Texture2D] = [
+		animations_sprites.walk_a,
+		animations_sprites.front,
+		animations_sprites.walk_b,
+		animations_sprites.front,
+	]
 
-	var anim_right = animation_player.get_animation("move right")
-	var track_right = anim_right.find_track(track_path, Animation.TYPE_VALUE)
-	if track_right != -1:
-		anim_right.track_set_key_value(track_right, 0, animations_sprites.walk_a)
-		anim_right.track_set_key_value(track_right, 1, animations_sprites.front)
-		anim_right.track_set_key_value(track_right, 2, animations_sprites.walk_b)
-		anim_right.track_set_key_value(track_right, 3, animations_sprites.front)
+	var idle_sprites: Array[Texture2D] = [
+		animations_sprites.idle,
+		animations_sprites.front,
+		animations_sprites.idle,
+		animations_sprites.front,
+	]
 
-	var anim_idle = animation_player.get_animation("idle down")
-	var track_idle = anim_idle.find_track(track_path, Animation.TYPE_VALUE)
-	if track_idle != -1:
-		anim_idle.track_set_key_value(track_idle, 0, animations_sprites.idle)
-		anim_idle.track_set_key_value(track_idle, 1, animations_sprites.front)
-		anim_idle.track_set_key_value(track_idle, 2, animations_sprites.idle)
-		anim_idle.track_set_key_value(track_idle, 3, animations_sprites.front)
+	AnimationSetup.setup_textures(anim_down, down_sprites)
+	AnimationSetup.setup_textures(anim_up, [animations_sprites.climb_a, animations_sprites.climb_b])
+	AnimationSetup.setup_textures(anim_left, left_sprites)
+	AnimationSetup.setup_textures(anim_right, left_sprites)
+	AnimationSetup.setup_textures(anim_idle, idle_sprites)
 
 
 func _animate(direction: Vector2):

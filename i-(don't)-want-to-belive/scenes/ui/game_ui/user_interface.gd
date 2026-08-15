@@ -4,6 +4,7 @@ class_name UserInterface
 
 @onready var q = $SkillsPanel/Q
 @onready var e = $SkillsPanel/E
+@onready var r = $SkillsPanel/R
 @onready var backpack_skills = $SkillsPanel/BackpackSkills
 @onready var win_info = $WinInfo
 @onready var win_label = $WinInfo/WinLabel
@@ -42,6 +43,8 @@ func _ready():
 		q.set_icon_text("")
 	if is_instance_valid(e):
 		e.set_icon_text("")
+	if is_instance_valid(r):
+		r.set_icon_text("Odleć")
 	for skill in additional_skills:
 		if is_instance_valid(skill):
 			skill.set_icon_text("")
@@ -126,7 +129,6 @@ func _connect_signals(player: Player):
 	elif player.role == Player.Role.UFO:
 		_assign_ufo_signals()
 	elif player.role == Player.Role.BOSS:
-		player as Robert
 		_connect_sinal_if_not_connected(player.near_wreck_changed, _on_robert_near_wreck)
 		_connect_sinal_if_not_connected(player.robert_reparing, _on_robert_reparing)
 	elif player.role == Player.Role.ALIEN:
@@ -135,7 +137,7 @@ func _connect_signals(player: Player):
 			_connect_sinal_if_not_connected(alien.near_wreck_changed, _on_alien_can_repair)
 
 
-func _on_item_type_removed(item_name: String, player: Player):
+func _on_item_type_removed(item_name: String, _player: Player):
 	var skill_data = _find_skill_by_name(item_name)
 
 	if skill_data == null:
@@ -393,23 +395,28 @@ func _setup_ui(role: Player.Role):
 			q.set_icon_text("Wystrzel laser")
 			e.set_icon_text("Pochwyć")
 			e.visible = true
+			r.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		Player.Role.SKEPTIC:
 			faction_label.text = "Sceptyk"
 			e.set_icon_text("Wyślij swoją pozycję")
 			q.set_icon_text("Zawołaj")
+			r.visible = false
 		Player.Role.ALIEN:
 			q.set_icon_text("Zawołaj")
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
+			r.visible = false
+			r.set_icon_text("Odleć")
 		Player.Role.BOSS:
 			faction_label.text = "Robert"
 			q.visible = false
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
+			r.visible = false
 
 
 func _on_somebody_win(winner: String):

@@ -111,19 +111,16 @@ func send_ufo_fixed_signal():
 
 
 func _set_animations():
-	var track_path = "Sprite2D:texture"
-
 	var fixed_animation = animator.get_animation("fixed")
-	var track = fixed_animation.find_track(track_path, Animation.TYPE_VALUE)
-	if track != -1:
-		fixed_animation.track_set_key_value(track, 0, UfosTextures.ufo_textures[ufo_texture_idx].ship)
 
+	AnimationSetup.setup_textures(fixed_animation, [UfosTextures.ufo_textures[ufo_texture_idx].ship])
 	var robert_fixing_animation = animator.get_animation("robert fixing")
-	var track_robert = robert_fixing_animation.find_track(track_path, Animation.TYPE_VALUE)
-	if track != -1:
-		robert_fixing_animation.track_set_key_value(track_robert, 0, UfosTextures.ufo_textures[ufo_texture_idx].ship_crashed)
-		robert_fixing_animation.track_set_key_value(track_robert, 1, UfosTextures.ufo_textures[ufo_texture_idx].ship_damage)
-		robert_fixing_animation.track_set_key_value(track_robert, 2, UfosTextures.ufo_textures[ufo_texture_idx].ship_fixed)
+	var ufos_sprites: Array[Texture2D] = [
+		UfosTextures.ufo_textures[ufo_texture_idx].ship_crashed,
+		UfosTextures.ufo_textures[ufo_texture_idx].ship_damage,
+		UfosTextures.ufo_textures[ufo_texture_idx].ship_fixed,
+	]
+	AnimationSetup.setup_textures(robert_fixing_animation, ufos_sprites)
 
 
 func _on_fixed_animation_complete():

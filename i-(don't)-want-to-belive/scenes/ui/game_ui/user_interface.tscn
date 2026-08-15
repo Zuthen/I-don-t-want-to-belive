@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://cbur3mmig4oxr" path="res://assets/ui/keboard_buttons/keyboard_e_outline.png" id="9_737vb"]
 [ext_resource type="PackedScene" uid="uid://tgygvek1j0wa" path="res://scenes/ui/game_ui/walkie_talkie_message.tscn" id="11_y3ul1"]
 [ext_resource type="PackedScene" uid="uid://jj3estcxvid4" path="res://scenes/ui/welcome_screen/button.tscn" id="12_olnl4"]
+[ext_resource type="Texture2D" uid="uid://2cabok6idj77" path="res://assets/ui/keboard_buttons/keyboard_r.png" id="12_pcpdh"]
 [ext_resource type="PackedScene" uid="uid://c7fud3xvj6so" path="res://scenes/ui/game_ui/backpack.tscn" id="12_xekmr"]
 [ext_resource type="Texture2D" uid="uid://dxmvoqesvl8xf" path="res://assets/ui/keboard_buttons/keyboard_1.png" id="13_8asap"]
 [ext_resource type="Texture2D" uid="uid://d0j2gmyuws1ef" path="res://assets/ui/keboard_buttons/keyboard_1_outline.png" id="14_sobma"]
@@ -160,6 +161,11 @@ layout_mode = 2
 layout_mode = 2
 icon_active_texture = ExtResource("8_kw8g8")
 icon_not_active_texture = ExtResource("9_737vb")
+
+[node name="R" parent="SkillsPanel" unique_id=300496719 instance=ExtResource("7_xg44s")]
+layout_mode = 2
+icon_active_texture = ExtResource("12_pcpdh")
+icon_not_active_texture = ExtResource("12_pcpdh")
 
 [node name="BackpackSkills" type="VBoxContainer" parent="SkillsPanel" unique_id=176672009]
 custom_minimum_size = Vector2(0, 200)
