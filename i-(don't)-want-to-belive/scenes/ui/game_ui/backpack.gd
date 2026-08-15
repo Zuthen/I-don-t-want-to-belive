@@ -37,8 +37,10 @@ func _remove_item(item_name: String, player: Player):
 			ItemsManager.item_type_removed.emit(item_name, player)
 
 
-func _item_collected(texture: Texture2D, item_name: String, player_role: int, color: Color):
-	print("item collected (backpack): ", item_name, player_role)
+func _item_collected(texture: Texture2D, item_name: String, player_role: int, color: Color, collector_id: int):
+	var my_id = multiplayer.get_unique_id()
+	if collector_id != my_id:
+		return
 	if max_capacity - get_child_count() > 0:
 		var backpack_item = backpack_item_scene.instantiate()
 		backpack_item.item_name = item_name

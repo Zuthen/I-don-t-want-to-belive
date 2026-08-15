@@ -37,7 +37,6 @@ var belive_points: int = 0
 var camera_zoom: Vector2
 var warning_time: float = 1.5
 
-var sanity_pills_collected = false
 var signal_jammer_active = false
 
 signal belive_points_changed(amount: int)
@@ -190,7 +189,7 @@ func _on_belive_points_changed(hit_points: int):
 	elif belive_points == 0:
 		can_take_sanity_pill.emit(false)
 	elif belive_points >= max_belive_points:
-		ufo_wins.emit()
+		somebody_wins.emit("ufo")
 
 
 func _on_laser_seen(ufo_sender_id: int):
@@ -252,7 +251,7 @@ func request_icon_spawn_on_server(target_position: Vector2, sender_id: int, targ
 
 func _on_skeptic_find_other_skeptic(area: Area2D):
 	if area.get_parent() is Skeptic:
-		skeptics_win.emit()
+		somebody_wins.emit("skeptic")
 
 
 func _play_captured_animation(ufo_texture_idx: int, target_position):

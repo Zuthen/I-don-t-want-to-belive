@@ -77,6 +77,7 @@
 [ext_resource type="PackedScene" uid="uid://bqxxtb22y4v3c" path="res://scenes/ui/game_ui/coordinates.tscn" id="76_x6dqh"]
 [ext_resource type="FontFile" uid="uid://byt5d3c0adohn" path="res://assets/fonts/RussoOne-Regular.ttf" id="77_3hh7n"]
 [ext_resource type="PackedScene" uid="uid://cjks5cw6xyieq" path="res://scenes/ui/game_ui/user_interface.tscn" id="78_a8rnf"]
+[ext_resource type="Texture2D" uid="uid://dvgejs317ruv6" path="res://assets/objects/platformIndustrial_067.png" id="78_s8ykp"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_gsmgp"]
 properties/0/path = NodePath(".:global_position")
@@ -84,7 +85,8 @@ properties/0/spawn = true
 properties/0/replication_mode = 1
 
 [sub_resource type="Animation" id="Animation_yj68g"]
-length = 0.001
+length = 0.8
+step = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -96,6 +98,30 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [ExtResource("3_wcume")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedWheel:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0015741121, 0.8),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 3.141592653589793]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimatedWheel:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
 }
 
 [sub_resource type="Animation" id="Animation_ioxgp"]
@@ -914,6 +940,9 @@ tracks/0/keys = {
 "values": [ExtResource("73_lij1y"), ExtResource("26_ua45m"), ExtResource("74_46d6k")]
 }
 
+[sub_resource type="Animation" id="Animation_bmxvp"]
+resource_name = "repair ufo"
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_tffgl"]
 _data = {
 &"RESET": SubResource("Animation_yj68g"),
@@ -964,7 +993,8 @@ _data = {
 &"move up 2": SubResource("Animation_k4vkl"),
 &"move up 3": SubResource("Animation_mmtf4"),
 &"move up 4": SubResource("Animation_uyhi1"),
-&"move up 5": SubResource("Animation_prbli")
+&"move up 5": SubResource("Animation_prbli"),
+&"repair ufo": SubResource("Animation_bmxvp")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4b4"]
@@ -980,8 +1010,9 @@ font_color = Color(0.9490196, 0.23137255, 0.32941177, 1)
 size = Vector2(13.333334, 17.777779)
 
 [node name="Robert" type="CharacterBody2D" unique_id=402508521]
+z_index = 2
 scale = Vector2(0.45, 0.45)
-collision_layer = 4
+collision_layer = 0
 collision_mask = 17
 script = ExtResource("1_q7lxt")
 
@@ -1052,3 +1083,9 @@ position = Vector2(-2.6490954e-07, 1.6666665)
 shape = SubResource("RectangleShape2D_q7lxt")
 
 [node name="UserInterface" parent="." unique_id=1358639179 instance=ExtResource("78_a8rnf")]
+
+[node name="AnimatedWheel" type="Sprite2D" parent="." unique_id=871254510]
+z_index = 2
+position = Vector2(0, -24.444447)
+scale = Vector2(0.13, 0.13)
+texture = ExtResource("78_s8ykp")

@@ -6,8 +6,8 @@ var tile: Vector2
 enum Role { UFO, SKEPTIC, ALIEN, BOSS, GROUND }
 
 @warning_ignore_start("unused_signal")
-signal ufo_wins
-signal skeptics_win
+signal somebody_wins
+
 var id: int = 0
 var movement_blocked: = false
 var role: Role
@@ -20,6 +20,8 @@ func _ready():
 	if not is_inside_tree():
 		await tree_entered
 	_set_fsx_volume()
+	ItemsManager.item_type_removed.connect(_clear_action)
+
 	await get_tree().process_frame
 	await get_tree().process_frame
 	is_gameplay_ready = true
@@ -107,6 +109,15 @@ func get_column_name(col_idx: int) -> String:
 
 func start_cooldown_timer(time: float, callback: Callable):
 	callback.call()
+	var timer = Timer.new()
+	timer.one_shot = true
+	add_child(timer)
+	timer.timeout.connect(callback)
+	timer.timeout.connect(timer.queue_free)
+	timer.start(time)
+
+
+func start_timer(time: float, callback: Callable):
 	var timer = Timer.new()
 	timer.one_shot = true
 	add_child(timer)
@@ -238,7 +249,6 @@ func _assign_skeptic_actions(item_name):
 
 func _assign_robert_actions(item_name):
 	print("assign robert actions", item_name)
-
 	match item_name:
 		"steering_wheel":
 			_assign_action(self.insert_steering_wheel, self.near_wreck, item_name)

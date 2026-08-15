@@ -44,7 +44,7 @@ func spawn(multiplayer_spawner: MultiplayerSpawner, tile_map: TileMapLayer):
 				node.input_multiplayer_authority = data.peer_id
 			"wreck":
 				node = crashed_ufo_scene.instantiate()
-				node.name = "CrashedUfo_" + str(data.peer_id)
+				node.name = "Wreck_" + str(data.peer_id)
 				node.peer_id = data.peer_id
 				node.add_to_group("wrecks")
 			"laser":

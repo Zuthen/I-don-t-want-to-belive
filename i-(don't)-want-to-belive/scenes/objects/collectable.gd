@@ -8,6 +8,7 @@ class_name Collectable
 var texture: Texture2D
 var item_name: String
 var item_faction: Player.Role
+var was_collected: bool = false
 
 var not_usable_color = Color("e35775ff")
 var usable_color = Color("57e357ff")
@@ -45,6 +46,9 @@ func _update_color_by_local_player_role():
 
 
 func _collect(other):
+	if was_collected:
+		return
+
 	var current_node = other
 	var player: Player = null
 
@@ -60,7 +64,10 @@ func _collect(other):
 		var backpack = player.get_backpack()
 		player.can_collect = backpack.can_collect()
 		if player.can_collect:
-			ItemsManager.item_collected.emit(texture, item_name, player.role, final_color)
+			was_collected = true
+			ItemsManager.item_collected.emit(texture, item_name, player.role, final_color, player.id)
+			if player.role == Player.Role.BOSS and item_name == "steering_wheel":
+				player.steering_wheel_collected = true
 			_request_server_removal.rpc_id(1)
 
 

@@ -1,6 +1,6 @@
 extends Node2D
 
-class_name CrashedUfo
+class_name Wreck
 
 @onready var sprite_2d = $Sprite2D
 @onready var vision = $Vision
@@ -8,6 +8,7 @@ class_name CrashedUfo
 @onready var animator = $Animator
 @onready var particle = $Particle
 @onready var repair_area = $RepairArea
+@onready var steering_wheel = $SteeringWheel
 
 var peer_id: int
 var steering_wheel_mounted = false
@@ -32,6 +33,7 @@ func _ready():
 	animator.play("crash")
 	await animator.animation_finished
 	animator.play("idle")
+	steering_wheel.visible = false
 
 
 func _connect_signals():
@@ -39,11 +41,6 @@ func _connect_signals():
 	repair_area.area_exited.connect(_reset_near_wreck)
 	vision.area_entered.connect(_on_crashed_ufo_seen)
 	Events.alien_fixed_ufo.connect(_on_fixed)
-	Events.steering_wheel_inserted.connect(_insert_steering_wheel)
-
-
-func _insert_steering_wheel():
-	steering_wheel_mounted = true
 
 
 func _set_near_wreck(collector: Area2D):

@@ -29,6 +29,9 @@ const UFO_WINS := "Prawda
 const SKEPTICS_WIN := "Od dawna 
 takie latają!"
 
+const ROBERT_WIN := "Oszust
+oszukał!"
+
 
 func _ready():
 	MultiplayerFeatures.local_ui = self
@@ -96,9 +99,11 @@ func _assign_backpack_skill(enabled_on_collect: bool, item_name: String):
 
 func _clear_backpack_skill(skill_name: String):
 	var skills_list = additional_skills.keys()
-	var skill_idx = _find_skill_by_name(skill_name).idx
-	if skill_idx != -1:
-		var taken_slot = skills_list[skill_idx]
+	var skill = _find_skill_by_name(skill_name)
+	if skill == null:
+		return
+	if skill.idx != -1:
+		var taken_slot = skills_list[skill.idx]
 		additional_skills[taken_slot] = false
 		taken_slot.visible = false
 		taken_slot.set_icon_text("")
@@ -109,8 +114,8 @@ func _connect_signals(player: Player):
 	_connect_sinal_if_not_connected(ItemsManager.input_action_assigned, _assign_backpack_skill)
 	_connect_sinal_if_not_connected(ItemsManager.action_removed, _clear_backpack_skill)
 	_connect_sinal_if_not_connected(main_menu_button.pressed, _go_to_main_menu)
-	_connect_sinal_if_not_connected(player.ufo_wins, _on_ufo_wins)
-	_connect_sinal_if_not_connected(player.skeptics_win, _on_skeptic_win)
+	_connect_sinal_if_not_connected(player.somebody_wins, _on_somebody_win)
+	_connect_sinal_if_not_connected(ItemsManager.item_type_removed, _on_item_type_removed)
 	if player.role == Player.Role.SKEPTIC:
 		player.belive_points_changed.connect(_on_belive_points_changed)
 		player.walkie_talkie_message_sent.connect(_on_skill_fired.bind(e))
@@ -123,10 +128,19 @@ func _connect_signals(player: Player):
 	elif player.role == Player.Role.BOSS:
 		player as Robert
 		_connect_sinal_if_not_connected(player.near_wreck_changed, _on_robert_near_wreck)
+		_connect_sinal_if_not_connected(player.robert_reparing, _on_robert_reparing)
 	elif player.role == Player.Role.ALIEN:
 		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
 			_connect_sinal_if_not_connected(alien.near_wreck_changed, _on_alien_can_repair)
+
+
+func _on_item_type_removed(item_name: String, player: Player):
+	var skill_data = _find_skill_by_name(item_name)
+
+	if skill_data == null:
+		return
+	_clear_backpack_skill(item_name)
 
 
 func _on_jammer_activated(player: Skeptic):
@@ -221,11 +235,24 @@ func _on_robert_near_wreck(near_wreck: bool, wreck_peer_id):
 			insert_steering_wheel_skill.set_disabled()
 
 	var repair_skill_data = _find_skill_by_name("repair_tool")
+	var wreck = _get_wreck_by_id(wreck_peer_id)
 	if repair_skill_data != null and repair_skill_data.idx != -1:
-		if near_wreck:
+		if near_wreck and not wreck.fixed:
 			repair_skill_data.skill.set_enabled()
 		else:
 			repair_skill_data.skill.set_disabled()
+
+
+func _get_wreck_by_id(wreck_id: int) -> Wreck:
+	var wrecks = get_tree().get_nodes_in_group("wrecks") as Array[Wreck]
+	var wreck_idx = wrecks.find_custom(func(wreck): return wreck.peer_id == wreck_id)
+	return wrecks[wreck_idx]
+
+
+func _on_robert_reparing(time: float):
+	var repair_skill_data = _find_skill_by_name("repair_tool")
+	if repair_skill_data != null and repair_skill_data.idx != -1:
+		repair_skill_data.skill.start_cooldown(time)
 
 
 func _is_steering_wheel_mounted_on_wreck(wreck_peer_id: int):
@@ -251,7 +278,6 @@ func _find_skill_by_name(skill_name: String):
 	var skillData = SkillData.new()
 	skillData.skill = skills[skill_idx]
 	skillData.idx = skill_idx
-	print(skillData)
 	return skillData
 
 
@@ -386,8 +412,14 @@ func _setup_ui(role: Player.Role):
 			belive_points_counter.visible = false
 
 
-func _on_ufo_wins():
-	_show_ufo_victory_screen.rpc_id(0)
+func _on_somebody_win(winner: String):
+	match winner:
+		"ufo":
+			_show_ufo_victory_screen()
+		"skeptic":
+			_show_skeptics_victory_screen()
+		"robert":
+			_show_robert_victory_screen()
 
 
 func _on_skeptic_win():
@@ -410,6 +442,14 @@ func _show_ufo_victory_screen():
 func _show_skeptics_victory_screen():
 	win_label.text = SKEPTICS_WIN
 	win_info_faction_label.text = "Wygrywają sceptycy"
+	win_info.visible = true
+	main_menu_button.disabled = false
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _show_robert_victory_screen():
+	win_label.text = ROBERT_WIN
+	win_info_faction_label.text = "Wygrywa Robert"
 	win_info.visible = true
 	main_menu_button.disabled = false
 
