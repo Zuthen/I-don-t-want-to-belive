@@ -15,20 +15,20 @@ class CollectablesData:
 		count = all_collectables_count
 
 
-static func get_skill_label(role: Player.Role, skill_name: String) -> String:
+func get_skill_label(role: Player.Role, skill_name: String) -> String:
 	match skill_name:
 		"repair_tool":
-			return "Napraw"
+			return tr("BACKPACK_SKILL_ACTION_REPAIR_TOOL")
 		"sanity_pills":
-			return "Weź tabletkę"
+			return tr("BACKPACK_SKILL_ACTION_SANITY_PILLS")
 		"signal_jammer":
 			if role == Player.Role.SKEPTIC:
-				return "Zaszyfruj sygnał"
+				return tr("BACKPACK_SKILL_ACTION_SIGNAL_JAMMER_SKEPTIC")
 			if role == Player.Role.ALIEN:
-				return "Wyślij swoją pozycję"
+				return tr("BACKPACK_SKILL_ACTION_SIGNAL_JAMMER_ALIEN")
 			return ""
 		"steering_wheel":
-			return "Umieść koło sterowe we wraku"
+			return tr("BACKPACK_SKILL_ACTION_STEERING_WHEEL")
 		_:
 			return ""
 

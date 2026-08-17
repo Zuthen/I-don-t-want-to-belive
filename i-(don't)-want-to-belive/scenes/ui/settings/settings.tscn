@@ -3,11 +3,19 @@
 [ext_resource type="PackedScene" uid="uid://dwy1qojae2a6m" path="res://scenes/ui/game_ui/slider.tscn" id="1_8wfqe"]
 [ext_resource type="Script" uid="uid://butg1bs3sjryw" path="res://scenes/ui/settings/settings.gd" id="1_ptynm"]
 [ext_resource type="PackedScene" uid="uid://kl4f1idrmk8k" path="res://scenes/ui/icon_button.tscn" id="2_h175o"]
+[ext_resource type="FontFile" uid="uid://c3nttrsxkt6bf" path="res://assets/fonts/Michroma-Regular.ttf" id="3_lfmul"]
 [ext_resource type="Texture2D" uid="uid://kbh3j76l3u13" path="res://assets/ui/icons/exitRight.png" id="3_ptynm"]
+[ext_resource type="Texture2D" uid="uid://dnumlg78dxpmq" path="res://assets/ui/flags/PL.png" id="4_55onm"]
 [ext_resource type="Texture2D" uid="uid://bc6acnf2sjjri" path="res://assets/ui/icons/information.png" id="5_8e5ad"]
+[ext_resource type="Texture2D" uid="uid://bmcuox2ffof1e" path="res://assets/ui/flags/GB.png" id="5_nfidl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h175o"]
 bg_color = Color(0.07450981, 0.105882354, 0.23137255, 0.98039216)
+
+[sub_resource type="LabelSettings" id="LabelSettings_gp3ea"]
+font = ExtResource("3_lfmul")
+
+[sub_resource type="Theme" id="Theme_lfmul"]
 
 [node name="Settings" type="PanelContainer" unique_id=81349658]
 anchors_preset = 15
@@ -39,19 +47,40 @@ alignment = 2
 
 [node name="MusicSlider" parent="MarginContainer/VBoxContainer" unique_id=108517858 instance=ExtResource("1_8wfqe")]
 layout_mode = 2
-option_name = "Muzyka"
+option_name = "SETTINGS_MUSIC"
 
 [node name="FSXSlider" parent="MarginContainer/VBoxContainer" unique_id=1067340858 instance=ExtResource("1_8wfqe")]
 layout_mode = 2
-option_name = "Efekty dźwiękowe"
+option_name = "SETTINGS_SFX"
 
-[node name="IconButton" parent="MarginContainer/VBoxContainer" unique_id=2111074099 instance=ExtResource("2_h175o")]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=282981217]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer" unique_id=772560378]
+layout_mode = 2
+text = "SETTINGS_LANGUAGE"
+label_settings = SubResource("LabelSettings_gp3ea")
+
+[node name="Language" type="OptionButton" parent="MarginContainer/VBoxContainer/VBoxContainer" unique_id=1342512812]
+layout_mode = 2
+theme = SubResource("Theme_lfmul")
+theme_override_fonts/font = ExtResource("3_lfmul")
+theme_override_font_sizes/font_size = 16
+item_count = 2
+popup/item_0/text = "SETTINGS_LANGUAGE_POLISH"
+popup/item_0/icon = ExtResource("4_55onm")
+popup/item_0/id = 1
+popup/item_1/text = "SETTINGS_LANGUAGE_ENGLISH"
+popup/item_1/icon = ExtResource("5_nfidl")
+popup/item_1/id = 1
+
+[node name="Quit" parent="MarginContainer/VBoxContainer" unique_id=2111074099 instance=ExtResource("2_h175o")]
 layout_mode = 2
 size_flags_vertical = 8
 texture = ExtResource("3_ptynm")
-label_text = "Wyjdź"
+label_text = "SETTINGS_LEAVE"
 
-[node name="IconButton" parent="." unique_id=821760375 instance=ExtResource("2_h175o")]
+[node name="About" parent="." unique_id=821760375 instance=ExtResource("2_h175o")]
 layout_direction = 2
 layout_mode = 2
 size_flags_horizontal = 8

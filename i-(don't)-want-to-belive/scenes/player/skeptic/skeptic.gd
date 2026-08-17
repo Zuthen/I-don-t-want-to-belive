@@ -412,7 +412,7 @@ func _on_crashed_ufo_discovered(ufo_peer_id: int):
 	if not seen_ufos.has(ufo_peer_id):
 		seen_ufos.append(ufo_peer_id)
 		belive_points_changed.emit(1)
-		warning_label.text = "Widzisz wrak ufo!"
+		warning_label.text = tr("SKEPTIC_WARNING_UFO_SEEN")
 		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
 
 
@@ -420,7 +420,7 @@ func _on_alien_seen(alien_peer_id: int):
 	if not seen_aliens.has(alien_peer_id):
 		seen_aliens.append(alien_peer_id)
 		belive_points_changed.emit(1)
-		warning_label.text = "Widzisz kosmitę!"
+		warning_label.text = tr("SKEPTIC_WARNING_ALIEN_SEEN")
 		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
 
 

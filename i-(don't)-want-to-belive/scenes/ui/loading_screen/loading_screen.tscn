@@ -162,7 +162,7 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_fonts/normal_font = ExtResource("6_y06jl")
 theme_override_font_sizes/normal_font_size = 40
-text = "Ładowanie"
+text = "LOADING"
 
 [node name="Dots" type="RichTextLabel" parent="." unique_id=141159545]
 layout_mode = 1
