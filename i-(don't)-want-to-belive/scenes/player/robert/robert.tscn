@@ -1012,7 +1012,7 @@ size = Vector2(13.333334, 17.777779)
 [node name="Robert" type="CharacterBody2D" unique_id=402508521]
 z_index = 2
 scale = Vector2(0.45, 0.45)
-collision_layer = 0
+collision_layer = 192
 collision_mask = 17
 script = ExtResource("1_q7lxt")
 
@@ -1041,8 +1041,8 @@ enabled = false
 zoom = Vector2(6, 6)
 
 [node name="CollisionArea" type="Area2D" parent="." unique_id=1507387659]
-collision_layer = 68
-collision_mask = 128
+collision_layer = 0
+collision_mask = 0
 
 [node name="HitBoxCollision" type="CollisionShape2D" parent="CollisionArea" unique_id=1651569879]
 position = Vector2(0, 1.5555558)
@@ -1075,7 +1075,7 @@ autowrap_mode = 2
 
 [node name="Collector" type="Area2D" parent="." unique_id=330730708]
 position = Vector2(0, 2.7777781)
-collision_layer = 196
+collision_layer = 192
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Collector" unique_id=1982878818]

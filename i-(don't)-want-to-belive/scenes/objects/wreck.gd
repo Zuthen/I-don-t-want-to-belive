@@ -40,7 +40,7 @@ func _connect_signals():
 	repair_area.area_entered.connect(_set_near_wreck)
 	repair_area.area_exited.connect(_reset_near_wreck)
 	vision.area_entered.connect(_on_crashed_ufo_seen)
-	Events.alien_fixed_ufo.connect(_on_fixed)
+	Events.aliens_ufo_is_fixed.connect(_on_fixed)
 
 
 func _set_near_wreck(collector: Area2D):
@@ -56,6 +56,9 @@ func _set_near_wreck(collector: Area2D):
 			var ufo_with_alien = alien.get_ufo_with_alien_container()
 			if is_instance_valid(ufo_with_alien) and ufo_with_alien.id == my_id:
 				alien.near_wreck = true
+				if fixed:
+					alien.fly_away_active = true
+					alien.fly_away_activated.emit(true)
 
 	elif collector_role == Player.Role.BOSS:
 		var robert = parent_node as Robert
@@ -73,6 +76,8 @@ func _reset_near_wreck(collector: Area2D):
 		var ufo_with_alien = alien.get_ufo_with_alien_container()
 		if ufo_with_alien.id == my_id:
 			alien.near_wreck = false
+			alien.fly_away_active = false
+			alien.fly_away_activated.emit(false)
 	elif collector_role == Player.Role.BOSS:
 		var robert = collector.get_parent() as Robert
 		if robert.id == my_id:
@@ -125,6 +130,12 @@ func _set_animations():
 
 func _on_fixed_animation_complete():
 	_request_server_to_destroy.rpc_id(1)
+
+
+func _get_wreck_by_id(wreck_id: int) -> Wreck:
+	var wrecks = get_tree().get_nodes_in_group("wrecks") as Array[Wreck]
+	var wreck_idx = wrecks.find_custom(func(wreck): return wreck.peer_id == wreck_id)
+	return wrecks[wreck_idx]
 
 
 @rpc("any_peer", "call_local", "reliable")

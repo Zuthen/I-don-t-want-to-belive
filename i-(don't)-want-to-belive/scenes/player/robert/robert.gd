@@ -70,10 +70,13 @@ func repair_ufo():
 	if near_wreck_id != -1:
 		var wreck_to_repair = _get_wreck_by_id(near_wreck_id)
 		if not wreck_to_repair.fixed:
-			wreck_to_repair.network_repair()
-			network_play_repair_animation()
+			wreck_to_repair.network_repair.rpc()
+			network_play_repair_animation.rpc()
+
 			var animation_time = animation_player.get_animation("repair ufo").length
-			start_cooldown_timer(animation_time, func(): movement_blocked = !movement_blocked)
+			movement_blocked = true
+			start_timer(animation_time, func(): movement_blocked = false)
+
 			robert_reparing.emit(animation_time)
 			ItemsManager.item_used.emit("repair_tool", self)
 			_check_can_win(near_wreck_id)

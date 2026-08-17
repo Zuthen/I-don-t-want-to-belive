@@ -232,7 +232,6 @@ func _assign_action(action: Callable, enabled_on_collect: bool, item_name: Strin
 		if actions[i].is_null():
 			actions[i] = action
 			ItemsManager.input_action_assigned.emit(enabled_on_collect, item_name)
-			print("input_action_assigned: ", action)
 			return
 
 
@@ -248,7 +247,6 @@ func _assign_skeptic_actions(item_name):
 
 
 func _assign_robert_actions(item_name):
-	print("assign robert actions", item_name)
 	match item_name:
 		"steering_wheel":
 			_assign_action(self.insert_steering_wheel, self.near_wreck, item_name)

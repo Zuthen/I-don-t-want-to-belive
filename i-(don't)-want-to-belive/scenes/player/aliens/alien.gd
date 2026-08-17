@@ -14,6 +14,7 @@ class_name Alien
 var icon_placeholder_scene: PackedScene = preload("uid://d03xota05sdvx")
 var voice_emitter_scene: PackedScene = preload("uid://qt86w2aja6bs")
 var voice_emitter_active := false
+var fly_away_active: = false
 const speed = 105.0
 var direction_sprite := "down"
 var peer_id: int
@@ -41,6 +42,7 @@ var skin_idx: int = 0:
 signal ufo_repaired
 signal repairing(time: float)
 signal near_wreck_changed(near: bool)
+signal fly_away_activated(active: bool)
 
 
 func _ready():
@@ -56,6 +58,20 @@ func _ready():
 func get_ufo_with_alien_container() -> UfoWithAlien:
 	var ufo_with_alien = get_parent()
 	return ufo_with_alien
+
+
+func _get_wreck_by_id(wreck_id: int) -> Wreck:
+	var wrecks = get_tree().get_nodes_in_group("wrecks") as Array[Wreck]
+	var wreck_idx = wrecks.find_custom(func(wreck): return wreck.peer_id == wreck_id)
+	return wrecks[wreck_idx]
+
+
+func fly_away():
+	var wreck = _get_wreck_by_id(peer_id) as Wreck
+	var animation_time = wreck.animator.get_animation("fixed").length
+	if near_wreck and wreck.fixed:
+		start_cooldown_timer(animation_time, func(): movement_blocked = !movement_blocked)
+		Events.aliens_ufo_is_fixed.emit(peer_id)
 
 
 func repair_ufo():
@@ -79,7 +95,7 @@ func repair_ufo():
 			timer.timeout.connect(
 				func():
 					timer.queue_free()
-					Events.alien_fixed_ufo.emit(peer_id)
+					Events.aliens_ufo_is_fixed.emit(peer_id)
 			)
 			timer.start(animation_time)
 
@@ -100,6 +116,9 @@ func _process(_delta):
 
 	if Input.is_action_just_pressed("call_other_skeptic") and not voice_emitter_active:
 		_call_skeptic_network.rpc()
+
+	if Input.is_action_just_pressed("alien_fly_away") and fly_away_active:
+		fly_away()
 
 
 @rpc("call_local", "any_peer", "reliable")

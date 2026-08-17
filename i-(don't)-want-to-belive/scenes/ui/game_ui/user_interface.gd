@@ -83,7 +83,6 @@ func _setup_backpack_skills():
 
 
 func _assign_backpack_skill(enabled_on_collect: bool, item_name: String):
-	print("assigning backpack action")
 	var skill_slots = additional_skills.keys()
 	var free_slot_idx = skill_slots.find_custom(
 		func(skill): return additional_skills[skill] == false
@@ -135,6 +134,11 @@ func _connect_signals(player: Player):
 		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
 			_connect_sinal_if_not_connected(alien.near_wreck_changed, _on_alien_can_repair)
+			_connect_sinal_if_not_connected(alien.fly_away_activated, _on_fly_away_changed)
+
+
+func _on_fly_away_changed(active: bool):
+	r.visible = active
 
 
 func _on_item_type_removed(item_name: String, _player: Player):
