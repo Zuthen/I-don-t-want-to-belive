@@ -277,10 +277,10 @@ func _set_game_data():
 
 func _set_warning_text(index: int = 0):
 	role_idx = index
-	if index == 0:
-		faction_warning.text = "Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz ufokiem"
-	elif index == 1:
-		faction_warning.text = "Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz sceptykiem"
+	if index == 0 or index == 1:
+		faction_warning.text = "Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją"
+	elif index == 2:
+		faction_warning.text = "Uwaga! Jeśli więcej niż jeden gracz wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją"
 	_adjust_skins_visibility(index)
 	_set_role_info()
 
