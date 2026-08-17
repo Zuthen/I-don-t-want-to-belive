@@ -121,6 +121,10 @@ alien_fly_away={
 ]
 }
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://translations/translations.en.translation", "res://translations/translations.pl.translation")
+
 [layer_names]
 
 2d_physics/layer_1="world"

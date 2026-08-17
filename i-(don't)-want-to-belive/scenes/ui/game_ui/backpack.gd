@@ -46,7 +46,8 @@ func _item_collected(texture: Texture2D, item_name: String, player_role: int, co
 		backpack_item.item_name = item_name
 		backpack_item.texture = texture
 		backpack_item.color = color
-		backpack_item.description = BackpackItemsDictionary.get_item_description(player_role, item_name)
+		var backpack_dictionary = BackpackItemsDictionary.new()
+		backpack_item.description = backpack_dictionary.get_item_description(player_role, item_name)
 		add_child(backpack_item)
 
 		var local_player: Player = null

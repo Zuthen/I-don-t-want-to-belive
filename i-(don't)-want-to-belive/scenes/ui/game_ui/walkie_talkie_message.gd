@@ -7,7 +7,7 @@ class_name WalkieTalkieMessage
 @onready var text = $VBoxContainer/Text
 
 var coordinates_text: String
-var message: String = "Sceptyk nadał wiadomość"
+var message: String = tr("WALKIE_TALKIE_MESSAGE_RECEIVED")
 
 signal show_message
 

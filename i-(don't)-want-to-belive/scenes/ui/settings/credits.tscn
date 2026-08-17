@@ -55,6 +55,7 @@ theme_override_constants/separation = 10
 
 [node name="Title" parent="HBoxContainer2/Left/CreditsSection/Content" index="0" unique_id=49029626]
 size_flags_horizontal = 1
+text = "CREDITS_CODE"
 
 [node name="Author" type="Label" parent="HBoxContainer2/Left/CreditsSection/Content" index="1" unique_id=1738846287]
 layout_mode = 2
@@ -82,8 +83,7 @@ layout_mode = 2
 
 [node name="Title" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="0" unique_id=49029626]
 size_flags_horizontal = 1
-text = "Testy i wsparcie 
-motywacyjne"
+text = "CREDITS_TESTS"
 
 [node name="Author" type="Label" parent="HBoxContainer2/Left/CreditsSection2/Content" parent_id_path=PackedInt32Array(557933775, 509388931) index="1" unique_id=1229250711]
 layout_mode = 2
@@ -123,9 +123,7 @@ layout_mode = 2
 
 [node name="Title" parent="HBoxContainer2/Right/CreditsSection/Content" parent_id_path=PackedInt32Array(2052512470, 509388931) index="0" unique_id=49029626]
 size_flags_horizontal = 1
-text = "Wszystkie 
-wykorzystane 
-grafiki"
+text = "CREDITS_ASSETS"
 
 [node name="LinkButton2" type="LinkButton" parent="HBoxContainer2/Right/CreditsSection/Content" parent_id_path=PackedInt32Array(2052512470, 509388931) index="1" unique_id=1810634000]
 layout_mode = 2
@@ -137,12 +135,23 @@ uri = "https://kenney.nl/"
 layout_mode = 2
 
 [node name="Title" parent="HBoxContainer2/Right/CreditsSection2/Content" parent_id_path=PackedInt32Array(1226708069, 509388931) index="0" unique_id=49029626]
-text = "Muzyka"
+text = "CREDITS_MUSIC"
 
 [node name="Author7" type="Label" parent="HBoxContainer2/Right/CreditsSection2/Content" parent_id_path=PackedInt32Array(1226708069, 509388931) index="1" unique_id=327501256]
 layout_mode = 2
 text = "alkakrab04@gmail.com
 (itch.io)"
+label_settings = SubResource("LabelSettings_lbqho")
+
+[node name="CreditsSection3" parent="HBoxContainer2/Right" unique_id=142701760 instance=ExtResource("1_wv8f7")]
+layout_mode = 2
+
+[node name="Title" parent="HBoxContainer2/Right/CreditsSection3/Content" parent_id_path=PackedInt32Array(142701760, 509388931) index="0" unique_id=49029626]
+text = "CREDITS_LOCALIZATION"
+
+[node name="Author7" type="Label" parent="HBoxContainer2/Right/CreditsSection3/Content" parent_id_path=PackedInt32Array(142701760, 509388931) index="1" unique_id=14729839]
+layout_mode = 2
+text = "Styx"
 label_settings = SubResource("LabelSettings_lbqho")
 
 [node name="Star01" type="Sprite2D" parent="." unique_id=828935599]
@@ -186,3 +195,4 @@ texture = ExtResource("11_yqj8i")
 [editable path="HBoxContainer2/Left/CreditsSection2"]
 [editable path="HBoxContainer2/Right/CreditsSection"]
 [editable path="HBoxContainer2/Right/CreditsSection2"]
+[editable path="HBoxContainer2/Right/CreditsSection3"]

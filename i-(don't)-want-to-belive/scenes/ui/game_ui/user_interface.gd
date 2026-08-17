@@ -23,15 +23,6 @@ var max_ufos_count: int = 2
 var player: Player
 var additional_skills: Dictionary[Skill, bool] = { }
 var jammer_ready = true
-const UFO_WINS := "Prawda 
-	nas jeszcze 
-	zadziwi..."
-
-const SKEPTICS_WIN := "Od dawna 
-takie latają!"
-
-const ROBERT_WIN := "Oszust
-oszukał!"
 
 
 func _ready():
@@ -44,7 +35,7 @@ func _ready():
 	if is_instance_valid(e):
 		e.set_icon_text("")
 	if is_instance_valid(r):
-		r.set_icon_text("Odleć")
+		r.set_icon_text(tr("SKILL_FLY_AWAY"))
 	for skill in additional_skills:
 		if is_instance_valid(skill):
 			skill.set_icon_text("")
@@ -93,7 +84,8 @@ func _assign_backpack_skill(enabled_on_collect: bool, item_name: String):
 		additional_skills[free_skill] = true
 		free_skill.skill_name = item_name
 		free_skill.visible = true
-		free_skill.set_icon_text(Findings.get_skill_label(player.role, item_name))
+		var skill_labels = Findings.new()
+		free_skill.set_icon_text(skill_labels.get_skill_label(player.role, item_name))
 		free_skill.set_disabled()
 		if enabled_on_collect:
 			free_skill.set_enabled()
@@ -395,27 +387,27 @@ func _setup_ui(role: Player.Role):
 		ufo.visible = false
 	match role:
 		Player.Role.UFO:
-			faction_label.text = "Ufok"
-			q.set_icon_text("Wystrzel laser")
-			e.set_icon_text("Pochwyć")
+			faction_label.text = tr("FACTION_LABEL_UFO")
+			q.set_icon_text(tr("SKILL_LASER_SHOOT"))
+			e.set_icon_text(tr("SKILL_CAPTURE"))
 			e.visible = true
 			r.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 		Player.Role.SKEPTIC:
-			faction_label.text = "Sceptyk"
-			e.set_icon_text("Wyślij swoją pozycję")
-			q.set_icon_text("Zawołaj")
+			faction_label.text = tr("FACTION_LABEL_SKEPTIC")
+			e.set_icon_text(tr("SKILL_SEND_POSITION_SKEPTIC"))
+			q.set_icon_text(tr("SKILL_CALL_SKEPTIC"))
 			r.visible = false
 		Player.Role.ALIEN:
-			q.set_icon_text("Zawołaj")
+			q.set_icon_text(tr("SKILL_CALL_SKEPTIC"))
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
 			r.visible = false
-			r.set_icon_text("Odleć")
+			r.set_icon_text(tr("SKILL_FLY_AWAY"))
 		Player.Role.BOSS:
-			faction_label.text = "Robert"
+			faction_label.text = tr("FACTION_LABEL_ROBERT")
 			q.visible = false
 			e.visible = false
 			belive_points_counter_background.visible = false
@@ -443,24 +435,24 @@ func _on_skill_fired(time: float, skill: Skill):
 
 @rpc("any_peer", "call_local", "reliable")
 func _show_ufo_victory_screen():
-	win_label.text = UFO_WINS
-	win_info_faction_label.text = "Wygrywają ufoki"
+	win_label.text = tr("UFO_WIN_LABEL")
+	win_info_faction_label.text = tr("UFO_WIN_SUBTITLE")
 	win_info.visible = true
 	main_menu_button.disabled = false
 
 
 @rpc("any_peer", "call_local", "reliable")
 func _show_skeptics_victory_screen():
-	win_label.text = SKEPTICS_WIN
-	win_info_faction_label.text = "Wygrywają sceptycy"
+	win_label.text = tr("SKEPTICS_WIN_LABEL")
+	win_info_faction_label.text = tr("SKEPTICS_WIN_SUBTITLE")
 	win_info.visible = true
 	main_menu_button.disabled = false
 
 
 @rpc("any_peer", "call_local", "reliable")
 func _show_robert_victory_screen():
-	win_label.text = ROBERT_WIN
-	win_info_faction_label.text = "Wygrywa Robert"
+	win_label.text = tr("ROBERT_WIN_LABEL")
+	win_info_faction_label.text = tr("ROBERT_WIN_SUBTITLE")
 	win_info.visible = true
 	main_menu_button.disabled = false
 

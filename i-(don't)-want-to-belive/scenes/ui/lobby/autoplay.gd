@@ -7,10 +7,6 @@ extends VBoxContainer
 var autoplay: bool = true
 var host: bool
 
-const CHECKED_LABEL: String = "Gra rozpocznie się automatycznie, kiedy wszyscy gracze potwierdzą obecność."
-const UNCHECKED_LABEL: String = "Gra rozpocznie się, kiedy gospodarz uruchomi grę, kiedy wszyscy gracze będą gotowi"
-const UNCHECKED_LABEL_HOST: String = "Uruchomisz grę, kiedy wszyscy gracze będą gotowi"
-
 
 func _ready():
 	check_box.toggled.connect(_on_checkbox_toggled)
@@ -40,9 +36,9 @@ func _set_autoplay(checked):
 	autoplay = checked
 
 	if checked:
-		description.text = CHECKED_LABEL
+		description.text = tr("AUTOPLAY_ON")
 	else:
 		if host:
-			description.text = UNCHECKED_LABEL_HOST
+			description.text = tr("AUTOPLAY_OFF_HOST")
 		else:
-			description.text = UNCHECKED_LABEL
+			description.text = tr("AUTOPLAY_OFF_PLAYERS")

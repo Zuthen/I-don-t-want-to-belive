@@ -408,15 +408,15 @@ theme_override_constants/separation = 100
 
 [node name="CreateGame" parent="CanvasLayer/Buttons" unique_id=1723459190 instance=ExtResource("12_o4vrg")]
 layout_mode = 2
-label_text = "Utwórz nową grę"
+label_text = "WELCOME_SCREEN_CREATE"
 
 [node name="Join" parent="CanvasLayer/Buttons" unique_id=565622636 instance=ExtResource("12_o4vrg")]
 layout_mode = 2
-label_text = "Dołącz"
+label_text = "WELCOME_SCREEN_JOIN"
 
 [node name="QuickGame" parent="CanvasLayer/Buttons" unique_id=1335872747 instance=ExtResource("12_o4vrg")]
 layout_mode = 2
-label_text = "Losuj grę"
+label_text = "WELCOME_SCREEN_QUICK_GAME"
 
 [node name="RoomPopup" parent="CanvasLayer" unique_id=321821047 instance=ExtResource("14_4ak4v")]
 visible = false
@@ -446,19 +446,19 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 texture = ExtResource("16_xsdje")
-label_text = "Ustawienia"
+label_text = "WELCOME_SCREEN_SETTINGS"
 
 [node name="QuitButton" parent="CanvasLayer/HBoxContainer2" unique_id=678577874 instance=ExtResource("15_keojs")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 texture = ExtResource("16_jp4pw")
-label_text = "Wyjdź"
+label_text = "WELCOME_SCREEN_QUIT"
 
 [node name="VersionLabel" type="Label" parent="CanvasLayer" unique_id=1793830956]
 offset_left = 12.0
 offset_top = 676.0
 offset_right = 98.0
 offset_bottom = 699.0
-text = "Wersja gry:"
+text = "WELCOME_SCREEN_GAME_VERSION"
 label_settings = SubResource("LabelSettings_keojs")

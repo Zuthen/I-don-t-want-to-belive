@@ -2,37 +2,24 @@ extends Node
 
 class_name BackpackItemsDictionary
 
-static func get_item_description(role: Player.Role, item_name: String) -> String:
+func get_item_description(role: Player.Role, item_name: String) -> String:
 	if role == Player.Role.ALIEN:
 		match item_name:
 			"repair_tool":
-				return "Wichajster:
-					 Użyj do naprawy swojego UFO"
+				return tr("TOOLTIP_REPAIR_TOOL_ALIEN")
 			"signal_jammer":
-				return "Zakłócacz:
-					Wyślij swoją pozycję przez
-					walkie talkie, tak jak
-					sceptyk"
+				return tr("TOOLTIP_SIGNAL_JAMMER_ALIEN")
 	elif role == Player.Role.SKEPTIC:
 		match item_name:
 			"sanity_pills":
-				return "Medi-Sinet: 
-					Użyj aby stracić punkt wiary"
+				return tr("TOOLTIP_SANITY_PILLS")
 			"signal_jammer":
-				return "Zakłócacz:
-					Po użyciu na walkie-talkie
-					ufo nie zobaczy nadanej
-					przez ciebie pozycji"
+				return tr("TOOLTIP_SIGNAL_JAMMER_SKEPTIC")
 	elif role == Player.Role.BOSS:
 		match item_name:
 			"steering_wheel":
-				return "Koło sterowe:
-					Po użyciu na wraku ufo
-					i naprawie ufo za pomocą
-					narzędzia naprawczego
-					możesz odlecieć i wygrać"
+				return tr("TOOLTIP_STEERING_WHEEL")
 			"repair_tool":
-				return "Wichajster:
-					 Użyj do naprawy wraku ufo"
+				tr("TOOLTIP_REPAIR_TOOL_ROBERT")
 
-	return "Nie możesz użyć tego przedmiotu"
+	return tr("TOOLTIP_DEFAULT")

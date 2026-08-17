@@ -91,7 +91,7 @@ theme_override_constants/separation = 12
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
-text = "Preferowana Frakcja"
+text = "PREFFERED_FACTION"
 label_settings = SubResource("LabelSettings_bthuv")
 
 [node name="Factions" type="OptionButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1694607065]

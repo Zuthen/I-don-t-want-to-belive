@@ -5,8 +5,8 @@ var lobby_scene = load("uid://dg7q16m0w6dnx") as PackedScene
 
 
 func _ready():
-	title = "Kod pokoju"
-	ok_button_text = "Dołącz"
+	title = tr("ROOM_JOIN_TITLE")
+	ok_button_text = tr("ROOM_JOIN_BUTTON")
 
 	code_input.text_changed.connect(cast_to_upper_case)
 	confirmed.connect(_on_connect_pressed)

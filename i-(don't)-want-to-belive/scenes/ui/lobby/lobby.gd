@@ -92,7 +92,7 @@ func _set_host_section():
 	var is_leader = (my_id == current_lobby_leader_id)
 
 	if is_leader:
-		host_label.text = "Jesteś hostem"
+		host_label.text = tr("HOST_LABEL")
 		host_label.set_deferred("visible", true)
 		game_map_settings.visible = true
 		game_map_settings.district_spin_box.editable = true
@@ -234,16 +234,16 @@ func _update_players_counter():
 	if main_loop and main_loop.get_multiplayer():
 		var net = main_loop.get_multiplayer()
 		if net.multiplayer_peer == null:
-			players_label.text = str("1/", GameManager.players_count, " graczy")
+			players_label.text = str("1/", GameManager.players_count, " ", tr("PLAYERS_IN_LOBBY_COUNT"))
 			return
 
 		var total_players = net.get_peers().size() + 1
 		if total_players >= GameManager.players_count + 1:
 			total_players = GameManager.players_count
-		players_label.text = str(total_players, "/", GameManager.players_count, " graczy")
+		players_label.text = str(total_players, "/", GameManager.players_count, " ", tr("PLAYERS_IN_LOBBY_COUNT"))
 	else:
-		players_label.text = str("1/", GameManager.players_count, " graczy")
-	ready_players_label.text = "Gotowi gracze: %d/%d" % [ready_players_counter, GameManager.players_count]
+		players_label.text = str("1/", GameManager.players_count, " ", tr("PLAYERS_IN_LOBBY_COUNT"))
+	ready_players_label.text = tr("READY_PLAYERS_COUNTER") + "%d/%d" % [ready_players_counter, GameManager.players_count]
 
 
 func _connect():
@@ -269,18 +269,18 @@ func _set_game_data():
 		if net_match_id == "":
 			net_match_id = NakamaNetworkManager.multiplayer_bridge.match_id
 
-		match_id_label.text = "ID meczu: " + str(net_match_id)
+		match_id_label.text = tr("MATCH_ID") + " " + str(net_match_id)
 
 		var room_name = NakamaNetworkManager.match_name
-		room_name_label.text = "Kod pokoju: " + str(room_name)
+		room_name_label.text = tr("ROOM_CODE") + " " + str(room_name)
 
 
 func _set_warning_text(index: int = 0):
 	role_idx = index
 	if index == 0 or index == 1:
-		faction_warning.text = "Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją"
+		faction_warning.text = tr("FACTION_WARNING_TEXT")
 	elif index == 2:
-		faction_warning.text = "Uwaga! Jeśli więcej niż jeden gracz wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją"
+		faction_warning.text = tr("FACTION_WARNING_TEXT_ROBERT")
 	_adjust_skins_visibility(index)
 	_set_role_info()
 
@@ -337,7 +337,7 @@ func _server_request_preferences(sender_id: int, type: String, skin_idx: int):
 @rpc("any_peer", "call_local", "reliable")
 func _set_players_ready(count: int):
 	ready_players_counter = count
-	ready_players_label.text = "gotowi gracze: " + str(count, "/", GameManager.players_count)
+	ready_players_label.text = tr("PLAYERS_READY") + (" ") + str(count, "/", GameManager.players_count)
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -351,7 +351,7 @@ func _on_all_players_ready():
 		if autoplay.autoplay:
 			_on_start_game()
 		else:
-			confirm_button.update_label("Rozpocznij grę")
+			confirm_button.update_label(tr("START_GAME_BUTTON"))
 			confirm_button.set_deferred("visible", true)
 			confirm_button.pressed.disconnect(_on_preferences_set)
 			confirm_button.pressed.connect(_on_start_game)
@@ -371,7 +371,7 @@ func _start_game():
 func _copy_room_name_to_clipboard():
 	if room_name_label and room_name_label.text != "":
 		var room_name = room_name_label.text
-		var clean_text = room_name.replace("Kod pokoju: ", "").strip_edges()
+		var clean_text = room_name.replace(tr("ROOM_CODE"), "").strip_edges()
 		DisplayServer.clipboard_set(clean_text)
 		tooltip.set_deferred("visible", true)
 		var tooltip_timer = Timer.new()
@@ -390,23 +390,8 @@ func _ufo_skins():
 
 func _set_role_info():
 	if role_idx == 1:
-		about_role.text = "[b]Cel:[/b] przekonać sceptyków do wiary w UFO
-[b]Zdolności: [/b]
-	[b] Wystrzelenie lasera: [/b] Jeśli laser trafi w sceptyka, sceptyk zdobędzie 1 punkt wiary a ty zobaczysz jego skwaszoną minę.
-	[b] Pochwycenie: [/b] Pikujesz w dół i pobierasz sceptyka, dodajesz mu 3 punkty wiary i wywozisz go w inne miejsce mapy. Nawet nie wiesz gdzie.
-		[b]Uwaga! [/b] Jeżeli nie trafisz w sceptyka, twój statek się rozbije. Musisz wtedy wyjść ze statku i sprawić by sceptyk zobaczył ciebie i twoje ufo (każda z tych akcji dodaje mu jednorazowo 1 punkt wiary).
-	[b] Wołanie sceptyka (jako kosmita):[/b] Możesz zawołać sceptyka. Jeśli się to powiedzie może uznać, że jesteś drugim sceptykiem. Ale nie wiesz czy się zorientuje."
+		about_role.text = tr("ABOUT_ROLE_UFO")
 	elif role_idx == 0:
-		about_role.text = "[b]Cel:[/b] Znaleźć drugiego sceptyka i współnie utwierdzić się w przekonaniu, że UFO nie istnieje.
-[b]Zdolności: [/b]
-	[b] Zawołanie: [/b] Jeśli drugi sceptyk jest w zasięgu twojego głosu, będziesz wiedzieć, w którą stronę iść.
-		[b] Uwaga! [/b] Kosmici po rozbiciu statku mogą podszywać się pod sceptyków.
-	[b] Walkie-Talkie: [/b] Wysyłasz swoją lokalizację drugiemu sceptykowi. Będzie to litera i/lub liczba (losowo).
-		[b]Uwaga! [/b] Statki UFO (ale nie kosmici) zawsze przechwytują tę informację."
+		about_role.text = tr("ABOUT_ROLE_SKEPTIC")
 	elif role_idx == 2:
-		about_role.text = "[b]Cel:[/b] UFO istnieje. To jest fakt. Jedyne o czym marzysz, to przelecieć się spodkiem. 
-		Musisz tylko zamontować kierownicę i dokonać naprawy, zanim kosmita zrobi to sam i odleci.
-[b]Zdolności: [/b]
-	[b] Przekonywanie (pasywna): [/b] Jeśli spotkasz sceptyka, zdobędzie on punkt wiary w UFO
-		[b] Uwaga! [/b] Jeśli sceptyk zdobędzie piąty punkt wiary to wygrają ufoki a nie ty. No ale to prawie to samo.
-	[b] Samoporwanie (pasywna): [/b] Jeśli ufo cię porwie, wygrywasz automatycznie"
+		about_role.text = tr("ABOUT_ROLE_ROBERT")
