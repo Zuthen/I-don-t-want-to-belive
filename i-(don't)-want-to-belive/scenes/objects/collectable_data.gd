@@ -36,8 +36,8 @@ static func get_skill_label(role: Player.Role, skill_name: String) -> String:
 static func create_collectables() -> CollectablesData:
 	var collectables: Dictionary[String, int] = {
 		"repair_tool": 3,
-		#"sanity_pills": 2,
-		#"signal_jammer": 2,
+		"sanity_pills": 2,
+		"signal_jammer": 2,
 		"steering_wheel": 1,
 	}
 	return CollectablesData.new(collectables)
