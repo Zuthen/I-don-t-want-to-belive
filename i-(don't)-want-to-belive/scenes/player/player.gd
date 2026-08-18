@@ -25,6 +25,14 @@ func _ready():
 	await get_tree().process_frame
 	await get_tree().process_frame
 	is_gameplay_ready = true
+	_setup_collision_layers()
+
+
+func _setup_collision_layers():
+	if get_parent():
+		for other_node in get_parent().get_children():
+			if other_node is Player and other_node != self:
+				add_collision_exception_with(other_node)
 
 
 func _get_action_by_item_name(item_name: String, player: Player) -> Callable:
