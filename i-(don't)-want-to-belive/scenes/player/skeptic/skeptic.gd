@@ -47,6 +47,7 @@ signal alien_seen(peer_id: int)
 signal can_take_sanity_pill(bool)
 signal jammer_activated()
 signal can_send_coordinates_changed(new_value: bool)
+signal robert_talking
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -102,6 +103,7 @@ func _connect_signals():
 	laser_seen.connect(_on_laser_seen)
 	alien_seen.connect(_on_alien_seen)
 	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
+	robert_talking.connect(_on_robert_talking)
 
 
 func take_sanity_pill():

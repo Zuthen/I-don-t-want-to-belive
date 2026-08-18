@@ -414,6 +414,9 @@ func _setup_ui(role: Player.Role):
 			r.visible = false
 		Player.Role.ALIEN:
 			q.set_icon_text(tr("SKILL_CALL_SKEPTIC"))
+			q.set_disabled()
+			if player.can_speach:
+				q.set_enabled()
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
