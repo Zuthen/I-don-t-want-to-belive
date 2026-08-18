@@ -34,11 +34,11 @@ ABOUT_ROLE_SKEPTIC,"[b]Cel:[/b] Znaleźć drugiego sceptyka i współnie utwierd
 	[b] Walkie-Talkie: [/b] Wysyłasz swoją lokalizację drugiemu sceptykowi. Będzie to litera i/lub liczba (losowo).
 		[b]Uwaga! [/b] Statki UFO (ale nie kosmici) zawsze przechwytują tę informację.",,,,,
 ABOUT_ROLE_ROBERT,"[b]Cel:[/b] UFO istnieje. To jest fakt. Jedyne o czym marzysz, to przelecieć się spodkiem. 
-		Musisz tylko zamontować kierownicę i dokonać naprawy, zanim kosmita zrobi to sam i odleci.
+                Musisz tylko zamontować kierownicę i dokonać naprawy, zanim kosmita zrobi to sam i odleci.
 [b]Zdolności: [/b]
-	[b] Przekonywanie (pasywna): [/b] Jeśli spotkasz sceptyka, zdobędzie on punkt wiary w UFO
-		[b] Uwaga! [/b] Jeśli sceptyk zdobędzie piąty punkt wiary to wygrają ufoki a nie ty. No ale to prawie to samo.
-	[b] Samoporwanie (pasywna): [/b] Jeśli ufo cię porwie, wygrywasz automatycznie",,,,,
+        [b] Przekonywanie: [/b] Jeśli spotkasz sceptyka a on usłyszy twój wywód o kosmitach, zdobędzie punkt wiary w UFO
+                [b] Uwaga! [/b] Jeśli sceptyk zdobędzie piąty punkt wiary to wygrają ufoki a nie ty. No ale to prawie to samo.
+        [b] Samoporwanie (pasywna): [/b] Jeśli ufo cię porwie, wygrywasz automatycznie",,,,,
 AUTOPLAY_ON,"Gra rozpocznie się automatycznie, kiedy wszyscy gracze potwierdzą obecność.",,,,,
 AUTOPLAY_OFF_PLAYERS,"Gra rozpocznie się, kiedy gospodarz uruchomi grę, kiedy wszyscy gracze będą gotowi",,,,,
 AUTOPLAY_OFF_HOST,"Uruchomisz grę, kiedy wszyscy gracze będą gotowi",,,,,
@@ -104,3 +104,7 @@ WELCOME_SCREEN_QUICK_GAME,Losuj grę,,,,,
 WELCOME_SCREEN_GAME_VERSION,Wersja gry:,,,,,
 WELCOME_SCREEN_SETTINGS,Ustawienia,Settings,,,,
 WELCOME_SCREEN_QUIT,Wyjdź,Leave,,,,
+SKEPTIC_LISTEN_ROBERTS_TALK,"Robert cię
+przekonał",,,,,
+SKILL_ROBERT_SPEACH,"Wygłoś
+tyradę",,,,,
