@@ -1009,6 +1009,9 @@ font_color = Color(0.9490196, 0.23137255, 0.32941177, 1)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q7lxt"]
 size = Vector2(13.333334, 17.777779)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_s8ykp"]
+radius = 120.0
+
 [node name="Robert" type="CharacterBody2D" unique_id=402508521]
 z_index = 2
 scale = Vector2(0.45, 0.45)
@@ -1089,3 +1092,10 @@ z_index = 2
 position = Vector2(0, -24.444447)
 scale = Vector2(0.13, 0.13)
 texture = ExtResource("78_s8ykp")
+
+[node name="Voicer" type="Area2D" parent="." unique_id=1392062654]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Voicer" unique_id=1318054302]
+shape = SubResource("CircleShape2D_s8ykp")

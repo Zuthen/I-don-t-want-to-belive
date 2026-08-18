@@ -38,6 +38,7 @@ var camera_zoom: Vector2
 var warning_time: float = 1.5
 
 var signal_jammer_active = false
+var roberts_wisdom = false
 
 signal belive_points_changed(amount: int)
 signal laser_seen(ufo_sender_id: int)
@@ -413,6 +414,13 @@ func _on_crashed_ufo_discovered(ufo_peer_id: int):
 		seen_ufos.append(ufo_peer_id)
 		belive_points_changed.emit(1)
 		warning_label.text = tr("SKEPTIC_WARNING_UFO_SEEN")
+
+
+func _on_robert_talking():
+	if not roberts_wisdom:
+		roberts_wisdom = true
+		belive_points_changed.emit(1)
+		warning_label.text = tr("SKEPTIC_LISTEN_ROBERTS_TALK")
 		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
 
 

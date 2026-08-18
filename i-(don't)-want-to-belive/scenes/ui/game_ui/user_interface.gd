@@ -105,11 +105,11 @@ func _clear_backpack_skill(skill_name: String):
 
 
 func _connect_signals(player: Player):
-	_connect_sinal_if_not_connected(ItemsManager.input_action_assigned, _assign_backpack_skill)
-	_connect_sinal_if_not_connected(ItemsManager.action_removed, _clear_backpack_skill)
-	_connect_sinal_if_not_connected(main_menu_button.pressed, _go_to_main_menu)
-	_connect_sinal_if_not_connected(player.somebody_wins, _on_somebody_win)
-	_connect_sinal_if_not_connected(ItemsManager.item_type_removed, _on_item_type_removed)
+	_connect_signal_if_not_connected(ItemsManager.input_action_assigned, _assign_backpack_skill)
+	_connect_signal_if_not_connected(ItemsManager.action_removed, _clear_backpack_skill)
+	_connect_signal_if_not_connected(main_menu_button.pressed, _go_to_main_menu)
+	_connect_signal_if_not_connected(player.somebody_wins, _on_somebody_win)
+	_connect_signal_if_not_connected(ItemsManager.item_type_removed, _on_item_type_removed)
 	if player.role == Player.Role.SKEPTIC:
 		player.belive_points_changed.connect(_on_belive_points_changed)
 		player.walkie_talkie_message_sent.connect(_on_skill_fired.bind(e))
@@ -120,13 +120,26 @@ func _connect_signals(player: Player):
 	elif player.role == Player.Role.UFO:
 		_assign_ufo_signals()
 	elif player.role == Player.Role.BOSS:
-		_connect_sinal_if_not_connected(player.near_wreck_changed, _on_robert_near_wreck)
-		_connect_sinal_if_not_connected(player.robert_reparing, _on_robert_reparing)
+		_connect_signal_if_not_connected(player.near_wreck_changed, _on_robert_near_wreck)
+		_connect_signal_if_not_connected(player.robert_reparing, _on_robert_reparing)
+		_connect_signal_if_not_connected(player.can_talk, _on_robert_can_talk)
+		_connect_signal_if_not_connected(player.robert_speaking, _on_robert_speaking)
 	elif player.role == Player.Role.ALIEN:
 		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
-			_connect_sinal_if_not_connected(alien.near_wreck_changed, _on_alien_can_repair)
-			_connect_sinal_if_not_connected(alien.fly_away_activated, _on_fly_away_changed)
+			_connect_signal_if_not_connected(alien.near_wreck_changed, _on_alien_can_repair)
+			_connect_signal_if_not_connected(alien.fly_away_activated, _on_fly_away_changed)
+
+
+func _on_robert_speaking():
+	q.start_cooldown(player.speach_timeout)
+
+
+func _on_robert_can_talk(can_talk: bool, _peer_id):
+	if can_talk:
+		q.set_enabled()
+	else:
+		q.set_disabled()
 
 
 func _on_fly_away_changed(active: bool):
@@ -181,11 +194,11 @@ func _set_sanity_pill_skill(enabled: bool):
 
 
 func _assign_ufo_signals():
-	_connect_sinal_if_not_connected(player.ufo_crashed, _on_ufo_crashed)
+	_connect_signal_if_not_connected(player.ufo_crashed, _on_ufo_crashed)
 	var ufo = player.get_node_or_null("Ufo")
 	if ufo:
-		_connect_sinal_if_not_connected(ufo.laser_shoot, _on_skill_fired.bind(q))
-		_connect_sinal_if_not_connected(ufo.captured, _on_skill_fired.bind(e))
+		_connect_signal_if_not_connected(ufo.laser_shoot, _on_skill_fired.bind(q))
+		_connect_signal_if_not_connected(ufo.captured, _on_skill_fired.bind(e))
 
 
 func _on_alien_near_ufo_wreck():
@@ -213,7 +226,7 @@ func _disconnect_connected_signal(connected_signal: Signal, handler: Callable):
 		connected_signal.disconnect(handler)
 
 
-func _connect_sinal_if_not_connected(signal_to_connect: Signal, callable: Callable):
+func _connect_signal_if_not_connected(signal_to_connect: Signal, callable: Callable):
 	if not signal_to_connect.is_connected(callable):
 		signal_to_connect.connect(callable)
 
@@ -298,7 +311,7 @@ func _on_alien_can_repair(near_wreck: bool):
 	else:
 		repair_skill.set_disabled()
 
-	_connect_sinal_if_not_connected(alien.repairing, repair_skill.start_cooldown)
+	_connect_signal_if_not_connected(alien.repairing, repair_skill.start_cooldown)
 
 
 func _get_action_idx(actions: Array[Callable], action: Callable) -> int:
@@ -408,7 +421,8 @@ func _setup_ui(role: Player.Role):
 			r.set_icon_text(tr("SKILL_FLY_AWAY"))
 		Player.Role.BOSS:
 			faction_label.text = tr("FACTION_LABEL_ROBERT")
-			q.visible = false
+			q.visible = true
+			q.set_icon_text("SKILL_ROBERT_SPEACH")
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false

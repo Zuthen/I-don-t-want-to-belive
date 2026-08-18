@@ -6,15 +6,21 @@ class_name Robert
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var camera = $Camera2D
 @onready var animated_wheel = $AnimatedWheel
+@onready var voicer = $Voicer
 
 signal near_wreck_changed(near: bool, _crashed_ufo_peer_id: int)
 signal robert_reparing(time: float)
+signal can_talk(can: bool, peer_id: int)
+signal robert_speaking
 
 const speed = 100.0
 var animation_sprite_idx: int = 0
 var steering_wheel_collected = false
 var repair_tool_collected = false
 var near_wreck_id: int
+var can_speach = false
+var speaking = false
+var speach_timeout: float = 20.0
 
 var input_multiplayer_authority: int:
 	set(value):
@@ -32,6 +38,33 @@ func _ready():
 		set_camera(camera)
 	animated_wheel.visible = false
 	near_wreck_changed.connect(_on_near_wreck)
+	voicer.area_entered.connect(_talk_active)
+	voicer.area_exited.connect(_talk_not_active)
+
+
+func _process(delta):
+	if Input.is_action_just_pressed("robert_speach") and can_speach and not speaking:
+		_speach()
+		start_cooldown_timer(speach_timeout, func(): speaking = !speaking)
+		robert_speaking.emit()
+
+
+func _speach():
+	pass
+
+
+func _talk_active(area):
+	var parent = area.get_parent()
+	if parent != null and parent is Skeptic:
+		can_talk.emit(true, parent.id)
+		can_speach = true
+
+
+func _talk_not_active(area):
+	var parent = area.get_parent()
+	if parent != null and parent is Skeptic:
+		can_talk.emit(false, parent.id)
+		can_speach = false
 
 
 func _physics_process(_delta):
@@ -104,6 +137,13 @@ func _update_visibility_for_local_player():
 		visible = false
 	if my_role == Player.Role.ALIEN:
 		visible = true
+
+
+func robert_talk():
+	# 1. Sceptyk widzi Roberta
+	# 2. Głos Roberta dociera do sceptyka
+	# 3. signal robert_talk(skeptic_id)
+	pass
 
 
 @rpc("any_peer", "call_local", "reliable")
