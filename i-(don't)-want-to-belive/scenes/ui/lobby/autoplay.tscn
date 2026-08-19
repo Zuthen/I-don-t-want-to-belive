@@ -29,7 +29,7 @@ theme_override_constants/separation = 13
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.08627451, 0.73333335, 0.46666667, 1)
-text = "Rozpocznij automatycznie"
+text = "AUTOPLAY"
 label_settings = SubResource("LabelSettings_1wbxg")
 autowrap_mode = 2
 
@@ -50,6 +50,6 @@ flat = true
 [node name="Description" type="Label" parent="." unique_id=359401575]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
-text = "Gra rozpocznie się automatyczniie, kiedy wszyscy gracze potwierdzą obecność."
+text = "AUTOPLAY_ON"
 label_settings = SubResource("LabelSettings_cc0m0")
 autowrap_mode = 2

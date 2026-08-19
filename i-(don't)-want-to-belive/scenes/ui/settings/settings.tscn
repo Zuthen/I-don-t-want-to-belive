@@ -66,6 +66,7 @@ layout_mode = 2
 theme = SubResource("Theme_lfmul")
 theme_override_fonts/font = ExtResource("3_lfmul")
 theme_override_font_sizes/font_size = 16
+selected = 0
 item_count = 2
 popup/item_0/text = "SETTINGS_LANGUAGE_POLISH"
 popup/item_0/icon = ExtResource("4_55onm")

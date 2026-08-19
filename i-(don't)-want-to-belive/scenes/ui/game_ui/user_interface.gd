@@ -111,35 +111,22 @@ func _connect_signals(player: Player):
 	_connect_signal_if_not_connected(player.somebody_wins, _on_somebody_win)
 	_connect_signal_if_not_connected(ItemsManager.item_type_removed, _on_item_type_removed)
 	if player.role == Player.Role.SKEPTIC:
-		player.belive_points_changed.connect(_on_belive_points_changed)
-		player.walkie_talkie_message_sent.connect(_on_skill_fired.bind(e))
-		player.can_take_sanity_pill.connect(_set_sanity_pill_skill)
-		player.jammer_activated.connect(_on_jammer_activated.bind(player as Skeptic))
-		player.can_send_coordinates_changed.connect(_on_jammer_ready)
+		_connect_signal_if_not_connected(player.belive_points_changed, _on_belive_points_changed)
+		_connect_signal_if_not_connected(player.walkie_talkie_message_sent, _on_skill_fired.bind(e))
+		_connect_signal_if_not_connected(player.can_take_sanity_pill, _set_sanity_pill_skill)
+		_connect_signal_if_not_connected(player.jammer_activated, _on_jammer_activated.bind(player as Skeptic))
+		_connect_signal_if_not_connected(player.can_send_coordinates_changed, _on_jammer_ready)
 
 	elif player.role == Player.Role.UFO:
 		_assign_ufo_signals()
 	elif player.role == Player.Role.BOSS:
 		_connect_signal_if_not_connected(player.near_wreck_changed, _on_robert_near_wreck)
 		_connect_signal_if_not_connected(player.robert_reparing, _on_robert_reparing)
-		_connect_signal_if_not_connected(player.can_talk, _on_robert_can_talk)
-		_connect_signal_if_not_connected(player.robert_speaking, _on_robert_speaking)
 	elif player.role == Player.Role.ALIEN:
 		var alien = player.get_node_or_null("Alien") as Alien
 		if alien:
 			_connect_signal_if_not_connected(alien.near_wreck_changed, _on_alien_can_repair)
 			_connect_signal_if_not_connected(alien.fly_away_activated, _on_fly_away_changed)
-
-
-func _on_robert_speaking():
-	q.start_cooldown(player.speach_timeout)
-
-
-func _on_robert_can_talk(can_talk: bool, _peer_id):
-	if can_talk:
-		q.set_enabled()
-	else:
-		q.set_disabled()
 
 
 func _on_fly_away_changed(active: bool):
@@ -413,10 +400,7 @@ func _setup_ui(role: Player.Role):
 			q.set_icon_text(tr("SKILL_CALL_SKEPTIC"))
 			r.visible = false
 		Player.Role.ALIEN:
-			q.set_icon_text(tr("SKILL_CALL_SKEPTIC"))
-			q.set_disabled()
-			if player.can_speach:
-				q.set_enabled()
+			q.visible = false
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
@@ -424,8 +408,7 @@ func _setup_ui(role: Player.Role):
 			r.set_icon_text(tr("SKILL_FLY_AWAY"))
 		Player.Role.BOSS:
 			faction_label.text = tr("FACTION_LABEL_ROBERT")
-			q.visible = true
-			q.set_icon_text("SKILL_ROBERT_SPEACH")
+			q.visible = false
 			e.visible = false
 			belive_points_counter_background.visible = false
 			belive_points_counter.visible = false
@@ -474,10 +457,11 @@ func _show_robert_victory_screen():
 	main_menu_button.disabled = false
 
 
-func _on_belive_points_changed(amount):
+func _on_belive_points_changed(amount: int):
 	hit_points += amount
 	if hit_points > ufos_sprites.size():
 		hit_points = ufos_sprites.size()
+
 	for i in range(ufos_sprites.size()):
 		ufos_sprites[i].visible = (i < hit_points)
 
