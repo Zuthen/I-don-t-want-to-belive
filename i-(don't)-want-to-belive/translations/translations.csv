@@ -23,11 +23,11 @@ HOST_LABEL,Jesteś hostem,You're hosting,,,,
 READY_PLAYERS_COUNTER,Gotowi gracze:,Ready players:,,,,
 MATCH_ID,ID meczu:,Game ID:,,,,
 ROOM_CODE,Kod pokoju:,Room code:,,,,
-FACTION_WARNING_TEXT,"Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją","Warning! If more than 2 players choose this option, 
-there is a chance you will 
+FACTION_WARNING_TEXT,"Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją","Warning! If more than 2 players choose 
+this option, there is a chance you will 
 play a different faction",,,,
-FACTION_WARNING_TEXT_ROBERT,"Uwaga! Jeśli więcej niż jeden gracz wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją","Warning! If more than one player choose this option, 
-there is a chance you will 
+FACTION_WARNING_TEXT_ROBERT,"Uwaga! Jeśli więcej niż jeden gracz wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją","Warning! If more than one player choose
+ this option, there is a chance you will 
 play a different faction",,,,
 ABOUT_ROLE_UFO,"[b]Cel:[/b] przekonać sceptyków do wiary w UFO
 [b]Zdolności: [/b]
@@ -96,68 +96,92 @@ are ready",,,,
 AUTOPLAY_OFF_HOST,"Uruchomisz grę, kiedy wszyscy gracze będą gotowi","You will launch the game,
 when all players are ready",,,,
 TOOLTIP_REPAIR_TOOL_ALIEN,"Wichajster:
-					 Użyj do naprawy swojego UFO",,,,,
+					 Użyj do naprawy swojego UFO","Widget:
+                                       Use to
+                                       repair your UFO wreck",,,,
 TOOLTIP_REPAIR_TOOL_ROBERT,"Wichajster:Wichajster:
-					 Użyj do naprawy wraku ufo",,,,,
+					 Użyj do naprawy wraku ufo","Widget:
+                                       Use to
+                                       repair a UFO wreck",,,,
 TOOLTIP_SIGNAL_JAMMER_ALIEN,"Zakłócacz:
 					Wyślij swoją pozycję przez
 					walkie talkie, tak jak
-					sceptyk",,,,,Użyj do naprawy wraku ufo
+					sceptyk","Jammer:
+                            Send your position
+through the walkie-talkie
+like a sceptic",,,,Użyj do naprawy wraku ufo
 TOOLTIP_SIGNAL_JAMMER_SKEPTIC,"Zakłócacz:
 					Po użyciu na walkie-talkie
 					ufo nie zobaczy nadanej
-					przez ciebie pozycji",,,,,
+					przez ciebie pozycji","Jammer:
+                          After using on the
+walkie-talkie 
+                         the ufo will not
+see the position
+                         transmitted by you",,,,
 TOOLTIP_SANITY_PILLS,"Medi-Sinet: 
-					Użyj aby stracić punkt wiary",,,,,
+					Użyj aby stracić punkt wiary","Medi-Sinet:
+                                    Use to lose
+a faith point",,,,
 TOOLTIP_STEERING_WHEEL,"Koło sterowe:
 					Po użyciu na wraku ufo
 					i naprawie ufo za pomocą
 					narzędzia naprawczego
-					możesz odlecieć i wygrać",,,,,
-TOOLTIP_DEFAULT,Nie możesz użyć tego przedmiotu,,,,,
-BACKPACK_SKILL_ACTION_REPAIR_TOOL,Napraw,,,,,
-BACKPACK_SKILL_ACTION_SANITY_PILLS,Weź tabletkę,,,,,
-BACKPACK_SKILL_ACTION_SIGNAL_JAMMER_SKEPTIC,Zaszyfruj sygnał,,,,,
-BACKPACK_SKILL_ACTION_SIGNAL_JAMMER_ALIEN,Wyślij swoją pozycję,,,,,
-BACKPACK_SKILL_ACTION_STEERING_WHEEL,Umieść koło sterowe we wraku,,,,,
-SKILL_FLY_AWAY,Odleć,,,,,
-SKILL_LASER_SHOOT,Wystrzel laser,,,,,
-SKILL_CAPTURE,Pochwyć,,,,,
-SKILL_SEND_POSITION_SKEPTIC,Wyślij swoją pozycję,,,,,
-SKILL_CALL_SKEPTIC,Zawołaj,,,,,
-CAPTURED_LABEL,Pochwycenie udane!,,,,,
-BACKPACK_OVERFLOW_LABEL,Plecak pełny!,,,,,
-LOADING,Ładowanie,,,,,
-PREFFERED_FACTION,Preferowana frakcja,,,,,
-PLAYERS_IN_LOBBY_COUNT,graczy,,,,,
-PLAYERS_READY,gotowi gracze: ,,,,,
-START_GAME_BUTTON,Rozpocznij grę,,,,,
-CREDITS_CODE,Kod gry,,,,,
+					możesz odlecieć i wygrać","Steering wheel:
+                              After using on the
+UFO wreck
+                              and fixing 
+the UFO using
+                              the fixing tool
+you can fly away
+                              and win",,,,
+TOOLTIP_DEFAULT,Nie możesz użyć tego przedmiotu,You can't use this item,,,,
+BACKPACK_SKILL_ACTION_REPAIR_TOOL,Napraw,Fix,,,,
+BACKPACK_SKILL_ACTION_SANITY_PILLS,Weź tabletkę,Take a pill,,,,
+BACKPACK_SKILL_ACTION_SIGNAL_JAMMER_SKEPTIC,Zaszyfruj sygnał,Encode the signal,,,,
+BACKPACK_SKILL_ACTION_SIGNAL_JAMMER_ALIEN,Wyślij swoją pozycję,Transmit your position,,,,
+BACKPACK_SKILL_ACTION_STEERING_WHEEL,Umieść koło sterowe we wraku,Place the steering wheel inside the wreck,,,,
+SKILL_FLY_AWAY,Odleć,Fly away,,,,
+SKILL_LASER_SHOOT,Wystrzel laser,Fire the laser,,,,
+SKILL_CAPTURE,Pochwyć,Seize,,,,
+SKILL_SEND_POSITION_SKEPTIC,Wyślij swoją pozycję,Transmit your position,,,,
+SKILL_CALL_SKEPTIC,Zawołaj,Call out,,,,
+CAPTURED_LABEL,Pochwycenie udane!,Seizing successful,,,,
+BACKPACK_OVERFLOW_LABEL,Plecak pełny!,Backpack full!,,,,
+LOADING,Ładowanie,Loading,,,,
+PREFFERED_FACTION,Preferowana frakcja,Prefered faction,,,,
+PLAYERS_IN_LOBBY_COUNT,graczy,players,,,,
+PLAYERS_READY,gotowi gracze: ,Ready players:,,,,
+START_GAME_BUTTON,Rozpocznij grę,Begin the game,,,,
+CREDITS_CODE,Kod gry,Game code:,,,,
 CREDITS_TESTS,"Testy i wsparcie 
-motywacyjne",,,,,
+motywacyjne",Tests and motivational support,,,,
 CREDITS_ASSETS,"Wszystkie 
 wykorzystane 
-grafiki",,,,,
-CREDITS_MUSIC,Muzyka,,,,,
+grafiki",All graphics used,,,,
+CREDITS_MUSIC,Muzyka,Music,,,,
 CREDITS_LOCALIZATION,"Lokalizacja na
-język angielski",,,,,
-SETTINGS_MUSIC,Muzyka,,,,,
-SETTINGS_SFX,Efekty dźwiękowe,,,,,
-SETTINGS_LANGUAGE,Język,,,,,
-SETTINGS_LANGUAGE_POLISH,polski,,,,,
-SETTINGS_LEAVE,Wyjdź,,,,,
-SETTINGS_LANGUAGE_ENGLISH,angielski,,,,,
-ROOM_JOIN_TITLE,Kod pokoju,,,,,
-ROOM_JOIN_BUTTON,Dołącz,,,,,
-ROOM_JOIN_PLACEHOLDER,Wpisz lub wklej kod pokoju,,,,,
-ROOM_CODE_COPIED,Kod skopiowany do schowka,,,,,
-WELCOME_SCREEN_CREATE,Utwórz nową grę,,,,,
-WELCOME_SCREEN_JOIN,Dołącz,,,,,
-WELCOME_SCREEN_QUICK_GAME,Losuj grę,,,,,
-WELCOME_SCREEN_GAME_VERSION,Wersja gry:,,,,,
+język angielski",English localization,,,,
+SETTINGS_MUSIC,Muzyka,Music,,,,
+SETTINGS_SFX,Efekty dźwiękowe,Sound effects,,,,
+SETTINGS_LANGUAGE,Język,Language,,,,
+SETTINGS_LANGUAGE_POLISH,polski,polish,,,,
+SETTINGS_LEAVE,Wyjdź,Exit,,,,
+SETTINGS_LANGUAGE_ENGLISH,angielski,english  ,,,,
+ROOM_JOIN_TITLE,Kod pokoju,Room code:,,,,
+ROOM_JOIN_BUTTON,Dołącz,Join,,,,
+ROOM_JOIN_PLACEHOLDER,Wpisz lub wklej kod pokoju,Type in or paste room code,,,,
+ROOM_CODE_COPIED,Kod skopiowany do schowka,Code copied to clipboard,,,,
+WELCOME_SCREEN_CREATE,Utwórz nową grę,Create new game,,,,
+WELCOME_SCREEN_JOIN,Dołącz,Join,,,,
+WELCOME_SCREEN_QUICK_GAME,Losuj grę,Randomize game,,,,
+WELCOME_SCREEN_GAME_VERSION,Wersja gry:,Game version:,,,,
 WELCOME_SCREEN_SETTINGS,Ustawienia,Settings,,,,
 WELCOME_SCREEN_QUIT,Wyjdź,Leave,,,,
 SKEPTIC_LISTEN_ROBERTS_TALK,"Robert cię
-przekonał",,,,,
+przekonał",Robert convinced you,,,,
 SKILL_ROBERT_SPEACH,"Wygłoś
-tyradę",,,,,
+tyradę",Deliver a tirade,,,,
+LOBBY_CONFIRM,Potwierdź,Confirm,,,,
+LOBBY_LEAVE,Opuść grę,Leave game,,,,
+AUTOPLAY,Rozpocznij automatycznie,autoplay,,,,

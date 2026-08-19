@@ -82,9 +82,10 @@ alignment = 2
 
 [node name="RobertLabel" type="Label" parent="." unique_id=1272069113]
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 3
 text = "Robert B."
 label_settings = SubResource("LabelSettings_4kpoo")
 
 [node name="RobertCheckbox" type="CheckBox" parent="." unique_id=847080723]
 layout_mode = 2
+size_flags_horizontal = 3
