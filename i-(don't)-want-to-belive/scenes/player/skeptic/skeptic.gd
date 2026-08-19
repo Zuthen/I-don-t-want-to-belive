@@ -99,7 +99,8 @@ func _ready():
 
 
 func _connect_signals():
-	belive_points_changed.connect(_on_belive_points_changed)
+	if not belive_points_changed.is_connected(_on_belive_points_changed):
+		belive_points_changed.connect(_on_belive_points_changed)
 	laser_seen.connect(_on_laser_seen)
 	alien_seen.connect(_on_alien_seen)
 	collision_area.area_entered.connect(_on_skeptic_find_other_skeptic)
@@ -185,14 +186,16 @@ func _reset_voice_emmitter():
 	voice_emitter_active = false
 
 
-func _on_belive_points_changed(hit_points: int):
-	belive_points += hit_points
-	if belive_points > 0:
+func _on_belive_points_changed(amount: int):
+	belive_points += amount
+
+	if belive_points >= max_belive_points:
+		somebody_wins.emit("ufo")
+		can_take_sanity_pill.emit(true)
+	elif belive_points > 0:
 		can_take_sanity_pill.emit(true)
 	elif belive_points == 0:
 		can_take_sanity_pill.emit(false)
-	elif belive_points >= max_belive_points:
-		somebody_wins.emit("ufo")
 
 
 func _on_laser_seen(ufo_sender_id: int):
@@ -421,7 +424,9 @@ func _on_crashed_ufo_discovered(ufo_peer_id: int):
 func _on_robert_talking():
 	if not roberts_wisdom:
 		roberts_wisdom = true
+
 		belive_points_changed.emit(1)
+
 		warning_label.text = tr("SKEPTIC_LISTEN_ROBERTS_TALK")
 		start_cooldown_timer(warning_time, func(): warning_label.visible = !warning_label.visible)
 

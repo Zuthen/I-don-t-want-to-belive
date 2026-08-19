@@ -12,7 +12,6 @@ class_name Robert
 
 signal near_wreck_changed(near: bool, _crashed_ufo_peer_id: int)
 signal robert_reparing(time: float)
-signal can_talk(can: bool, peer_id: int)
 signal robert_speaking
 
 const speed = 100.0
@@ -45,20 +44,7 @@ func _ready():
 	voicer_shape_radius = voicer_shape.shape.radius
 	near_wreck_changed.connect(_on_near_wreck)
 	voicer.area_entered.connect(_talk_active)
-	voicer.area_exited.connect(_talk_not_active)
 	robert_speaking.connect(_speach)
-
-
-func _process(delta):
-	if Input.is_action_just_pressed("robert_speach") and can_speach and not speaking:
-		_speach()
-		start_cooldown_timer(
-			speach_timeout,
-			func():
-				speaking = !speaking
-				can_speach = !can_speach
-		)
-		robert_speaking.emit()
 
 
 func _show_range():
@@ -72,11 +58,10 @@ func _hide_range():
 
 
 func _speach():
+	speaking = true
 	const voicer_max_radius: float = 150.0
 	const voicer_min_radius: float = 50.0
-
 	_show_range()
-
 	var tween = create_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
@@ -86,8 +71,9 @@ func _speach():
 		voicer_max_radius,
 		speach_timeout / 3.0,
 	)
-
-	tween.finished.connect(_on_speach_end)
+	if not voicer.area_entered.is_connected(_on_speach_succeed):
+		voicer.area_entered.connect(_on_speach_succeed.bind(tween))
+	tween.finished.connect(_on_speach_end.bind(tween))
 
 
 func _update_speach_radius(new_radius: float):
@@ -108,37 +94,48 @@ func _draw():
 		draw_circle(Vector2.ZERO, current_radius, speach_border_color, false, 2.0, true)
 
 
-func _on_speach_end():
+func _on_speach_end(tween: Tween):
 	_hide_range()
 	voicer_shape.shape.radius = voicer_shape_radius
 	speaking = false
+	if voicer.area_entered.is_connected(_on_speach_succeed):
+		voicer.area_entered.disconnect(_on_speach_succeed)
 
 
 func _talk_active(area):
 	var parent = area.get_parent()
-	if parent != null and parent is Skeptic:
-		can_talk.emit(true, parent.id)
-		can_speach = true
-		if speaking and not belivers.has(parent.id):
-			rpc_change_skeptic_faith.rpc(parent.id)
-			belivers.append(parent.id)
+	if parent != null and parent is Skeptic and not belivers.has(parent.id) and not speaking:
+		start_timer(1.5, _speach)
+
+
+func _on_speach_succeed(area, tween: Tween):
+	if not multiplayer.is_server():
+		return
+
+	var parent = area.get_parent()
+
+	if not (parent is Skeptic) or belivers.has(parent.id):
+		return
+
+	belivers.append(parent.id)
+
+	if voicer.area_entered.is_connected(_on_speach_succeed):
+		voicer.area_entered.disconnect(_on_speach_succeed)
+
+	if is_instance_valid(tween) and tween.is_running():
+		tween.kill()
+
+	_on_speach_end(tween)
+
+	rpc_change_skeptic_faith.rpc(parent.id)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func rpc_change_skeptic_faith(skeptic_id: int):
 	var game_node = get_node_or_null("/root/Game")
 	if game_node:
-		var target_skeptic = game_node.get_node_or_null(str(skeptic_id)) as Player
-		if is_instance_valid(target_skeptic):
-			target_skeptic.belive_points_changed.emit(1)
-			target_skeptic.robert_talking.emit()
-
-
-func _talk_not_active(area):
-	var parent = area.get_parent()
-	if parent != null and parent is Skeptic:
-		can_talk.emit(false, parent.id)
-		can_speach = false
+		var target_skeptic = game_node.get_node_or_null(str(skeptic_id))
+		target_skeptic.belive_points_changed.emit(1)
 
 
 func _physics_process(_delta):

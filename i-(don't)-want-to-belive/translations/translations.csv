@@ -1,47 +1,100 @@
 id,pl,en,,,,
-SKEPTIC_WARNING_UFO_SEEN,Widzisz wrak ufo!,,,,,
-SKEPTIC_WARNING_ALIEN_SEEN,Widzisz kosmitę!,,,,,
-WALKIE_TALKIE_MESSAGE_RECEIVED,Sceptyk nadał wiadomość,,,,,
+SKEPTIC_WARNING_UFO_SEEN,Widzisz wrak ufo!,You see a UFO wreckage!,,,,
+SKEPTIC_WARNING_ALIEN_SEEN,Widzisz kosmitę!,You see an alien!,,,,
+WALKIE_TALKIE_MESSAGE_RECEIVED,Sceptyk nadał wiadomość,The sceptic has transmited a message,,,,
 UFO_WIN_LABEL,"Prawda 
-	nas jeszcze 
-	zadziwi...",,,,,
-UFO_WIN_SUBTITLE,Wygrywają ufoki,,,,,
+        nas jeszcze 
+        zadziwi...","The truth 
+  will surprise us
+  yet…",,,,
+UFO_WIN_SUBTITLE,Wygrywają ufoki,The UFOlks win,,,,
 SKEPTICS_WIN_LABEL,"Od dawna 
-takie latają!",,,,,
-SKEPTICS_WIN_SUBTITLE,Wygrywają sceptycy,,,,,
+takie latają!","These have been flying around 
+for a long time",,,,
+SKEPTICS_WIN_SUBTITLE,Wygrywają sceptycy,The sceptics win,,,,
 ROBERT_WIN_LABEL,"Oszust
-oszukał",,,,,
-ROBERT_WIN_SUBTITLE,Wygrywa Robert,,,,,
-FACTION_LABEL_UFO,Ufok,,,,,
-FACTION_LABEL_SKEPTIC,Sceptyk,,,,,
-FACTION_LABEL_ROBERT,Robert,,,,,
-HOST_LABEL,Jesteś hostem,,,,,
-READY_PLAYERS_COUNTER,Gotowi gracze:,,,,,
-MATCH_ID,ID meczu:,,,,,
-ROOM_CODE,Kod pokoju:,,,,,
-FACTION_WARNING_TEXT,"Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją",,,,,
-FACTION_WARNING_TEXT_ROBERT,"Uwaga! Jeśli więcej niż jeden gracz wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją",,,,,
+oszukał","The cheater 
+cheated",,,,
+ROBERT_WIN_SUBTITLE,Wygrywa Robert,Robert wins,,,,
+FACTION_LABEL_UFO,Ufok,UFOlk,,,,
+FACTION_LABEL_SKEPTIC,Sceptyk,Sceptic,,,,
+FACTION_LABEL_ROBERT,Robert,Robert,,,,
+HOST_LABEL,Jesteś hostem,You're hosting,,,,
+READY_PLAYERS_COUNTER,Gotowi gracze:,Ready players:,,,,
+MATCH_ID,ID meczu:,Game ID:,,,,
+ROOM_CODE,Kod pokoju:,Room code:,,,,
+FACTION_WARNING_TEXT,"Uwaga! Jeśli więcej niż 2 graczy wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją","Warning! If more than 2 players choose this option, 
+there is a chance you will 
+play a different faction",,,,
+FACTION_WARNING_TEXT_ROBERT,"Uwaga! Jeśli więcej niż jeden gracz wybierzę tę opcję, może się zdarzyć, że zagrasz inną frakcją","Warning! If more than one player choose this option, 
+there is a chance you will 
+play a different faction",,,,
 ABOUT_ROLE_UFO,"[b]Cel:[/b] przekonać sceptyków do wiary w UFO
 [b]Zdolności: [/b]
 	[b] Wystrzelenie lasera: [/b] Jeśli laser trafi w sceptyka, sceptyk zdobędzie 1 punkt wiary a ty zobaczysz jego skwaszoną minę.
 	[b] Pochwycenie: [/b] Pikujesz w dół i pobierasz sceptyka, dodajesz mu 3 punkty wiary i wywozisz go w inne miejsce mapy. Nawet nie wiesz gdzie.
 		[b]Uwaga! [/b] Jeżeli nie trafisz w sceptyka, twój statek się rozbije. Musisz wtedy wyjść ze statku i sprawić by sceptyk zobaczył ciebie i twoje ufo (każda z tych akcji dodaje mu jednorazowo 1 punkt wiary).
-	[b] Wołanie sceptyka (jako kosmita):[/b] Możesz zawołać sceptyka. Jeśli się to powiedzie może uznać, że jesteś drugim sceptykiem. Ale nie wiesz czy się zorientuje.",,,,,
+	[b] Wołanie sceptyka (jako kosmita):[/b] Możesz zawołać sceptyka. Jeśli się to powiedzie może uznać, że jesteś drugim sceptykiem. Ale nie wiesz czy się zorientuje.","[b]Goal:[/b] convince the sceptics to believe in UFO
+[b]Abilities: [/b]
+         [b]Firing the laser: [/b] If the laser hits the sceptic, 
+sceptic will gain 1 faith point and 
+you will see their sour expression.
+         [b]Seize: [/b] You nosedive and take a sceptic, 
+you add them 3 faith points 
+and export them into another place on the map. 
+You don’t even know where.
+         [b]Warning! [/b] If you don’t hit the sceptic, 
+your ship will crash. You have to exit the ship 
+and make the sceptic see you and your UFO 
+(each of these actions add 1 faith point a single time).
+         [b]: Calling the sceptic (as alien):[/b] You can 
+call out to a sceptic. If it’s successful, 
+they can assume you’re the second sceptic. 
+But you don't know if they realize.",,,,
 ABOUT_ROLE_SKEPTIC,"[b]Cel:[/b] Znaleźć drugiego sceptyka i współnie utwierdzić się w przekonaniu, że UFO nie istnieje.
 [b]Zdolności: [/b]
 	[b] Zawołanie: [/b] Jeśli drugi sceptyk jest w zasięgu twojego głosu, będziesz wiedzieć, w którą stronę iść.
 		[b] Uwaga! [/b] Kosmici po rozbiciu statku mogą podszywać się pod sceptyków.
 	[b] Walkie-Talkie: [/b] Wysyłasz swoją lokalizację drugiemu sceptykowi. Będzie to litera i/lub liczba (losowo).
-		[b]Uwaga! [/b] Statki UFO (ale nie kosmici) zawsze przechwytują tę informację.",,,,,
+		[b]Uwaga! [/b] Statki UFO (ale nie kosmici) zawsze przechwytują tę informację.","[b]Goal:[/b] Find the other sceptic 
+and together confirm your belief that UFO doesn’t exist.
+[b]Abilities: [/b]
+         [b] Call out: [/b] If the other sceptic is in the range of your voice,
+ you will know which way to go.
+         [b] Warning! [/b] After the UFO crashes, 
+the aliens can impersonate the sceptics.
+         [b] Walkie-Talkie: [/b] You send your location to the other sceptic.
+ It will be a letter and/or a number (random).
+         [b]Warning! [/b] UFO ships (not the aliens) 
+always intercept this information",,,,
 ABOUT_ROLE_ROBERT,"[b]Cel:[/b] UFO istnieje. To jest fakt. Jedyne o czym marzysz, to przelecieć się spodkiem. 
                 Musisz tylko zamontować kierownicę i dokonać naprawy, zanim kosmita zrobi to sam i odleci.
 [b]Zdolności: [/b]
         [b] Przekonywanie: [/b] Jeśli spotkasz sceptyka a on usłyszy twój wywód o kosmitach, zdobędzie punkt wiary w UFO
                 [b] Uwaga! [/b] Jeśli sceptyk zdobędzie piąty punkt wiary to wygrają ufoki a nie ty. No ale to prawie to samo.
-        [b] Samoporwanie (pasywna): [/b] Jeśli ufo cię porwie, wygrywasz automatycznie",,,,,
-AUTOPLAY_ON,"Gra rozpocznie się automatycznie, kiedy wszyscy gracze potwierdzą obecność.",,,,,
-AUTOPLAY_OFF_PLAYERS,"Gra rozpocznie się, kiedy gospodarz uruchomi grę, kiedy wszyscy gracze będą gotowi",,,,,
-AUTOPLAY_OFF_HOST,"Uruchomisz grę, kiedy wszyscy gracze będą gotowi",,,,,
+        [b] Samoporwanie (pasywna): [/b] Jeśli ufo cię porwie, wygrywasz automatycznie","[b]Goal:[/b] UFO exists. That’s a fact. 
+The only thing you dream about is to fly the saucer. 
+          All you need to do is mount the steering wheel 
+and repair the UFO before the alien 
+does it themselves and flies away.
+[b]Abilities: [/b]
+          [b] Convincing: [/b] If you meet a sceptic 
+and they hear your disquisition about the aliens, 
+they will earn a point of faith in UFO
+           [b] Warning! [/b] If the sceptic earns their fifth faith point, 
+the UFOlks will win, not you. 
+But well, that’s almost the same thing.
+           [b] Self-kidnapping (passive): [/b] If the UFO kidnaps you, 
+you win automatically
+",,,,
+AUTOPLAY_ON,"Gra rozpocznie się automatycznie, kiedy wszyscy gracze potwierdzą obecność.","The game will begin automatically, 
+when all players confirm their 
+attendance.",,,,
+AUTOPLAY_OFF_PLAYERS,"Gra rozpocznie się, kiedy gospodarz uruchomi grę, kiedy wszyscy gracze będą gotowi","The game will begin, when the host
+launches the game, when all players
+are ready",,,,
+AUTOPLAY_OFF_HOST,"Uruchomisz grę, kiedy wszyscy gracze będą gotowi","You will launch the game,
+when all players are ready",,,,
 TOOLTIP_REPAIR_TOOL_ALIEN,"Wichajster:
 					 Użyj do naprawy swojego UFO",,,,,
 TOOLTIP_REPAIR_TOOL_ROBERT,"Wichajster:Wichajster:

@@ -131,7 +131,7 @@ layout_mode = 2
 
 [node name="Confirm" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1723459190 instance=ExtResource("9_gj1jc")]
 layout_mode = 2
-label_text = "Potwierdź"
+label_text = "LOBBY_CONFIRM"
 
 [node name="Autoplay" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=206744738 instance=ExtResource("10_bxh51")]
 layout_mode = 2
@@ -207,7 +207,16 @@ layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 texture = ExtResource("15_qhjwk")
-label_text = "Opuść grę"
+label_text = "LOBBY_LEAVE"
+
+[node name="LeaveButton2" parent="MarginContainer" unique_id=1118256951 instance=ExtResource("14_c8ugs")]
+clip_contents = true
+custom_minimum_size = Vector2(250, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+texture = ExtResource("15_qhjwk")
+label_text = "LOBBY_LEAVE"
 
 [node name="MatchId" type="Label" parent="MarginContainer" unique_id=1180636423]
 visible = false
