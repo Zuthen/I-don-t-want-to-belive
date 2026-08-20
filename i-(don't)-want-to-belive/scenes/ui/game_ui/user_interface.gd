@@ -142,20 +142,33 @@ func _on_item_type_removed(item_name: String, _player: Player):
 
 
 func _on_jammer_activated(player: Skeptic):
-	var jammer_idx = _find_skill_by_name("signal_jammer").idx
+	var skill_data = _find_skill_by_name("signal_jammer")
+	if skill_data == null:
+		ItemsManager.item_used.emit("signal_jammer", player)
+		return
+
+	var jammer_idx = skill_data.idx
 	var skills_list = additional_skills.keys()
-	if not player.can_send_coordinates:
-		skills_list[jammer_idx].set_disabled()
+
+	if jammer_idx != -1 and jammer_idx < skills_list.size():
+		if not player.can_send_coordinates:
+			skills_list[jammer_idx].set_disabled()
+
 	ItemsManager.item_used.emit("signal_jammer", player)
 
 
 func _on_jammer_ready(ready: bool):
-	var jammer_idx = _find_skill_by_name("signal_jammer").idx
+	var skill_data = _find_skill_by_name("signal_jammer")
+	if skill_data == null or skill_data.idx == -1:
+		return
+	var jammer_idx = skill_data.idx
 	var skills_list = additional_skills.keys()
-	if ready:
-		skills_list[jammer_idx].set_enabled()
-	else:
-		skills_list[jammer_idx].set_disabled()
+
+	if jammer_idx < skills_list.size():
+		if ready:
+			skills_list[jammer_idx].set_enabled()
+		else:
+			skills_list[jammer_idx].set_disabled()
 
 
 func _set_sanity_pill_skill(enabled: bool):
