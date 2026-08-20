@@ -180,11 +180,11 @@ func check_usable(item_name: String, player_role: Player.Role) -> bool:
 	var roles_can_use: Array[Role]
 	match item_name:
 		"repair_tool":
-			roles_can_use = [Role.ALIEN, Role.BOSS]
+			roles_can_use = [Role.UFO, Role.BOSS]
 		"sanity_pills":
 			roles_can_use = [Role.SKEPTIC]
 		"signal_jammer":
-			roles_can_use = [Role.SKEPTIC, Role.ALIEN]
+			roles_can_use = [Role.SKEPTIC, Role.UFO]
 		"steering_wheel":
 			roles_can_use = [Role.BOSS]
 	return roles_can_use.has(player_role)
