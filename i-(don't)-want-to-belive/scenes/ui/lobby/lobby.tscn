@@ -102,10 +102,10 @@ theme_override_font_sizes/font_size = 20
 expand_icon = true
 selected = 1
 item_count = 2
-popup/item_0/text = "Sceptyk"
+popup/item_0/text = "FACTION_LABEL_SKEPTIC"
 popup/item_0/icon = ExtResource("2_2rbxb")
 popup/item_0/id = 0
-popup/item_1/text = "Ufok"
+popup/item_1/text = "FACTION_LABEL_UFO"
 popup/item_1/icon = ExtResource("3_rqagm")
 popup/item_1/id = 1
 
