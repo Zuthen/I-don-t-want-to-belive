@@ -37,7 +37,7 @@ var input_multiplayer_authority: int:
 func _ready():
 	game = get_tree().root.get_node("Game")
 	capture_area_collision.disabled = true
-	capture_area.area_entered.connect(_on_capture)
+	capture_area.body_entered.connect(_on_capture)
 
 	if input_multiplayer_authority != 0:
 		set_multiplayer_authority(input_multiplayer_authority)
@@ -220,13 +220,30 @@ func _find_new_skeptic_position(paths_array: Array[Vector2i], current_position) 
 
 
 func _on_capture(other):
-	var player = other.get_parent()
-	if player is Skeptic:
+	if other is Robert:
+		_server_request_robert_win.rpc()
+	if other is Skeptic:
 		capture_hit_target = true
 		start_cooldown_timer(capture_label_time, func(): captured_label.visible = !captured_label.visible)
-		var skeptic_path = player.get_path()
+		var skeptic_path = other.get_path()
 		var new_skeptic_position = _get_new_captured_skeptic_position()
 		_server_request_capture.rpc(skeptic_path, new_skeptic_position)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _server_request_robert_win():
+	if not multiplayer.is_server():
+		return
+
+	_client_trigger_win_signal.rpc("robert")
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _client_trigger_win_signal(winner: String):
+	var ui = get_tree().get_first_node_in_group("local_user_interface")
+
+	if is_instance_valid(ui) and ui.has_method("_on_somebody_win"):
+		ui._on_somebody_win(winner)
 
 
 @rpc("any_peer", "call_local", "reliable")

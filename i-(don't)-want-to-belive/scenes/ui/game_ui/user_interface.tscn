@@ -82,6 +82,7 @@ vertical_alignment = 2
 metadata/_edit_group_ = true
 
 [node name="MainMenuButton" parent="WinInfo" unique_id=1723459190 instance=ExtResource("12_olnl4")]
+process_mode = 2
 layout_mode = 2
 label_text = "Wróć do menu"
 
