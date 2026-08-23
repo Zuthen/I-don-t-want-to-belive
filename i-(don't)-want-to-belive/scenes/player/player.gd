@@ -6,7 +6,7 @@ var tile: Vector2
 enum Role { UFO, SKEPTIC, ALIEN, BOSS, GROUND }
 
 @warning_ignore_start("unused_signal")
-signal somebody_wins
+signal somebody_wins(who: String)
 
 var id: int = 0
 var movement_blocked: = false

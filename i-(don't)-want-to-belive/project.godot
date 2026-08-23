@@ -140,6 +140,7 @@ locale/translations=PackedStringArray("res://translations/translations.en.transl
 2d_physics/layer_6="ufo"
 2d_physics/layer_7="collectible"
 2d_physics/layer_8="wreck"
+2d_physics/layer_9="robert"
 
 [network]
 

@@ -26,6 +26,7 @@ var jammer_ready = true
 
 
 func _ready():
+	add_to_group("local_user_interface")
 	MultiplayerFeatures.local_ui = self
 	ufos_sprites = belive_points_counter.get_children()
 	_setup_win_section()
@@ -429,6 +430,8 @@ func _setup_ui(role: Player.Role):
 
 
 func _on_somebody_win(winner: String):
+	get_tree().paused = true
+
 	match winner:
 		"ufo":
 			_show_ufo_victory_screen()
