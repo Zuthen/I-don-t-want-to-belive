@@ -166,7 +166,7 @@ func _check_can_win(wreck_id: int):
 	var wreck = _get_wreck_by_id(wreck_id)
 	if wreck.fixed and wreck.steering_wheel_mounted:
 		wreck.animator.play("robert fixed")
-		somebody_wins.emit("robert")
+		Events.rpc_global_announce_win.rpc("robert")
 	movement_blocked = false
 
 

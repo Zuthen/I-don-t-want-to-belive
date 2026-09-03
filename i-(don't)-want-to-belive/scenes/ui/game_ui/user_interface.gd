@@ -109,7 +109,7 @@ func _connect_signals(player: Player):
 	_connect_signal_if_not_connected(ItemsManager.input_action_assigned, _assign_backpack_skill)
 	_connect_signal_if_not_connected(ItemsManager.action_removed, _clear_backpack_skill)
 	_connect_signal_if_not_connected(main_menu_button.pressed, _go_to_main_menu)
-	_connect_signal_if_not_connected(player.somebody_wins, _on_somebody_win)
+	_connect_signal_if_not_connected(Events.somebody_wins_network, _on_somebody_win)
 	_connect_signal_if_not_connected(ItemsManager.item_type_removed, _on_item_type_removed)
 	if player.role == Player.Role.SKEPTIC:
 		_connect_signal_if_not_connected(player.belive_points_changed, _on_belive_points_changed)
@@ -442,7 +442,7 @@ func _on_somebody_win(winner: String):
 
 
 func _on_skeptic_win():
-	_show_skeptics_victory_screen.rpc_id(0)
+	_show_skeptics_victory_screen.rpc()
 
 
 func _on_skill_fired(time: float, skill: Skill):

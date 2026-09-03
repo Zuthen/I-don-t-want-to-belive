@@ -190,7 +190,7 @@ func _on_belive_points_changed(amount: int):
 	belive_points += amount
 
 	if belive_points >= max_belive_points:
-		somebody_wins.emit("ufo")
+		Events.rpc_global_announce_win.rpc("ufo")
 		can_take_sanity_pill.emit(true)
 	elif belive_points > 0:
 		can_take_sanity_pill.emit(true)
@@ -256,8 +256,10 @@ func request_icon_spawn_on_server(target_position: Vector2, sender_id: int, targ
 
 
 func _on_skeptic_find_other_skeptic(area: Area2D):
+	if not is_multiplayer_authority():
+		return
 	if area.get_parent() is Skeptic:
-		somebody_wins.emit("skeptic")
+		Events.rpc_global_announce_win.rpc("skeptic")
 
 
 func _play_captured_animation(ufo_texture_idx: int, target_position):

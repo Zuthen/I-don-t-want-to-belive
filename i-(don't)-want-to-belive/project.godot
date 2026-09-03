@@ -128,7 +128,7 @@ robert_speach={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://translations/translations.en.translation", "res://translations/translations.pl.translation")
+locale/translations=PackedStringArray("res://translations/translations - Sheet1.en.translation", "res://translations/translations - Sheet1.pl.translation")
 
 [layer_names]
 
