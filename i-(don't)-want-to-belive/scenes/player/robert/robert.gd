@@ -38,6 +38,16 @@ var near_wreck = false:
 
 
 func _ready():
+	if has_node("MultiplayerSynchronizer"):
+		var synchronizer = $MultiplayerSynchronizer
+		synchronizer.public_visibility = false
+		synchronizer.set_process(false)
+
+		await get_tree().process_frame
+		await get_tree().process_frame
+
+		synchronizer.public_visibility = true
+		synchronizer.set_process(true)
 	if is_multiplayer_authority() and has_node("Camera2D"):
 		set_camera(camera)
 	animated_wheel.visible = false
