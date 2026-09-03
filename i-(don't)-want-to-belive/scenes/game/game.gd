@@ -41,12 +41,17 @@ func client_build_map_instruction(map_payload: Dictionary):
 	add_child(client_server)
 	client_server.set_tile_maps(tile_map_layer, buildings_details)
 
+	# 1. Synchronizujemy parametry generowania z payloadu serwera
 	GameManager.map_config = map_payload["config"] as GameManager.MapConfig
 	GameManager.map_tiles_size = map_payload["tiles_size"]
 	GameManager.map_paths_tiles = map_payload["paths_tiles"]
 
+	# 2. Wywołujemy wbudowaną funkcję serwera. Dzięki temu klient
+	#    uruchomi zoptymalizowaną (szybką) wersję generatora na tym samym seedzie,
+	#    wyrysuje kafelki i postawi collidery brzegów w ułamku sekundy!
 	map_paths = client_server.create_map(map_payload["seed"])
 
+	# 3. Zgłaszamy serwerowi gotowość do spawnowania
 	_client_signals_ready_to_spawn.rpc_id(1, multiplayer.get_unique_id())
 
 
